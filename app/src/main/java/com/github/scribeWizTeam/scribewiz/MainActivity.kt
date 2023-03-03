@@ -1,10 +1,10 @@
 package com.github.scribeWizTeam.scribewiz
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -19,20 +19,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val db = Room.databaseBuilder(
+        val boredActDao = Room.databaseBuilder(
             this,
             AppDatabase::class.java, "database-name"
-        ).build()
-        val boredActDao = db.boredActivityDao()
+        ).build().boredActivityDao()
 
-        val okButton = findViewById<Button>(R.id.okButton)
-
-        val retrofit = Retrofit.Builder()
+        val boredApi = Retrofit.Builder()
             .baseUrl("https://www.boredapi.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+            .create(BoredApi::class.java)
 
-        val boredApi = retrofit.create(BoredApi::class.java)
+        val scope = CoroutineScope(Dispatchers.Main)
+
+        val okButton = findViewById<Button>(R.id.okButton)
 
         okButton.setOnClickListener {
             boredApi.getActivity().enqueue(object : Callback<BoredActivity> {
@@ -40,7 +40,14 @@ class MainActivity : AppCompatActivity() {
 
                     val text = when(val body = response.body()) {
                         null -> "empty activity"
-                        else -> body.activity
+                        else -> {
+                            scope.launch {
+                                withContext(Dispatchers.IO) {
+                                    boredActDao.insertAll(body)
+                                }
+                            }
+                            body.activity
+                        }
                     }
 
                     findViewById<TextView>(R.id.activityText).text = text
@@ -48,7 +55,9 @@ class MainActivity : AppCompatActivity() {
 
                 @SuppressLint("SetTextI18n")
                 override fun onFailure(call: Call<BoredActivity>, t: Throwable) {
-                    findViewById<TextView>(R.id.activityText).text = "empty activity"
+                    scope.launch {
+                        findViewById<TextView>(R.id.activityText).text = boredActDao.getAll().random().activity
+                    }
                 }
             })
         }
