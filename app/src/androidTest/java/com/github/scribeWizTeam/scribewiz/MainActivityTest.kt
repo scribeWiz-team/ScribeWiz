@@ -24,6 +24,7 @@ class MainActivityTest {
     val rule = activityScenarioRule<MainActivity>()
 
     @Test
+    // This test will fail because the mainGoButton is not clickable
     fun testExample() {
         Intents.init()
 
@@ -37,4 +38,5 @@ class MainActivityTest {
 
         Intents.release()
     }
+
 }
