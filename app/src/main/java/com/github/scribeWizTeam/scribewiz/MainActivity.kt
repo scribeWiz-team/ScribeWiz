@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun compute_presentation(name: String, raw_age: String): String{
+fun compute_presentation(name: String, raw_age: String): String {
     val current_year = 2023
     val age = raw_age.toIntOrNull()
     val birth_year = age?.let{current_year - it}
