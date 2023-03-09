@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "683634334546",
+    "firebase_url": "https://scribewiz-a539a-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "scribewiz-a539a",
+    "storage_bucket": "scribewiz-a539a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683634334546:android:3fcd174f1c739c8988b88b",
+        "android_client_info": {
+          "package_name": "com.example.firebasebootcamp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683634334546-n0dhq0ejujqhqdn0a6p6s1aajk6g3atp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU9moIQnOqg1wg_gE4orEHQJFLHDSe_Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683634334546-n0dhq0ejujqhqdn0a6p6s1aajk6g3atp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
