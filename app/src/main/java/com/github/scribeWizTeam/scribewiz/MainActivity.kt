@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val gotButton = findViewById<Button>(R.id.mainGoButton)
+        val loginButton = findViewById<Button>(R.id.LoginButton)
         val nameText = findViewById<EditText>(R.id.mainName)
 
         gotButton.setOnClickListener {
@@ -19,6 +20,12 @@ class MainActivity : AppCompatActivity() {
             //you can go to another activity in your app by creating Intent
             val intent = Intent(this, GreetingActivity::class.java)
             intent.putExtra("name", nameText.text.toString())
+            startActivity(intent)
+        }
+        loginButton.setOnClickListener {
+            //set the event you want to perform when button is clicked
+            //you can go to another activity in your app by creating Intent
+            val intent = Intent(this, FirebaseUIActivity::class.java)
             startActivity(intent)
         }
 

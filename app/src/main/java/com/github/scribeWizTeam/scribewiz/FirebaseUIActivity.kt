@@ -1,8 +1,12 @@
 package com.github.scribeWizTeam.scribewiz
 
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -54,18 +58,28 @@ class FirebaseUIActivity : AppCompatActivity()  {
         signInLauncher.launch(signInIntent)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
+        val tv = findViewById<TextView>(R.id.LoginMessage)
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
             val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                tv.text = "Successful Login! \n${user.displayName}"
+            }
+            tv.setTextColor(Color.parseColor("#00FF00"))
+
             // ...
         } else {
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
             // ...
+            tv.text = "Failed Login"
+            tv.setTextColor(Color.parseColor("#FF0000"))
         }
+        tv.visibility = View.VISIBLE
     }
 
     private fun signOut() {
