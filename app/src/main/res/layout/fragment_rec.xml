@@ -5,10 +5,31 @@
     android:background="@android:color/holo_blue_light">
 
     <TextView
+        android:id="@+id/time_recording"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Record"
-        android:textSize="32dp" />
+        android:layout_height="26dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="211dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginBottom="366dp"
+        android:text="00:00"
+        android:textSize="18dp" />
+
+    <Button
+        android:id="@+id/record_button"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="197dp"
+        android:layout_marginEnd="51dp"
+        android:layout_marginBottom="356dp"
+        android:layout_toStartOf="@+id/time_recording"
+        android:text="start recording" />
+    
 
 </RelativeLayout>
