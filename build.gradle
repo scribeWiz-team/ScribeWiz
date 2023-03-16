@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.8.20-Beta'
+        kotlin_version = '1.8.0'
     }
     repositories {
         // Make sure that you have the following two repositories
