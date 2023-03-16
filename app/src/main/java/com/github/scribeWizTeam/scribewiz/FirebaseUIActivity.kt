@@ -2,35 +2,32 @@ package com.github.scribeWizTeam.scribewiz
 
 
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageButton
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 
 
-class FirebaseUIActivity : AppCompatActivity()  {
-
+class FirebaseUIActivity : ComponentActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-
-        val gotButton = findViewById<ImageButton>(R.id.GoogleLoginButton)
-
-
-        gotButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            createSignInIntent()
+        setContent{
+            LoginPage()
         }
-
     }
 
+    private val user = FirebaseAuth.getInstance().currentUser
 
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
@@ -48,12 +45,15 @@ class FirebaseUIActivity : AppCompatActivity()  {
         // [START auth_fui_create_intent]
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.EmailBuilder().build()
         )
 
         // Create and launch sign-in intent
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setTheme(R.style.Theme_ScribeWiz)
+            .setLogo(R.mipmap.ic_launcher_round)
             .build()
         signInLauncher.launch(signInIntent)
     }
@@ -61,14 +61,13 @@ class FirebaseUIActivity : AppCompatActivity()  {
     @SuppressLint("SetTextI18n")
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
-        val tv = findViewById<TextView>(R.id.LoginMessage)
+
+        reloadPage()
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
-            val user = FirebaseAuth.getInstance().currentUser
             if (user != null) {
-                tv.text = "Successful Login! \n${user.displayName}"
+
             }
-            tv.setTextColor(Color.parseColor("#00FF00"))
 
             // ...
         } else {
@@ -76,10 +75,8 @@ class FirebaseUIActivity : AppCompatActivity()  {
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
             // ...
-            tv.text = "Failed Login"
-            tv.setTextColor(Color.parseColor("#FF0000"))
+
         }
-        tv.visibility = View.VISIBLE
     }
 
     private fun signOut() {
@@ -87,7 +84,7 @@ class FirebaseUIActivity : AppCompatActivity()  {
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {
-                // ...
+                reloadPage()
             }
         // [END auth_fui_signout]
     }
@@ -102,6 +99,66 @@ class FirebaseUIActivity : AppCompatActivity()  {
         // [END auth_fui_delete]
     }
 
+    private fun loginMessage(): String{
+        return if(user != null){
+            "Hello, " + user.displayName + "!"
+        }else{
+            "Not signed in"
+        }
+    }
+
+    private fun reloadPage(){
+        this@FirebaseUIActivity.recreate()
+    }
 
 
+    @Composable
+    fun LoginPage() {
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "ScribeWiz \uD83C\uDFBC",
+                style = MaterialTheme.typography.h4,
+                fontSize = 50.sp
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(
+                text = loginMessage(),
+                style = MaterialTheme.typography.h4,
+                fontSize = 30.sp
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                onClick = {
+                    createSignInIntent()
+                    reloadPage()},
+            ) {
+                Text("Login")
+            }
+
+            Button(
+                onClick = {
+                    signOut()
+                    reloadPage()
+                    },
+            ) {
+                Text("Sign out")
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            Button(
+                onClick = {
+                    val navigate = Intent(this@FirebaseUIActivity, MainActivity::class.java)
+                    startActivity(navigate)
+                          },
+            ) {
+                Text("Home")
+            }
+
+        }
+    }
 }
