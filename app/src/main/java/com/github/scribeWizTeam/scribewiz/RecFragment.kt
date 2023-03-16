@@ -18,14 +18,19 @@ import java.util.Timer
 
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
-
     private lateinit var recordButton: Button //button to start and stop recording
     private lateinit var mediaRecorder: MediaRecorder //media recorder to record audio
     private lateinit var recordingTimeText: TextView //text to show recording time
     private lateinit var timer: CountDownTimer //timer to show recording time
 
-    private var isRecording = false //boolean to check if recording is in progress
-    private val REQUEST_RECORD_AUDIO_PERMISSION = 200 //request code for permission
+    var isRecording = false //boolean to check if recording is in progress
+    val REQUEST_RECORD_AUDIO_PERMISSION = 200 //request code for permission
+    val MILLISINFUTURE = 9999999L //number of milliseconds maximum record time
+    val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
+
+    constructor() : this(0) {
+        // Default constructor
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,13 +59,13 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 android.Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            //if not, request permission
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(android.Manifest.permission.RECORD_AUDIO),
                 REQUEST_RECORD_AUDIO_PERMISSION
             )
         }
-
         return view
     }
     override fun onRequestPermissionsResult(
@@ -68,60 +73,79 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        //set the result of the permission request
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        //check if the request code is same as the one we sent
         if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+            //check if the permission is granted
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //if not, show a toast "Permission Denied"
                 Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
             }
             else{
-                //permission granted
+                //else when permission granted, start recording
                 startRecording()
             }
         }
     }
 
-    private fun getOutputFilePath(): String {
+    fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
     }
 
     private fun startRecording() {
-        mediaRecorder = MediaRecorder() //initialize the media recorder
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC) //set the audio source
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP) //set the output format
-        mediaRecorder.setOutputFile(getOutputFilePath()) //set the output file path
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB) //set the encoder
+        //initialize the media recorder
+        mediaRecorder = MediaRecorder()
+        //set the audio source
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        //set the output format
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        //set the output file path
+        mediaRecorder.setOutputFile(getOutputFilePath())
+        //set the encoder
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
 
         try {
-            mediaRecorder.prepare() //prepare the media recorder
-            mediaRecorder.start() //start recording
-            isRecording = true //set recording in progress
-            recordButton.text = "Stop Recording" //change the button text
+            //prepare the media recorder
+            mediaRecorder.prepare()
+            //start recording
+            mediaRecorder.start()
+            //set recording in progress
+            isRecording = true
+            //change the button text
+            recordButton.text = "Stop Recording"
 
             //set the timer
-            timer = object : CountDownTimer(60000, 1000) {
+            timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
                 override fun onTick(millisUntilFinished: Long) {
-                    recordingTimeText.text = "Recording Time: " + millisUntilFinished / 1000
+                    recordingTimeText.text = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
                 }
-
                 override fun onFinish() {
-                    stopRecording()
+                //do nothing
                 }
             }
             //start the timer
             timer.start()
 
-
+        //if there is any error in recording
         } catch (e: IOException) {
             Toast.makeText(requireContext(), "Failed to start the recording", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
-
     }
-
+    //method to stop recording
     private fun stopRecording() {
-        mediaRecorder.stop() //stop recording
-        mediaRecorder.release() //release the media recorder
-        isRecording = false //set recording not in progress
-        recordButton.text = "Start Recording" //change the button text
+        //stop recording
+        mediaRecorder.stop()
+        //release the media recorder
+        mediaRecorder.release()
+        //set recording not in progress
+        isRecording = false
+        //change the button text
+        recordButton.text = "Start Recording"
+        //stop the timer
+        timer.cancel()
+        //set the recording time to 0
+        recordingTimeText.text = "Recording saved!"
     }
 }

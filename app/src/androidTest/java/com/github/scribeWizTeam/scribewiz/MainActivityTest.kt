@@ -1,42 +1,46 @@
 package com.github.scribeWizTeam.scribewiz
 
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.activityScenarioRule
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.*
-import org.junit.Rule
+import org.hamcrest.Matchers.containsString
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
 
-    @get:Rule
-    val rule = activityScenarioRule<MainActivity>()
+    @Before
+    fun setUp() {
+        // Initialize the ActivityScenario for MainActivity
+        ActivityScenario.launch(MainActivity::class.java)
+    }
 
     @Test
-    // This test will fail because the mainGoButton is not clickable
-    fun testExample() {
-        Intents.init()
+    fun testToolbarIsDisplayed() {
+        // Check if the toolbar is displayed
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+    }
 
-        val mainNameInteraction = onView(ViewMatchers.withId(R.id.mainName))
-        mainNameInteraction.perform(ViewActions.replaceText("John Doe"))
+    @Test
+    fun testNavigationDrawerIsDisplayed() {
+        // Check if the navigation drawer is displayed
+        onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()))
+    }
 
-        val mainGoButtonInteraction = onView(ViewMatchers.withId(R.id.mainGoButton))
-        mainGoButtonInteraction.perform(ViewActions.click())
+    @Test
+    fun testGreetingActivityIsStarted() {
+        // Perform a click on the "Go" button with a name typed in the EditText
+        onView(withId(R.id.mainName)).perform(typeText("John"))
+        onView(withId(R.id.mainGoButton)).perform(click())
 
-        Intents.intended(IntentMatchers.hasComponent(GreetingActivity::class.java.name))
-
-        Intents.release()
+        // Check if the GreetingActivity is started with the correct name passed as an extra
+        onView(withId(R.id.greetingMessage)).check(matches(withText(containsString("John"))))
     }
 
 }
