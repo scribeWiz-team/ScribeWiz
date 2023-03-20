@@ -12,11 +12,18 @@ import alphaTab.synth.PlayerState
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import java.io.ByteArrayOutputStream
 import kotlin.contracts.ExperimentalContracts
+import androidx.compose.runtime.Composable
 
 
+@ExperimentalContracts
+@ExperimentalUnsignedTypes
 class NotesDisplayedActivity : AppCompatActivity() {
+
+    private lateinit var _alphaTabView: AlphaTabView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -47,5 +54,15 @@ class NotesDisplayedActivity : AppCompatActivity() {
             }
         }
     }
+
+    @Composable
+    fun startButton() {
+        Button(onClick = {_alphaTabView.api.playPause()}) {
+            Text(text = "Play")
+        }
+    }
+
+
+
 
 }
