@@ -1,11 +1,9 @@
 package com.github.scribeWizTeam.scribewiz
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.activityScenarioRule
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
 import org.junit.Rule
@@ -21,20 +19,11 @@ import org.junit.runner.RunWith
 class MainActivityTest {
 
     @get:Rule
-    val rule = activityScenarioRule<MainActivity>()
-
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
     @Test
-    fun testExample() {
-        Intents.init()
-
-        val mainNameInteraction = onView(ViewMatchers.withId(R.id.mainName))
-        mainNameInteraction.perform(ViewActions.replaceText("John Doe"))
-
-        val mainGoButtonInteraction = onView(ViewMatchers.withId(R.id.mainGoButton))
-        mainGoButtonInteraction.perform(ViewActions.click())
-
-        Intents.intended(IntentMatchers.hasComponent(GreetingActivity::class.java.name))
-
-        Intents.release()
+    fun testLoginPageButtonClick() {
+        val expectedText = "ScribeWiz \uD83C\uDFBC"
+        composeTestRule.onNodeWithText("To login page").performClick()
+        composeTestRule.onNodeWithText(expectedText).assertIsDisplayed()
     }
 }

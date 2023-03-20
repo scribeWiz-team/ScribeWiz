@@ -2,25 +2,29 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.ui.*
+import androidx.compose.ui.unit.dp
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val gotButton = findViewById<Button>(R.id.mainGoButton)
-        val nameText = findViewById<EditText>(R.id.mainName)
-
-        gotButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            val intent = Intent(this, GreetingActivity::class.java)
-            intent.putExtra("name", nameText.text.toString())
-            startActivity(intent)
+        setContent {
+            Column (modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = {
+                        val navigate = Intent(this@MainActivity, FirebaseUIActivity::class.java)
+                        startActivity(navigate)
+                    }
+                ) {
+                    Text("To login page")
+                }
+            }
         }
-
     }
 }
