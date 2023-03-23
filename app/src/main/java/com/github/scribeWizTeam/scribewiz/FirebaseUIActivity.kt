@@ -152,7 +152,7 @@ class FirebaseUIActivity : ComponentActivity()  {
 
             Button(
                 onClick = {
-                    val navigate = Intent(this@FirebaseUIActivity, MainActivity::class.java)
+                    val navigate = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
                     startActivity(navigate)
                           },
             ) {

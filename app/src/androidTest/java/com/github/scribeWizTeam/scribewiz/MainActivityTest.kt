@@ -18,17 +18,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
 
-    @Before
-    fun setUp() {
-        // Initialize the ActivityScenario for MainActivity
-        ActivityScenario.launch(MainActivity::class.java)
-    }
-
-    @Test
-    fun testToolbarIsDisplayed() {
-        // Check if the toolbar is displayed
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-    }
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
     @Test
@@ -38,10 +27,5 @@ class MainActivityTest {
         composeTestRule.onNodeWithText(expectedText).assertIsDisplayed()
     }
 
-    @Test
-    fun testNavigationDrawerIsDisplayed() {
-        // Check if the navigation drawer is displayed
-        onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()))
-    }
 
 }

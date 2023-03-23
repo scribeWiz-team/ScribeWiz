@@ -20,4 +20,6 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
 
     </style>
+    <style name="Theme.ScribeWiz.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ScribeWiz.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

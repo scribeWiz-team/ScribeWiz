@@ -1,0 +1,26 @@
+package com.github.scribeWizTeam.scribewiz
+
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
+import org.junit.Test
+
+class NavigationActivityTest {
+    @Test
+    fun testToolbarIsDisplayed() {
+        // Check if the toolbar is displayed
+        ActivityScenario.launch(NavigationActivity::class.java)
+        Espresso.onView(ViewMatchers.withId(R.id.toolbar))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun testNavigationDrawerIsDisplayed() {
+        // Check if the navigation drawer is displayed
+        ActivityScenario.launch(NavigationActivity::class.java)
+        Espresso.onView(ViewMatchers.withId(R.id.drawer_layout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+}
