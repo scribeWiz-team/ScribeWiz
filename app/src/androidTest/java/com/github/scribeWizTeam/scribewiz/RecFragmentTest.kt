@@ -1,18 +1,10 @@
 package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class RecFragmentTest {

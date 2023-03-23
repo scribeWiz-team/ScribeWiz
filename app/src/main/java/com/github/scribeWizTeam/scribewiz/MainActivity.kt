@@ -1,5 +1,9 @@
 package com.github.scribeWizTeam.scribewiz
-
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.ui.*
+import androidx.compose.ui.unit.dp
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,6 +20,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setContent {
+            Column (modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = {
+                        val navigate = Intent(this@MainActivity, FirebaseUIActivity::class.java)
+                        startActivity(navigate)
+                    }
+                ) {
+                    Text("To login page")
+                }
+            }
+        }
+
         //set the layout
         setContentView(R.layout.activity_main)
 

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "655652092330",
+    "project_id": "scribewiz-cf90d",
+    "storage_bucket": "scribewiz-cf90d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655652092330:android:1c20e68b4abfe4c0ab93d3",
+        "android_client_info": {
+          "package_name": "com.github.scribeWizTeam.scribewiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655652092330-idr77dfum3adpjg25f1kdd8a09fuis5u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdmgJwktluIyRkHYn0CcSGRKADSclgt6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655652092330-idr77dfum3adpjg25f1kdd8a09fuis5u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
