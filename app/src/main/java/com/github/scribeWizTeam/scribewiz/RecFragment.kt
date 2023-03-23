@@ -41,18 +41,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         recordButton = view.findViewById(R.id.record_button) //get the button
         recordingTimeText = view.findViewById(R.id.time_recording) //get the text
 
-        recordButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            if (!isRecording) {
-                //start recording
-                startRecording()
-            } else {
-                //stop recording
-                stopRecording()
-            }
-        }
-
         //check if the app has permission to record audio
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -66,6 +54,20 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 REQUEST_RECORD_AUDIO_PERMISSION
             )
         }
+
+        recordButton.setOnClickListener {
+            //set the event you want to perform when button is clicked
+            //you can go to another activity in your app by creating Intent
+            if (!isRecording) {
+                //start recording
+                startRecording()
+            } else {
+                //stop recording
+                stopRecording()
+            }
+        }
+
+
         return view
     }
     override fun onRequestPermissionsResult(
