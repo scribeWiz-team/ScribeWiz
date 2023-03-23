@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -42,19 +43,13 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         recordingTimeText = view.findViewById(R.id.time_recording) //get the text
 
         //check if the app has permission to record audio
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //if not, request permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.RECORD_AUDIO),
-                REQUEST_RECORD_AUDIO_PERMISSION
-            )
-        }
-
+        checkPermission()
+        //set the event for the button
+        setEvent()
+        return view
+    }
+    //This function is called when the record button is clicked
+    private fun setEvent() {
         recordButton.setOnClickListener {
             //set the event you want to perform when button is clicked
             //you can go to another activity in your app by creating Intent
@@ -66,10 +61,23 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 stopRecording()
             }
         }
-
-
-        return view
     }
+
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //if not, request permission
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUEST_RECORD_AUDIO_PERMISSION
+            )
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

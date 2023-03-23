@@ -33,14 +33,4 @@ class MainActivityTest {
         onView(withId(R.id.drawer_layout)).check(matches(isDisplayed()))
     }
 
-    @Test
-    fun testGreetingActivityIsStarted() {
-        // Perform a click on the "Go" button with a name typed in the EditText
-        onView(withId(R.id.mainName)).perform(typeText("John"))
-        onView(withId(R.id.mainGoButton)).perform(click())
-
-        // Check if the GreetingActivity is started with the correct name passed as an extra
-        onView(withId(R.id.greetingMessage)).check(matches(withText(containsString("John"))))
-    }
-
 }

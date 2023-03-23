@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -22,9 +23,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //set the layout
         setContentView(R.layout.activity_main)
 
-        val gotButton = findViewById<Button>(R.id.mainGoButton)
-        val nameText = findViewById<EditText>(R.id.mainName)
-        //set the toolbar
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         //set the action bar
         setSupportActionBar(toolbar)
@@ -52,13 +50,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //set the default item selected
         navigationView.setCheckedItem(R.id.nav_home)
 
-        gotButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            val intent = Intent(this, GreetingActivity::class.java)
-            intent.putExtra("name", nameText.text.toString())
-            startActivity(intent)
-        }
     }
 
     override fun onBackPressed() {
@@ -73,21 +64,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {
-            R.id.nav_help -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HelpFragment(0)).commit()
-            R.id.nav_home -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment(0)).commit()
-            R.id.nav_library -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, LibraryFragment(0)).commit()
-            R.id.nav_rec -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, RecFragment(0)).commit()
-            R.id.nav_settings -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SettingsFragment(0)).commit()
+            R.id.nav_help -> showFragment(HelpFragment(0))
+            R.id.nav_home -> showFragment(HomeFragment(0))
+            R.id.nav_library -> showFragment(LibraryFragment(0))
+            R.id.nav_rec -> showFragment(RecFragment(0))
+            R.id.nav_settings -> showFragment(SettingsFragment(0))
             R.id.nav_share -> Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
         }
         //close the navigation drawer
         drawer.closeDrawer(GravityCompat.START)
         return true
+    }
+    //auxiliary function to show a fragment
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment).commit()
     }
 }
 
