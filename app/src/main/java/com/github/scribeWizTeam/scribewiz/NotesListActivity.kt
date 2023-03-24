@@ -18,26 +18,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
-import java.io.File
-
-const val NOTES_FOLDER : String = "music_notes"
-const val MUSIC_XML_EXTENSION : String = "musicxml"
 
 class NotesListActivity : ComponentActivity() {
+
+    private lateinit var memoryManager: NotesStorageManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val notesDir = File(applicationContext
-            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            ?.absoluteFile,
-            NOTES_FOLDER)
+        memoryManager = applicationContext
+            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.let { NotesStorageManager(it) }!!
 
-        notesDir.mkdir()
-
-        val files = notesDir.listFiles()?.filter { f ->
-            f.extension == MUSIC_XML_EXTENSION
-        }
+        val notesNames = memoryManager.notesNames()
 
         setContent {
             ScribeWizTheme {
@@ -51,10 +43,8 @@ class NotesListActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Text("Recent notes:",  fontSize = 20.sp, modifier = Modifier.padding(20.dp))
-                    if (files != null) {
-                        for (file in files) {
-                            NoteTile(name = file.name.removeSuffix(".$MUSIC_XML_EXTENSION"))
-                        }
+                    for (name in notesNames) {
+                        NoteTile(name = name)
                     }
                 }
             }
