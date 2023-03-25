@@ -4,10 +4,12 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import com.firebase.ui.auth.KickoffActivity
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -15,7 +17,11 @@ class AuthActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<FirebaseUIActivity>()
-
+    @Before
+    fun setUp() {
+        // Initialize the ActivityScenario for MainActivity
+        ActivityScenario.launch(FirebaseUIActivity::class.java)
+    }
     @Test
     fun testLoginButton(){
         Intents.init()
