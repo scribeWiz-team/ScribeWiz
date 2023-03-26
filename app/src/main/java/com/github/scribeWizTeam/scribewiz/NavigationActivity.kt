@@ -3,13 +3,13 @@ package com.github.scribeWizTeam.scribewiz
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+
 
 
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -71,7 +71,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.nav_library -> showFragment(LibraryFragment(0))
             R.id.nav_rec -> showFragment(RecFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
-            R.id.nav_share -> Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
+            R.id.nav_share -> ShareFragment(0).shareMidiFile("/storage/emulated/0/Download/1.mid", this)
         }
         //close the navigation drawer
         drawer.closeDrawer(GravityCompat.START)
