@@ -1,17 +1,14 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Activities
 
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import alphaTab.AlphaTabView
 import alphaTab.Settings
 import alphaTab.core.ecmaScript.Uint8Array
 import alphaTab.importer.ScoreLoader
 import alphaTab.model.Score
-import alphaTab.synth.PlayerState
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import java.io.ByteArrayOutputStream
 import kotlin.contracts.ExperimentalContracts
 

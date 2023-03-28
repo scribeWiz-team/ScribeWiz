@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.R
 import java.io.IOException
 
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
@@ -112,7 +113,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         //set the output file path
         mediaRecorder.setOutputFile(getOutputFilePath())
         //set the encoder
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
 
         try {
             //prepare the media recorder

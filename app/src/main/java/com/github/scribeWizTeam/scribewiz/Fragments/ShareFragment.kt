@@ -1,13 +1,15 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 
 class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
@@ -28,11 +30,18 @@ class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     fun shareMidiFile(midiFilePath: String, context: Context) {
         val file = File(midiFilePath)
 
+        // Check if the file exists
+        if (!file.exists()) {
+            // Log an error message or display an error to the user
+            Log.e("ShareMidiFile", "File does not exist: $midiFilePath")
+            return
+        }
+
         // create a new intent with the ACTION_SEND action
         val shareIntent = Intent(Intent.ACTION_SEND)
 
-        // set the MIME type of the file to share
-        shareIntent.type = "audio/midi"
+        // set the MIME type of the file to share, in our case, 3gp
+        shareIntent.type = "audio/three-gpp"
 
         // create a file URI for the file to share
         val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", file)

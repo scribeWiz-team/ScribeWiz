@@ -1,19 +1,20 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.R
 
-class LibraryFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_library, container,false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
 }

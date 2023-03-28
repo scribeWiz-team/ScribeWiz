@@ -4,6 +4,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import org.junit.Before
 import org.junit.Test
 

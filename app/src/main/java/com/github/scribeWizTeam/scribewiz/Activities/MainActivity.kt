@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Activities
 import android.content.Intent
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
