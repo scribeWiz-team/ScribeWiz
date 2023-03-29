@@ -20,8 +20,15 @@ import com.google.firebase.auth.FirebaseAuth
 
 
 class FirebaseUIActivity : ComponentActivity()  {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check if the user is already signed in
+        if(user != null){
+            val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
+            startActivity(goHome)
+        }
         setContent{
             LoginPage()
         }
@@ -152,8 +159,8 @@ class FirebaseUIActivity : ComponentActivity()  {
 
             Button(
                 onClick = {
-                    val navigate = Intent(this@FirebaseUIActivity, MainActivity::class.java)
-                    startActivity(navigate)
+                    val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
+                    startActivity(goHome)
                           },
             ) {
                 Text("Home")

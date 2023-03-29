@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,15 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ScribeWiz"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_notes_list"
-            android:theme="@style/Theme.ScribeWiz">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".NavigationActivity"
+            android:exported="false" />
         <activity
             android:name=".FirebaseUIActivity"
             android:exported="false">
@@ -35,9 +30,13 @@
         <activity
             android:name=".NotesListActivity"
             android:exported="true">
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ScribeWiz.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
@@ -46,5 +45,4 @@
                 android:value="" />
         </activity>
     </application>
-
 </manifest>
