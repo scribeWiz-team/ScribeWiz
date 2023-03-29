@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -22,6 +24,10 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".NavigationActivity"
+            android:exported="false" />
+        </activity>
+        <activity
             android:name=".FirebaseUIActivity"
             android:exported="false">
             <meta-data
@@ -30,7 +36,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.ScribeWiz.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
