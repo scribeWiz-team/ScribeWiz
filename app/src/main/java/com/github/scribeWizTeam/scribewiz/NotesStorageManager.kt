@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.content.Context
 import android.os.Environment
 import java.io.File
 
@@ -7,12 +8,16 @@ import java.io.File
 const val MUSIC_XML_EXTENSION : String = "musicxml"
 const val NOTES_FOLDER : String = "music_notes"
 
-class NotesStorageManager(file: File = File(Environment.getExternalStorageDirectory().absolutePath, NOTES_FOLDER)) {
+class NotesStorageManager() {
 
-    private val storageFolder: File
+    private lateinit var storageFolder: File
 
-    init {
+    constructor(file: File) : this() {
         storageFolder = file
+    }
+
+    constructor(context: Context) : this() {
+        storageFolder = context.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
         storageFolder.mkdir()
     }
 

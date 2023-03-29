@@ -33,9 +33,7 @@ class NotesListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
 
-        notesStorageManager = applicationContext
-            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            ?.let { NotesStorageManager() }!!
+        notesStorageManager = NotesStorageManager(this)
 
         setContent {
             ScribeWizTheme {
