@@ -34,6 +34,8 @@ class NotesListActivityTest {
     @Before
     fun initialize() {
 
+
+
         notesDir = File(composeTestRule.activity.applicationContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
             ?.absoluteFile,

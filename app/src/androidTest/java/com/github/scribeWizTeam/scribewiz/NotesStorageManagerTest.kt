@@ -21,24 +21,20 @@ import kotlin.io.path.createTempDirectory
 @RunWith(AndroidJUnit4::class)
 class NotesStorageManagerTest {
 
-    private var rootFolder: File = createTempDirectory("test").toFile()
-
-    private var notesFolder = File(rootFolder, NOTES_FOLDER)
+    private val notesFolder: File = createTempDirectory("test").toFile()
 
     private val expectedFiles = ('a'..'z').map { a -> a.toString() }
 
     private val invalidFileName = "NOT_A_VALID_FILE"
 
-    private lateinit var notesDir: File
-
-    private var notesStorageManager = NotesStorageManager(rootFolder)
+    private var notesStorageManager = NotesStorageManager(notesFolder)
 
     @Before
     fun initialize() {
 
-        notesFolder.mkdir()
+        val listFile = notesFolder.listFiles()?:emptyArray<File>()
 
-        for (file in notesFolder.listFiles()!!) {
+        for (file in listFile) {
             file.delete()
         }
 
@@ -51,25 +47,38 @@ class NotesStorageManagerTest {
 
     @Test
     fun testManagerReturnAllNotesNames() {
-        assertArrayEquals(expectedFiles.toTypedArray(), notesStorageManager.notesNames().toTypedArray())
+        assertArrayEquals(expectedFiles.toTypedArray(), notesStorageManager.getNotesNames().toTypedArray())
 
     }
 
     @Test
     fun deleteNoteDeleteTheFile() {
         notesStorageManager.deleteNote("a")
-        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(), notesStorageManager.notesNames().toTypedArray())
+        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(), notesStorageManager.getNotesNames().toTypedArray())
     }
 
     @Test
     fun onlyMusicXMLFiles() {
-        assertFalse(notesStorageManager.notesNames().contains(invalidFileName))
+        assertFalse(notesStorageManager.getNotesNames().contains(invalidFileName))
     }
 
     @Test
     fun clearFolderDeleteTheNotesFolder() {
         notesStorageManager.clearFolder()
         assertFalse(notesFolder.exists())
+    }
+
+    @Test
+    fun getAllFile() {
+        assertEquals(expectedFiles.size, notesStorageManager.getAllNotesFiles()?.size ?: 0)
+    }
+
+    @Test
+    fun getFileRetrieveCorrectFile() {
+
+        for (name in expectedFiles) {
+            assertEquals("$name.$MUSIC_XML_EXTENSION", notesStorageManager.getNoteFile(name)?.name ?: "")
+        }
     }
 
     @After

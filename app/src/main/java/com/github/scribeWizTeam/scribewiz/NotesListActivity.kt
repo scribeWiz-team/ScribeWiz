@@ -1,15 +1,19 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,30 +25,57 @@ import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 
 class NotesListActivity : ComponentActivity() {
 
-    private lateinit var memoryManager: NotesStorageManager
 
+    private lateinit var notesStorageManager: NotesStorageManager
+
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        memoryManager = applicationContext
-            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.let { NotesStorageManager(it) }!!
 
-        val notesNames = memoryManager.notesNames()
+        notesStorageManager = applicationContext
+            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            ?.let { NotesStorageManager() }!!
 
         setContent {
             ScribeWizTheme {
                 // A surface container using the 'background' color from the theme
-                Column (modifier = Modifier
-                    .fillMaxSize()
-                    .padding(all = 8.dp)
-                    .verticalScroll(rememberScrollState())
-                    .testTag("columnList"),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    Text("Recent notes:",  fontSize = 20.sp, modifier = Modifier.padding(20.dp))
-                    for (name in notesNames) {
-                        NoteTile(name = name)
+                val notesNames = remember {
+                    notesStorageManager.getNotesNames().toMutableStateList()
+                }
+
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Recent notes:",  fontSize = 20.sp, modifier = Modifier
+                        .height(30.dp)
+                        .padding(5.dp))
+                    LazyColumn (modifier = Modifier
+                        .padding(all = 8.dp)
+                        .testTag("columnList"),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        items(notesNames, key={ name -> name }) { name ->
+
+                            val state = rememberDismissState(
+                                confirmStateChange = {
+                                    if (it == DismissValue.DismissedToStart) {
+                                        notesStorageManager.deleteNote(name)
+                                        notesNames.remove(name)
+                                    }
+                                    true
+                                }
+                            )
+
+                            SwipeToDismiss(
+                                state = state,
+                                background = {},
+                                dismissContent = {
+                                    NoteTile(name = name)
+                                },
+                                directions = setOf(DismissDirection.EndToStart)
+                            )
+                        }
                     }
                 }
             }
@@ -58,12 +89,21 @@ class NotesListActivity : ComponentActivity() {
             .border(1.dp, Color.Black, CircleShape)
             .width(300.dp)
             .padding(10.dp, 5.dp)
-            .clickable {}) {
+            .background(Color.Red)
+            .clickable {
+                val score = Intent(this@NotesListActivity, NotesDisplayedActivity::class.java)
+                score.putExtra("note_name", name)
+                startActivity(score)
+            }) {
             Row {
-                Image(painter = painterResource(R.drawable.music_note), modifier = Modifier
-                    .height(20.dp)
-                    .align(Alignment.CenterVertically), contentDescription = "music_file")
-                Text(text = name, modifier = Modifier.padding(10.dp))
+                Image(painter = painterResource(R.drawable.music_note),
+                    modifier = Modifier
+                        .height(20.dp)
+                        .align(Alignment.CenterVertically),
+                    contentDescription = "music_file")
+                Text(text = name, modifier = Modifier
+                    .padding(10.dp)
+                    .width(220.dp))
             }
         }
     }

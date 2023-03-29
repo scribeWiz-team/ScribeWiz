@@ -1,25 +1,25 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.os.Environment
 import java.io.File
+
 
 const val MUSIC_XML_EXTENSION : String = "musicxml"
 const val NOTES_FOLDER : String = "music_notes"
 
-class NotesStorageManager(_storageFolder: File) {
+class NotesStorageManager(file: File = File(Environment.getExternalStorageDirectory().absolutePath, NOTES_FOLDER)) {
 
     private val storageFolder: File
 
     init {
-        if (!_storageFolder.exists()) {
-            _storageFolder.mkdir()
-        }
-        storageFolder = File(_storageFolder, NOTES_FOLDER)
+        storageFolder = file
+        storageFolder.mkdir()
     }
 
     /**
      *  Return the names of all music notes in the storage folder
      */
-    fun notesNames(): List<String> {
+    fun getNotesNames(): List<String> {
 
         return storageFolder.listFiles()
             ?.filter { f ->
@@ -27,6 +27,21 @@ class NotesStorageManager(_storageFolder: File) {
             }?.map { f ->
                 f.name.removeSuffix(".$MUSIC_XML_EXTENSION")
             } ?: emptyList()
+    }
+
+    /**
+     * Return the file corresponding to the name or null if the file does not exist
+     */
+    fun getNoteFile(name: String): File? {
+        val file = storageFolder.resolve("$name.$MUSIC_XML_EXTENSION")
+        return if (file.exists()) file else null
+    }
+
+    /**
+     *  Return the list of the music notes files
+     */
+    fun getAllNotesFiles(): Array<out File>? {
+        return storageFolder.listFiles()
     }
 
     /**
