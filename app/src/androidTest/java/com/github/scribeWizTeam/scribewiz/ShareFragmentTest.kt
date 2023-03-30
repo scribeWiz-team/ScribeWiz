@@ -17,6 +17,7 @@ class ShareFragmentTest  {
 
     private val midiFilePath = "path/to/midi/file"
 
+    //check if the file exists, if not, should return false
     @Test
     fun shareMidiFile_fileDoesNotExist() {
         // Arrange
@@ -35,6 +36,7 @@ class ShareFragmentTest  {
         }
     }
 
+    //check if the file exists, if so, should return true
     @Test
     fun shareMidiFile_fileExists() {
         // Arrange
@@ -56,7 +58,7 @@ class ShareFragmentTest  {
             assertTrue(result)
         }
     }
-
+    //check if the file URI is correct
     @Test
     fun shareMidiFile_fileUriIsCorrect() {
         // Arrange
