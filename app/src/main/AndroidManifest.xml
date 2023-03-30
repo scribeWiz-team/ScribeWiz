@@ -28,10 +28,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".NotesListFragment"
-            android:exported="true">
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ScribeWiz.NoActionBar">
