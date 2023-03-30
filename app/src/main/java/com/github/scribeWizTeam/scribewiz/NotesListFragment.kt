@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -86,14 +87,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         SwipeToDismiss(
             state = state,
             background = {
-                Surface(color = Color.Red, modifier = Modifier
-                    .padding(0.dp, 5.dp)
-                    .border(1.dp, Color.Red, CircleShape)
-                    .background(Color.Red, CircleShape)
-                    .width(300.dp)
-                    .height(50.dp)
-                    .padding(10.dp, 5.dp)
-                    .background(Color.Red)
+                Surface(color = Color.Red, modifier = Modifier.getTileModifier(Color.Red, Color.Red)
                 ) {}
             },
             dismissContent = {
@@ -105,13 +99,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @Composable
     fun NoteTile(name: String) {
-        Surface(modifier = Modifier
-            .padding(0.dp, 5.dp)
-            .border(1.dp, Color.Black, CircleShape)
-            .background(Color.White, CircleShape)
-            .width(300.dp)
-            .height(50.dp)
-            .padding(10.dp, 5.dp)
+        Surface(modifier =  Modifier.getTileModifier()
             .clickable {
                 val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
                 score.putExtra("note_name", name)
@@ -128,5 +116,16 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     .width(220.dp))
             }
         }
+    }
+
+    @SuppressLint("ModifierFactoryUnreferencedReceiver")
+    fun Modifier.getTileModifier(color: Color = Color.White, borderColor: Color = Color.Black) : Modifier {
+        return Modifier
+            .padding(0.dp, 5.dp)
+            .border(1.dp, borderColor, CircleShape)
+            .background(color, CircleShape)
+            .width(300.dp)
+            .height(50.dp)
+            .padding(10.dp, 5.dp)
     }
 }
