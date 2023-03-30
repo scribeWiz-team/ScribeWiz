@@ -2,10 +2,8 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.R
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
@@ -27,6 +25,9 @@ import java.io.File
 class NotesListFragmentTest {
 
     @get:Rule
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
+
+    @get:Rule
     var rRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
 
     @get:Rule
@@ -42,20 +43,31 @@ class NotesListFragmentTest {
     @Before
     fun initialize() {
 
+        notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
+
+        for (name in expectedFiles) {
+            File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
+        }
+
+        File(notesDir, invalidFileName).createNewFile()
+
+        FragmentScenario.launchInContainer(NotesListFragment::class.java)
     }
 
     @Test
     fun testNumberOfComponentMatchNumberOfFile() {
-
+        for (title in expectedFiles) {
+            composeTestRule.onNodeWithText(title.toString()).assertExists()
+        }
     }
 
     @Test
     fun onlyMusicXMLFiles() {
-
+        composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
     @After
     fun removeTestFiles(){
-
+        notesDir.deleteRecursively()
     }
 }
