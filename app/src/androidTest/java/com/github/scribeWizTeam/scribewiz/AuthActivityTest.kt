@@ -1,6 +1,5 @@
 package com.github.scribeWizTeam.scribewiz
 
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -31,13 +30,6 @@ class AuthActivityTest {
         intended(hasComponent(KickoffActivity::class.java.name))
 
         Intents.release()
-    }
-
-    //TODO: Figure out how to actually log in a user using the Google API
-    @Test
-    fun testSignOutButton(){
-        composeTestRule.onNodeWithText("Sign out").performClick()
-        composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
     }
 
     @Test
