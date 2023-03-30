@@ -2,13 +2,8 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.os.Environment
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import org.junit.After

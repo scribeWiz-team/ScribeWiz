@@ -8,6 +8,7 @@ import androidx.compose.ui.test.performClick
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

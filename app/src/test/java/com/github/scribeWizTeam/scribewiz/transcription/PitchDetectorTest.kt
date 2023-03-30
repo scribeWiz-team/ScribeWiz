@@ -1,7 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.transcription
 
 import kotlin.math.*
-import kotlin.test.*
 
 import org.junit.Test
 
@@ -20,10 +19,12 @@ class PitchDetectorTest {
 
     @Test
     fun pitch_detector_must_have_positive_samplingFreq() {
-        assertFailsWith<IllegalArgumentException> {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             PitchDetector(-12.3)
         }
+        assertEquals("Sampling frequency must be positive", exception.message)
     }
+
 
     @Test
     fun no_signal_gives_no_pitch() {

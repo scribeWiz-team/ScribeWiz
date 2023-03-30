@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
@@ -15,7 +18,7 @@
         android:theme="@style/Theme.ScribeWiz"
         tools:targetApi="31">
         <activity
-            android:name=".NavigationActivity"
+            android:name=".Activities.NavigationActivity"
             android:exported="false" />
         <activity
             android:name=".FirebaseUIActivity"
@@ -25,7 +28,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ScribeWiz.NoActionBar">
             <intent-filter>
@@ -38,6 +41,18 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
     </application>
 
 </manifest>
