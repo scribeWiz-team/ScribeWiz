@@ -138,23 +138,28 @@ class FirebaseUIActivity : ComponentActivity()  {
                 fontSize = 30.sp
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Button(
-                onClick = {
-                    createSignInIntent()
-                    reloadPage()},
-            ) {
-                Text("Login")
-            }
 
-            Button(
-                onClick = {
-                    signOut()
-                    reloadPage()
+            if(user == null) {
+                Button(
+                    onClick = {
+                        createSignInIntent()
+                        reloadPage()
                     },
-            ) {
-                Text("Sign out")
+                ) {
+                    Text("Login")
+                }
             }
 
+            if(user != null) {
+                Button(
+                    onClick = {
+                        signOut()
+                        reloadPage()
+                    },
+                ) {
+                    Text("Sign out")
+                }
+            }
             Spacer(modifier = Modifier.height(100.dp))
 
             Button(

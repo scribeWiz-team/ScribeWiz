@@ -66,9 +66,10 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {
-            R.id.nav_help -> showFragment(HelpFragment(0))
             R.id.nav_home -> showFragment(HomeFragment(0))
             R.id.nav_library -> showFragment(NotesListFragment(0))
+            R.id.nav_profile -> showFragment(ProfilePageFragment(0))
+            R.id.nav_help -> showFragment(HelpFragment(0))
             R.id.nav_rec -> showFragment(RecFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
             R.id.nav_share -> Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
