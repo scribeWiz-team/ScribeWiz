@@ -22,7 +22,7 @@ class PitchDetectorTest {
         val exception = assertThrows(IllegalArgumentException::class.java) {
             PitchDetector(-12.3)
         }
-        assertEquals("Sampling frequency must be positive", exception.message)
+        assertEquals("sampling frequency of PitchDetector should be positive", exception.message)
     }
 
 
