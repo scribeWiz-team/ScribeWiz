@@ -22,7 +22,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         goHomePage()
     }
 
-    public fun goHomePage() {
+    fun goHomePage() {
         //set the layout
         setContentView(R.layout.activity_navigation)
 
@@ -68,7 +68,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         when (item.itemId) {
             R.id.nav_help -> showFragment(HelpFragment(0))
             R.id.nav_home -> showFragment(HomeFragment(0))
-            R.id.nav_library -> showFragment(LibraryFragment(0))
+            R.id.nav_library -> showFragment(NotesListFragment(0))
             R.id.nav_rec -> showFragment(RecFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
             R.id.nav_share -> Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()

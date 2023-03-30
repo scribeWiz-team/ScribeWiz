@@ -28,7 +28,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".NotesListActivity"
+            android:name=".NotesListFragment"
             android:exported="true">
         </activity>
         <activity
