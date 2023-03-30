@@ -55,6 +55,10 @@ class NotesDisplayedActivity : AppCompatActivity() {
 
         val playButton = findViewById<FloatingActionButton>(R.id.play_button)
 
+        _alphaTabView.api.playerReady.on {
+            playButton.isEnabled = true
+        }
+
         _alphaTabView.api.playerStateChanged.on {
             if (it.state == PlayerState.Playing) {
                 playButton.setImageResource(android.R.drawable.ic_media_pause)
@@ -77,7 +81,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
 
         val filePassed: String? = intent.getStringExtra(fileKey)
 
-        if (filePassed != null){
+        if (filePassed != null) {
             openFile(Uri.parse(filePassed))
         }
         playButton.setOnClickListener {
@@ -85,8 +89,8 @@ class NotesDisplayedActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalContracts //Required by the implementation of the library to work
-    private fun openFile(uri: Uri): Score? {
+    //Required by the implementation of the library to work
+    private fun openFile(uri: Uri) {
         var inMemoryObject: Score = Score()
         try {
             val fileData = readFileData(uri)
@@ -106,7 +110,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
             Toast.makeText(this, "Open File Failed", Toast.LENGTH_LONG).show()
         }
 
-        return inMemoryObject
+
     }
 
     @ExperimentalContracts
