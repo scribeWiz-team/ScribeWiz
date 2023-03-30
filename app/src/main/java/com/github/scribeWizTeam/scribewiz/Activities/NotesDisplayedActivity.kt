@@ -1,8 +1,7 @@
-package com.github.scribeWizTeam.scribewiz.Activities
+package com.github.scribeWizTeam.scribewiz
 
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import alphaTab.Settings
 import alphaTab.core.ecmaScript.Uint8Array
 import alphaTab.importer.ScoreLoader
@@ -14,9 +13,6 @@ import kotlin.contracts.ExperimentalContracts
 
 
 class NotesDisplayedActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     @ExperimentalContracts //Required by the implementation of the library to work
     private fun loadInMemoryMusicXML(uri: Uri, settings: Settings?) : Score? {

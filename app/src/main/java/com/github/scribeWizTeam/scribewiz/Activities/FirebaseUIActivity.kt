@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Activities
+package com.github.scribeWizTeam.scribewiz
 
 
 import android.annotation.SuppressLint
@@ -16,13 +16,19 @@ import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.scribeWizTeam.scribewiz.R
 import com.google.firebase.auth.FirebaseAuth
 
 
 class FirebaseUIActivity : ComponentActivity()  {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check if the user is already signed in
+        if(user != null){
+            val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
+            startActivity(goHome)
+        }
         setContent{
             LoginPage()
         }
@@ -132,29 +138,34 @@ class FirebaseUIActivity : ComponentActivity()  {
                 fontSize = 30.sp
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Button(
-                onClick = {
-                    createSignInIntent()
-                    reloadPage()},
-            ) {
-                Text("Login")
-            }
 
-            Button(
-                onClick = {
-                    signOut()
-                    reloadPage()
+            if(user == null) {
+                Button(
+                    onClick = {
+                        createSignInIntent()
+                        reloadPage()
                     },
-            ) {
-                Text("Sign out")
+                ) {
+                    Text("Login")
+                }
             }
 
+            if(user != null) {
+                Button(
+                    onClick = {
+                        signOut()
+                        reloadPage()
+                    },
+                ) {
+                    Text("Sign out")
+                }
+            }
             Spacer(modifier = Modifier.height(100.dp))
 
             Button(
                 onClick = {
-                    val navigate = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
-                    startActivity(navigate)
+                    val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
+                    startActivity(goHome)
                           },
             ) {
                 Text("Home")

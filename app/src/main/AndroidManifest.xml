@@ -15,17 +15,17 @@
         android:theme="@style/Theme.ScribeWiz"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.NavigationActivity"
+            android:name=".NavigationActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.FirebaseUIActivity"
+            android:name=".FirebaseUIActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ScribeWiz.NoActionBar">
             <intent-filter>
@@ -38,18 +38,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
-
-
     </application>
 
 </manifest>
