@@ -1,10 +1,16 @@
 package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Button
+import android.widget.TextView
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.scribeWizTeam.scribewiz.Fragments.RecFragment
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class RecFragmentTest {
@@ -19,7 +25,6 @@ class RecFragmentTest {
         assertTrue(true)
     }
 
-/*
     @Test
     fun startAndStopRecording() {
 
@@ -75,5 +80,5 @@ class RecFragmentTest {
         }
     }
 
- */
+
 }
