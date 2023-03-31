@@ -4,6 +4,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import org.junit.After
@@ -21,10 +22,10 @@ import java.io.File
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class NotesListActivityTest {
+class NotesListFragmentTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<NotesListActivity>()
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @get:Rule
     var rRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
@@ -37,34 +38,26 @@ class NotesListActivityTest {
 
     private val invalidFileName = "NOT_A_VALID_FILE"
 
-    private lateinit var notesDir: File
+    private var notesDir = File("test")
 
     @Before
     fun initialize() {
 
         notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
-        notesDir.mkdir()
 
-        for (filename in expectedFiles) {
-            File(notesDir, "$filename.$MUSIC_XML_EXTENSION").createNewFile()
+        for (name in expectedFiles) {
+            File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
         }
 
         File(notesDir, invalidFileName).createNewFile()
 
-        // refresh the activity
-        composeTestRule.activity.finish()
-        composeTestRule.activity.startActivity(composeTestRule.activity.intent)
+        FragmentScenario.launchInContainer(NotesListFragment::class.java)
     }
 
     @Test
     fun testNumberOfComponentMatchNumberOfFile() {
-
-        for (file in notesDir.listFiles()!!) {
-            println(file.name)
-        }
-
         for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).assertExists("can't find node with: '$title' name")
+            composeTestRule.onNodeWithText(title.toString()).assertExists()
         }
     }
 

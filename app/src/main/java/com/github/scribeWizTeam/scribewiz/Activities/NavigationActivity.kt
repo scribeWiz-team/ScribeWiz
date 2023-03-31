@@ -70,9 +70,9 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Code to handle the navigation view item click event
         when (item.itemId) {
             R.id.nav_home -> showFragment(HomeFragment(0))
+            R.id.nav_library -> showFragment(NotesListFragment(0))
             R.id.nav_profile -> showFragment(ProfilePageFragment(0))
             R.id.nav_help -> showFragment(HelpFragment(0))
-            R.id.nav_library -> showFragment(LibraryFragment(0))
             R.id.nav_rec -> showFragment(RecFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
             R.id.nav_share -> ShareFragment(0).shareMidiFile("/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp", this)
