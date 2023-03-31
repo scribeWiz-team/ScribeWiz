@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,8 +16,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.R
 
-class HelpFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class SettingsFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +37,7 @@ class HelpFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Help",
+                        text = "Settings",
                         style = MaterialTheme.typography.h4,
                         fontSize = 50.sp
                     )
@@ -44,4 +45,5 @@ class HelpFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
         }
     }
+
 }

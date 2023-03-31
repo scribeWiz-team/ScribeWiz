@@ -8,6 +8,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import com.firebase.ui.auth.KickoffActivity
+import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule

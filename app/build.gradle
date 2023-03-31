@@ -120,6 +120,7 @@ dependencies {
     // Firebase authentication import
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation "org.jetbrains.kotlin:kotlin-test:1.8.10"
 
 }
 
