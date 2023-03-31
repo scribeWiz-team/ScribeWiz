@@ -9,6 +9,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.Fragments.*
+import com.github.scribeWizTeam.scribewiz.NotesListFragment
 import com.github.scribeWizTeam.scribewiz.ProfilePageFragment
 import com.github.scribeWizTeam.scribewiz.R
 import com.google.android.material.navigation.NavigationView
