@@ -11,7 +11,7 @@ import com.firebase.ui.auth.KickoffActivity
 import org.junit.Rule
 import org.junit.Test
 
-class AuthActivityTest {
+class wAuthActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<FirebaseUIActivity>()

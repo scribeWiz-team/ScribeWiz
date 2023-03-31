@@ -35,6 +35,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
+//This activity displays dinamically the notes of a passed MusicXML file
+//To use this activity, you have to use an Intent with the Uri of the MusicXML file converted to string, passed as additional data to the intent with the key fileKey
+//For a concrete use case, don't hesitate to check the NotesDisplayedActivityTest.kt file
 @ExperimentalContracts
 @ExperimentalUnsignedTypes
 class NotesDisplayedActivity : AppCompatActivity() {
