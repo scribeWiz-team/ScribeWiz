@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
 import android.os.Environment
+import androidx.activity.result.ActivityResultCaller
 import java.io.File
 
 
@@ -16,9 +17,11 @@ class NotesStorageManager() {
         storageFolder = file
     }
 
-    constructor(context: Context) : this() {
-        storageFolder = context.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
-        storageFolder.mkdir()
+    constructor(caller: ActivityResultCaller, context: Context) : this() {
+        PermissionsManager().checkPermissionThenExecute(caller, context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            storageFolder = context.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
+            storageFolder.mkdir()
+        }
     }
 
     /**

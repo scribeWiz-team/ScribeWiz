@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
+import com.github.scribeWizTeam.scribewiz.NotesStorageManager
+import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
@@ -40,7 +43,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        notesStorageManager = NotesStorageManager(this.requireContext())
+        notesStorageManager = NotesStorageManager(this, this.requireContext())
         return ComposeView(requireContext()).apply {
             setContent {
                 ScribeWizTheme {

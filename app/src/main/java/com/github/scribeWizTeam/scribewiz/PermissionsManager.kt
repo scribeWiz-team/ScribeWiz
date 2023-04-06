@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ class PermissionsManager {
             // check directly for permission
             ContextCompat.checkSelfPermission(context, permission) -> {
                 // You can use the API that requires the permission.
+                Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
                 callback()
             }
 
@@ -38,6 +40,7 @@ class PermissionsManager {
                     ActivityResultContracts.RequestPermission()
                 ) { isGranted: Boolean ->
                     if (isGranted) {
+                        Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
                         callback()
                     } else {
                         // Explain to the user that the feature is unavailable because the
@@ -45,6 +48,7 @@ class PermissionsManager {
                         // same time, respect the user's decision. Don't link to system
                         // settings in an effort to convince the user to change their
                         // decision.
+                        Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
                     }
                 }
 
