@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 
+
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private lateinit var notesStorageManager: NotesStorageManager
@@ -97,26 +98,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         )
     }
 
-    @Composable
-    fun NoteTile(name: String) {
-        Surface(modifier =  Modifier.getTileModifier()
-            .clickable {
-                val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
-                score.putExtra("note_name", name)
-                startActivity(score)
-            }) {
-            Row {
-                Image(painter = painterResource(R.drawable.music_note),
-                    modifier = Modifier
-                        .height(20.dp)
-                        .align(Alignment.CenterVertically),
-                    contentDescription = "music_file")
-                Text(text = name, modifier = Modifier
-                    .padding(10.dp)
-                    .width(220.dp))
-            }
-        }
-    }
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getTileModifier(color: Color = Color.White, borderColor: Color = Color.Black) : Modifier {
@@ -127,5 +108,28 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             .width(300.dp)
             .height(50.dp)
             .padding(10.dp, 5.dp)
+    }
+
+    @Composable
+    fun NoteTile(name: String) {
+        Surface(modifier =  Modifier.getTileModifier()
+                .clickable {
+                    //commented out this part since it wouldn't make the app compile
+                    //Indeed I would have had to add @experimentalContracts everywhere to support notesDisplayedActivityq
+//                    val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
+//                    score.putExtra("note_name", name)
+//                    startActivity(score)
+                }) {
+            Row {
+                Image(painter = painterResource(R.drawable.music_note),
+                        modifier = Modifier
+                                .height(20.dp)
+                                .align(Alignment.CenterVertically),
+                        contentDescription = "music_file")
+                Text(text = name, modifier = Modifier
+                        .padding(10.dp)
+                        .width(220.dp))
+            }
+        }
     }
 }
