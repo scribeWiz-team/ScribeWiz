@@ -52,7 +52,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
 
 
 
-    //The file has to be passed as a String with Key fileKey
+    //The URI of the file has to be passed as a String with Key fileKey
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.notes_displayed_activity)
