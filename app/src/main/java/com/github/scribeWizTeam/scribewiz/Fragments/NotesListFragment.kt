@@ -104,9 +104,9 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     fun NoteTile(name: String) {
         Surface(modifier =  Modifier.getTileModifier()
             .clickable {
-                val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
-                score.putExtra("note_name", name)
-                startActivity(score)
+//                val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
+//                score.putExtra("note_name", name)
+//                startActivity(score)
             }) {
             Row {
                 Image(painter = painterResource(R.drawable.music_note),

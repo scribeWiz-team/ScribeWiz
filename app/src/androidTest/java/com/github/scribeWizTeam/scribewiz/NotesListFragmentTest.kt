@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
@@ -60,6 +61,20 @@ class NotesListFragmentTest {
     fun testNumberOfComponentMatchNumberOfFile() {
         for (title in expectedFiles) {
             composeTestRule.onNodeWithText(title.toString()).assertExists()
+        }
+    }
+
+    @Test
+    fun dismissNoteDeleteCorrectly() {
+        for (title in expectedFiles) {
+            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
+                this.down(Offset(200F, 0F))
+                this.moveTo(Offset(0F, 0F))
+                this.up()
+            }
+        }
+        for (title in expectedFiles) {
+            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
         }
     }
 
