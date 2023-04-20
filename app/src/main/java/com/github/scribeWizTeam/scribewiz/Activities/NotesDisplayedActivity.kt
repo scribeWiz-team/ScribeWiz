@@ -1,40 +1,18 @@
-
- 
-
 package com.github.scribeWizTeam.scribewiz
 
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import alphaTab.AlphaTabView
-import alphaTab.Settings
 import alphaTab.core.ecmaScript.Uint8Array
 import alphaTab.importer.ScoreLoader
 import alphaTab.model.Score
 import alphaTab.synth.PlayerState
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Button
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Text
 import java.io.ByteArrayOutputStream
 import kotlin.contracts.ExperimentalContracts
-import kotlinx.coroutines.flow.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.*
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -157,8 +135,4 @@ class NotesDisplayedActivity : AppCompatActivity() {
             shouldSetPosition = false
         }
     }
-
-
-
-
 }

@@ -37,6 +37,12 @@ class NotesDisplayedActivityTest {
         // Initialize Intents before each test
         Intents.init()
     }
+
+    @After
+    fun releaseIntents() {
+        Intents.release()
+    }
+
     @Test
     fun testLaunchActivityWithIntent(){
 
@@ -101,10 +107,4 @@ class NotesDisplayedActivityTest {
             tempFile?.deleteOnExit()
         }
     }
-
-    @After
-    fun end() {
-        Intents.release()
-    }
-
 }
