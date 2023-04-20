@@ -73,4 +73,9 @@ class NotesDisplayedActivityTest {
         }
     }
 
+    @After
+    fun end() {
+        Intents.release()
+    }
+
 }
