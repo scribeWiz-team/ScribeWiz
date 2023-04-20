@@ -2,9 +2,6 @@ package com.github.scribeWizTeam.scribewiz.transcription
 
 import kotlin.math.*
 
-// total: 7h
-// start: 
-
 
 class Tag(val name: String, val attr: List<Pair<String, String>> = listOf()){
 
