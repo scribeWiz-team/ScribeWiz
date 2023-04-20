@@ -4,6 +4,7 @@ package com.github.scribeWizTeam.scribewiz
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -18,6 +19,9 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class FirebaseUIActivity : ComponentActivity()  {
@@ -35,6 +39,9 @@ class FirebaseUIActivity : ComponentActivity()  {
         }
     }
 
+    // The main firebase database
+    private val db = Firebase.firestore
+
     private val user = FirebaseAuth.getInstance().currentUser
 
     private val signInLauncher = registerForActivityResult(
@@ -43,17 +50,29 @@ class FirebaseUIActivity : ComponentActivity()  {
         this.onSignInResult(res)
     }
 
-    // Choose authentication providers
-    // AuthUI.IdpConfig.EmailBuilder().build()
-    // AuthUI.IdpConfig.PhoneBuilder().build()
-    // AuthUI.IdpConfig.FacebookBuilder().build()
-    // AuthUI.IdpConfig.TwitterBuilder().build()
 
+
+    private fun addCurrentUserToDB(){
+        // User needs to be refreshed for the code to detect the change
+        val curUser = FirebaseAuth.getInstance().currentUser
+        if(curUser != null) {
+             val userData = hashMapOf(
+                "userName" to curUser.displayName
+            )
+            db.collection("Users").document(curUser.uid).set(
+            userData, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.d("SETTINGUPDB", "ADDED USER")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("SETTINGUPDB", "Error adding document", e)
+                }
+        }
+    }
     private fun createSignInIntent() {
         // [START auth_fui_create_intent]
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.EmailBuilder().build()
         )
 
         // Create and launch sign-in intent
@@ -69,13 +88,11 @@ class FirebaseUIActivity : ComponentActivity()  {
     @SuppressLint("SetTextI18n")
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
-
         reloadPage()
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
-            if (user != null) {
+            addCurrentUserToDB()
 
-            }
 
             // ...
         } else {
@@ -85,6 +102,7 @@ class FirebaseUIActivity : ComponentActivity()  {
             // ...
 
         }
+
     }
 
     private fun signOut() {
