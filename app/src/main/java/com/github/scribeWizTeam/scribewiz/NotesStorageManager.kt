@@ -6,7 +6,7 @@ import androidx.activity.result.ActivityResultCaller
 import java.io.File
 
 
-const val MUSIC_XML_EXTENSION : String = "musicxml"
+const val MUSIC_XML_EXTENSION : String = "xml"
 const val NOTES_FOLDER : String = "music_notes"
 
 class NotesStorageManager() {

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,9 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
+import java.lang.IllegalStateException
+import kotlin.contracts.ExperimentalContracts
+
 
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
@@ -99,27 +104,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         )
     }
 
-    @Composable
-    fun NoteTile(name: String) {
-        Surface(modifier =  Modifier.getTileModifier()
-            .clickable {
-//                val score = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
-//                score.putExtra("note_name", name)
-//                startActivity(score)
-            }) {
-            Row {
-                Image(painter = painterResource(R.drawable.music_note),
-                    modifier = Modifier
-                        .height(20.dp)
-                        .align(Alignment.CenterVertically),
-                    contentDescription = "music_file")
-                Text(text = name, modifier = Modifier
-                    .padding(10.dp)
-                    .width(220.dp))
-            }
-        }
-    }
-
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getTileModifier(color: Color = Color.White, borderColor: Color = Color.Black) : Modifier {
         return Modifier
@@ -129,5 +113,43 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             .width(300.dp)
             .height(50.dp)
             .padding(10.dp, 5.dp)
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Composable
+    fun NoteTile(name: String) {
+        Surface(modifier =  Modifier.getTileModifier()
+                .clickable {
+                    //commented out this part since it wouldn't make the app compile
+                    //Indeed I would have had to add @experimentalContracts everywhere to support notesDisplayedActivity
+                    makeTheMusicBeDisplayed(name)
+                }) {
+            Row {
+                Image(painter = painterResource(R.drawable.music_note),
+                        modifier = Modifier
+                                .height(20.dp)
+                                .align(Alignment.CenterVertically),
+                        contentDescription = "music_file")
+                Text(text = name, modifier = Modifier
+                        .padding(10.dp)
+                        .width(220.dp))
+            }
+        }
+    }
+    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
+    fun makeTheMusicBeDisplayed(name: String) {
+        val newNotesDisplayedActivity = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
+        val file = notesStorageManager.getNoteFile(name)
+        var stringUri = ""
+
+        file?.let {
+            stringUri = file.toURI().toString()
+        } ?: run {
+            Toast.makeText(context, "The file is empty !", Toast.LENGTH_LONG).show()
+            throw IllegalStateException("The file is null")
+        }
+
+        newNotesDisplayedActivity.putExtra("FILE", stringUri)
+        startActivity(newNotesDisplayedActivity)
     }
 }

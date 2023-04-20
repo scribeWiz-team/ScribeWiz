@@ -6,6 +6,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
@@ -17,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import kotlin.contracts.ExperimentalContracts
 
 
 /**
@@ -35,6 +39,7 @@ class NotesListFragmentTest {
 
     @get:Rule
     var wRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(WRITE_EXTERNAL_STORAGE)
+
 
 
     private val expectedFiles = 'a'..'g'
@@ -64,6 +69,17 @@ class NotesListFragmentTest {
         }
     }
 
+    @OptIn(ExperimentalContracts::class)
+    @Test
+    fun displayNotesWhenClickOnPlay() {
+        Intents.init()
+
+        composeTestRule.onNode(hasText("a")).performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
+
+        Intents.release()
+    }
     @Test
     fun dismissNoteDeleteCorrectly() {
         for (title in expectedFiles) {
@@ -82,6 +98,8 @@ class NotesListFragmentTest {
     fun onlyMusicXMLFiles() {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
+
+
 
     @After
     fun removeTestFiles(){
