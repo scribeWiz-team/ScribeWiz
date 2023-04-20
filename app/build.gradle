@@ -22,12 +22,12 @@ android {
             useSupportLibrary true
         }
     }
-
-    signingConfigs{
+    signingConfigs {
         debug {
-            storeFile file("debug.keystore")
+            storeFile file('E:\\EPFL\\BA6\\SDP\\ScribeWiz\\app\\debug.keystore')
         }
     }
+
 
     buildTypes {
         release {
