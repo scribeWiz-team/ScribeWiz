@@ -40,7 +40,7 @@ class FirebaseUIActivity : ComponentActivity()  {
     }
 
     // The main firebase database
-    private val db = Firebase.firestore
+    val db = Firebase.firestore
 
     private val user = FirebaseAuth.getInstance().currentUser
 
@@ -51,21 +51,23 @@ class FirebaseUIActivity : ComponentActivity()  {
     }
 
 
-
     private fun addCurrentUserToDB(){
         // User needs to be refreshed for the code to detect the change
         val curUser = FirebaseAuth.getInstance().currentUser
         if(curUser != null) {
              val userData = hashMapOf(
-                "userName" to curUser.displayName
-            )
+                "userName" to curUser.displayName,
+                "userNumRecordings" to 99,
+                "friends" to ""
+             )
+
             db.collection("Users").document(curUser.uid).set(
             userData, SetOptions.merge())
                 .addOnSuccessListener {
                     Log.d("SETTINGUPDB", "ADDED USER")
                 }
                 .addOnFailureListener { e ->
-                    Log.w("SETTINGUPDB", "Error adding document", e)
+                    Log.w("SETTINGUPDB", "Error adding user", e)
                 }
         }
     }
@@ -87,10 +89,12 @@ class FirebaseUIActivity : ComponentActivity()  {
 
     @SuppressLint("SetTextI18n")
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        val response = result.idpResponse
+        //val response = result.idpResponse
         reloadPage()
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
+
+            // Add the user to the database, now they can add friends :)
             addCurrentUserToDB()
 
 

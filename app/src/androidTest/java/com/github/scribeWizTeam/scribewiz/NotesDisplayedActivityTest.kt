@@ -72,10 +72,4 @@ class NotesDisplayedActivityTest {
             tempFile?.deleteOnExit()
         }
     }
-
-    @After
-    fun end() {
-        Intents.release()
-    }
-
 }
