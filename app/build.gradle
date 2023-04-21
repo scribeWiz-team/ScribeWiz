@@ -24,6 +24,12 @@ android {
 
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+        }
+    }
+
 
     buildTypes {
         release {
@@ -106,6 +112,8 @@ dependencies {
     // Coil (Used for profile pictures)
     implementation("io.coil-kt:coil-compose:2.3.0")
 
+    // Firestore
+
     // Testing
 
     
@@ -125,7 +133,8 @@ dependencies {
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.2')
-    // When using the BoM, don't specify versions in Firebase dependencies
+    // Declare the dependency for the Cloud Firestore library
+    implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Firebase authentication import
