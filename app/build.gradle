@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
     signingConfigs {
         debug {
@@ -55,6 +57,11 @@ android {
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -135,6 +142,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation "org.jetbrains.kotlin:kotlin-test:1.8.10"
 
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 }
 
 tasks.withType(Test) {

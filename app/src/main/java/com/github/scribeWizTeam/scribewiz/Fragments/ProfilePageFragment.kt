@@ -33,6 +33,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlin.random.Random
 
+
 class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     override fun onCreateView(
@@ -59,7 +60,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     fun ProfilePage(){
         val context = LocalContext.current
 
-
         // Get the current user
         val user = FirebaseAuth.getInstance().currentUser
 
@@ -82,7 +82,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
 
             userName = user.displayName!!
-
         }
 
         Column(
@@ -115,7 +114,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
 
 
-
             Text(
                 text = userName,
                 style = MaterialTheme.typography.h4,
@@ -139,6 +137,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     Text("Sign out")
                 }
             }
+
             Text(
                 text = "My total recordings : $numRecordings",
                 style = MaterialTheme.typography.h4,
