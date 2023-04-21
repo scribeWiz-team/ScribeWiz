@@ -27,10 +27,15 @@ class NotesDisplayedActivity : AppCompatActivity() {
     private lateinit var _alphaTabView: AlphaTabView
     private lateinit var _viewModel: ViewScoreViewModel
     val fileKey : String = "FILE"
+    var exceptionCaught: Boolean = false //Used in the unit tests to make sure the exception was handled
+
     //TODO: Think about a better way to pass the file
 
 
-
+    fun isPlaying() : Boolean{
+        //here value is 0 when the player is paused and 1 when it is running
+       return _alphaTabView.api.playerState.value == 1
+    }
     //The URI of the file has to be passed as a String with Key fileKey
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +87,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
             inMemoryObject = ScoreLoader.loadScoreFromBytes(fileData, _alphaTabView.settings)
             Log.i("AlphaTab", "File loaded: ${inMemoryObject.title}")
         } catch (e: Exception) {
+            exceptionCaught = true
             Log.e("AlphaTab", "Failed to load file: $e, ${e.stackTraceToString()}")
             Toast.makeText(this, "Open File Failed", Toast.LENGTH_LONG)
                 .show() //simple feedback in a small popup
@@ -91,6 +97,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
             _viewModel.currentTickPosition.value = 0
             _viewModel.tracks.value = arrayListOf(inMemoryObject.tracks[0])
         } catch (e: Exception) {
+            exceptionCaught = true
             Log.e("AlphaTab", "Failed to render file: $e, ${e.stackTraceToString()}")
             Toast.makeText(this, "Open File Failed", Toast.LENGTH_LONG).show()
         }
