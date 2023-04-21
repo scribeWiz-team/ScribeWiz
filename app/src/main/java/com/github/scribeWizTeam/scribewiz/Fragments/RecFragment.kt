@@ -14,9 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 import java.io.FileOutputStream
@@ -57,9 +56,10 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         recordingTimeText = view.findViewById(R.id.time_recording) //get the text
 
         //check if the app has permission to record audio
-        checkPermission()
-        //set the event for the button
-        setEvent()
+        PermissionsManager().checkPermissionThenExecute(this, this.requireContext(), Manifest.permission.RECORD_AUDIO) {
+            //set the event for the button
+            setEvent()
+        }
         return view
     }
     //This function is called when the record button is clicked
@@ -77,43 +77,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //if not, request permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.RECORD_AUDIO),
-                REQUEST_RECORD_AUDIO_PERMISSION
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        //set the result of the permission request
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //check if the request code is same as the one we sent
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            //check if the permission is granted
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                //if not, show a toast "Permission Denied"
-                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                //else when permission granted, start recording
-                startRecording()
-            }
-        }
-    }
-
-    fun getOutputFilePath(): String {
+    private fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
     }
 
