@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
+import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {

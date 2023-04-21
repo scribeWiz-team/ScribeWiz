@@ -45,7 +45,12 @@ class NotesStorageManagerTest {
     @Test
     fun testManagerReturnAllNotesNames() {
         assertArrayEquals(expectedFiles.toTypedArray(), notesStorageManager.getNotesNames().toTypedArray())
+    }
 
+    @Test
+    fun testManagerNotesNamesReturnsEmptyListWhenNoFile() {
+        notesStorageManager.clearFolder()
+        assertArrayEquals(emptyArray(), notesStorageManager.getNotesNames().toTypedArray())
     }
 
     @Test
