@@ -187,7 +187,8 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             text = friendsList[item]!!,
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp)
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp),
+
                         )
                     }
                     // Default profile picture
