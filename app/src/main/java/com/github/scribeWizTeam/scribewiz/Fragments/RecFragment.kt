@@ -1,6 +1,10 @@
 package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.media.AudioFormat
+import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -10,18 +14,30 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
+
+    private val audioSource = MediaRecorder.AudioSource.MIC
+    private val sampleRateInHz = 44100
+    private val channelConfig = AudioFormat.CHANNEL_IN_MONO
+    private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+    private val bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat)
+
     private lateinit var recordButton: Button //button to start and stop recording
-    private lateinit var mediaRecorder: MediaRecorder //media recorder to record audio
+    private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var recordingTimeText: TextView //text to show recording time
     private lateinit var timer: CountDownTimer //timer to show recording time
 
+    private lateinit var outputFile: File
+    private lateinit var outputFilePath: String
     var isRecording = false //boolean to check if recording is in progress
     val REQUEST_RECORD_AUDIO_PERMISSION = 200 //request code for permission
     val MILLISINFUTURE = 9999999L //number of milliseconds maximum record time
@@ -41,10 +57,9 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         recordingTimeText = view.findViewById(R.id.time_recording) //get the text
 
         //check if the app has permission to record audio
-        PermissionsManager().checkPermissionThenExecute(this, this.requireContext(), Manifest.permission.RECORD_AUDIO) {
-            //set the event for the button
-            setEvent()
-        }
+        checkPermission()
+        //set the event for the button
+        setEvent()
         return view
     }
     //This function is called when the record button is clicked
@@ -62,63 +77,105 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun getOutputFilePath(): String {
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //if not, request permission
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUEST_RECORD_AUDIO_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        //set the result of the permission request
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        //check if the request code is same as the one we sent
+        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+            //check if the permission is granted
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //if not, show a toast "Permission Denied"
+                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                //else when permission granted, start recording
+                startRecording()
+            }
+        }
+    }
+
+    fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
     }
 
+    @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
     private fun startRecording() {
-        //initialize the media recorder
-        mediaRecorder = MediaRecorder()
-        //set the audio source
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        //set the output format
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-        //set the output file path
-        mediaRecorder.setOutputFile(getOutputFilePath())
-        //set the encoder
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+        // Initialize the AudioRecord
+        audioRecorder = AudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSize)
 
-        try {
-            //prepare the media recorder
-            mediaRecorder.prepare()
-            //start recording
-            mediaRecorder.start()
-            //set recording in progress
-            isRecording = true
-            //change the button text
-            recordButton.text = "Stop Recording"
+        // Set the output file path
+        outputFilePath = getOutputFilePath()
+        outputFile = File(outputFilePath)
 
-            //set the timer
-            timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
-                override fun onTick(millisUntilFinished: Long) {
-                    recordingTimeText.text = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
-                }
-                override fun onFinish() {
-                //do nothing
+        // Start recording
+        audioRecorder.startRecording()
+        isRecording = true
+        recordButton.text = "Stop Recording"
+
+        // Write the audio data to a file
+        val buffer = ByteArray(bufferSize)
+        val outputStream = FileOutputStream(outputFile)
+
+        Thread(Runnable {
+            while (isRecording) {
+                val bytesRead = audioRecorder.read(buffer, 0, bufferSize)
+                if (bytesRead > 0) {
+                    try {
+                        outputStream.write(buffer, 0, bytesRead)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
                 }
             }
-            //start the timer
-            timer.start()
+            outputStream.close()
+        }).start()
 
-        //if there is any error in recording
-        } catch (e: IOException) {
-            Toast.makeText(requireContext(), "Failed to start the recording", Toast.LENGTH_SHORT).show()
-            e.printStackTrace()
+        // Set the timer
+        timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
+            override fun onTick(millisUntilFinished: Long) {
+                recordingTimeText.text = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+            }
+
+            override fun onFinish() {
+                // Do nothing
+            }
         }
+        // Start the timer
+        timer.start()
     }
-    //method to stop recording
+
+    // Method to stop recording
     private fun stopRecording() {
-        //stop recording
-        mediaRecorder.stop()
-        //release the media recorder
-        mediaRecorder.release()
-        //set recording not in progress
+        // Stop recording
+        audioRecorder.stop()
+        // Release the AudioRecord
+        audioRecorder.release()
+        // Set recording not in progress
         isRecording = false
-        //change the button text
+        // Change the button text
         recordButton.text = "Start Recording"
-        //stop the timer
+        // Stop the timer
         timer.cancel()
-        //set the recording time to 0
+        // Set the recording time to 0
         recordingTimeText.text = "Recording saved!"
     }
 }
