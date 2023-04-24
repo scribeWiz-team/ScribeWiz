@@ -122,7 +122,20 @@ data class StaffRest(override val duration: Int,
 
 data class Signature(val key: Int, val beats: Int, val beat_type: Int,
                      val divisions: Int = 1, val tempo: Int = 120){
-    // tempo is given in bpm, with one quarter note per beat
+    // key: the key to use for the music piece
+    //      0 indicates C major
+    //      a positive number indicates a number of sharps
+    //      a negative number indicates a number of flats
+    //
+    // beats and beat_type: the time signature for the piece
+    //                      e.g. use beats = 3 and beat_type = 4 for a 3/4 piece
+    //
+    // divisions: controls the smallest representable note will be, possible values are
+    //            divisions = 1 (quarter note) [default]
+    //            divisions = 2 (eighth note)
+    //            divisions = 4 (16th note)
+    //
+    // tempo: the tempo of the piece, given in bpm, with one quarter note per beat
     val durationNames = listOf(
         "16th",
         "eighth",
@@ -200,15 +213,14 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
         }
     }
 
-    fun add_note(midinote: Pair<Int, Double>) {
-        val (pitch, real_duration) = midinote
-        var duration = signature.get_duration(real_duration)
+    fun add_note(midinote: MidiNote) {
+        var duration = signature.get_duration(midinote.duration)
         var elements: List<StaffElement> = emptyList()
-        if (pitch >= 0){
-            val index = pitch % 12
+        if (midinote.pitch >= 0){
+            val index = midinote.pitch % 12
             val step = steps[index]
             val alter = alterations[index]
-            val octave = pitch / 12 - 1
+            val octave = midinote.pitch / 12 - 1
             while (duration > 0){
                 val (type, dot, dur) = signature.get_representable_duration(duration, measureTime)
                 val element = StaffNote(step, octave, alter, dur, type, dot)

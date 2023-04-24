@@ -5,7 +5,7 @@ import kotlin.math.*
 
 const val SILENT_PITCH = -1
 
-data class Note(val pitch: Int, val startTime: Double, val endTime: Double){
+data class MidiNote(val pitch: Int, val startTime: Double, val endTime: Double){
     val duration = endTime - startTime
 }
 
@@ -17,16 +17,16 @@ class NoteGuesser(val sampleDelay: Double) {
     // - you can retrieve the guessed notes at any time in the `notes` attribute
 
     var time: Double = 0.0
-    var notes: List<Note> = listOf()
-    var currentNote: Note = Note(SILENT_PITCH, 0.0, 0.0)
+    var notes: List<MidiNote> = listOf()
+    var currentNote: MidiNote = MidiNote(SILENT_PITCH, 0.0, 0.0)
 
     fun add_sample(pitchFreq: Double?){
         val midiPitch = compute_midi_pitch(pitchFreq)
         if (midiPitch != currentNote.pitch){
             push_current_note()
-            currentNote = Note(midiPitch, time, time+sampleDelay)
+            currentNote = MidiNote(midiPitch, time, time+sampleDelay)
         }
-        currentNote = Note(currentNote.pitch, currentNote.startTime, time+sampleDelay)
+        currentNote = MidiNote(currentNote.pitch, currentNote.startTime, time+sampleDelay)
         time += sampleDelay
     }
 
@@ -37,7 +37,7 @@ class NoteGuesser(val sampleDelay: Double) {
     private fun push_current_note(){
         if (currentNote.duration != 0.0){
             notes += currentNote
-            currentNote = Note(SILENT_PITCH, time, time)
+            currentNote = MidiNote(SILENT_PITCH, time, time)
         }
     }
 
