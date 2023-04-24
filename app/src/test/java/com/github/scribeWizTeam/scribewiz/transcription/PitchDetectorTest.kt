@@ -10,7 +10,7 @@ import org.junit.Before
 class PitchDetectorTest {
 
     private var sampleFreq = 44000.0
-    private lateinit var detector: PitchDetector
+    private lateinit var detector: PitchDetectorInterface
 
     @Before
     fun prepare_pitch_detector(){

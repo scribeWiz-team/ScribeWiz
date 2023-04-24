@@ -195,13 +195,25 @@ data class Signature(val key: Int, val beats: Int, val beat_type: Int,
     }
 }
 
+interface MusicRenderer {
 
-class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
-    val steps: List<String>
-    val alterations: List<Int>
-    var staff: List<Node> = listOf()
+    fun add_note(midinote: MidiNote)
+
+    fun build(): String
+
+    fun reset()
+}
+
+
+class MusicxmlBuilder(val scoreName: String, val signature: Signature): MusicRenderer {
+    // scoreName: the name of this musical score
+    // signature: the signature of this music score, see MusicxmlBuilder.Signature
+    
+    private val steps: List<String>
+    private val alterations: List<Int>
+    private var staff: List<Node> = listOf()
     var measure: List<StaffElement> = listOf()
-    var measureTime: Int = 0
+    private var measureTime: Int = 0
 
     init {
         if (signature.key >= 0){
@@ -213,7 +225,13 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
         }
     }
 
-    fun add_note(midinote: MidiNote) {
+    override fun reset(){
+        staff = listOf()
+        measure = listOf()
+        measureTime = 0
+    }
+
+    override fun add_note(midinote: MidiNote) {
         var duration = signature.get_duration(midinote.duration)
         var elements: List<StaffElement> = emptyList()
         if (midinote.pitch >= 0){
@@ -237,7 +255,7 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
         }
     }
 
-    fun push_to_measure(note: StaffElement){
+    private fun push_to_measure(note: StaffElement){
         measure += note
         measureTime += note.duration
         if (measureTime == signature.measureMaxDuration){
@@ -245,7 +263,7 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
         }
     }
 
-    fun flush_measure(){
+    private fun flush_measure(){
         if (measureTime == 0){
             return
         }
@@ -265,7 +283,7 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature) {
         measureTime = 0
     }
 
-    fun build(): String {
+    override fun build(): String {
         flush_measure()
         val header = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">"""
