@@ -44,7 +44,8 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         notesStorageManager = NotesStorageManager(this, this.requireContext())

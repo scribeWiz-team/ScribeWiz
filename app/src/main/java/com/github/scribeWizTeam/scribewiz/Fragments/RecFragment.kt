@@ -11,13 +11,26 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -31,9 +44,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
     private val bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat)
 
-    private lateinit var recordButton: Button //button to start and stop recording
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
-    private lateinit var recordingTimeText: TextView //text to show recording time
+
     private lateinit var timer: CountDownTimer //timer to show recording time
 
     private lateinit var outputFile: File
@@ -51,28 +63,58 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_rec, container, false) //inflate the layout
-        recordButton = view.findViewById(R.id.record_button) //get the button
-        recordingTimeText = view.findViewById(R.id.time_recording) //get the text
-
+    ): View {
         //check if the app has permission to record audio
         checkPermission()
-        //set the event for the button
-        setEvent()
-        return view
-    }
-    //This function is called when the record button is clicked
-    private fun setEvent() {
-        recordButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            if (!isRecording) {
-                //start recording
-                startRecording()
-            } else {
-                //stop recording
-                stopRecording()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+
+                var counterText by remember { mutableStateOf("00:00") }
+                var recordButtonText by remember { mutableStateOf("Start recording") }
+
+
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = counterText, fontSize = 24.sp)
+                    Button(modifier = Modifier
+                        .height(40.dp)
+                        .width(180.dp),
+                        onClick = {
+                            if (!isRecording) {
+                                // Set the timer
+                                timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                        counterText = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+                                    }
+
+                                    override fun onFinish() {
+                                        // Do nothing
+                                    }
+                                }
+
+                                //start recording
+                                recordButtonText = "Stop recording"
+                                startRecording()
+                            } else {
+                                //stop recording
+                                // Set the recording time to 0
+                                counterText = "Recording saved!"
+                                recordButtonText = "Start recording"
+                                stopRecording()
+                            }
+                    }) {
+                        Icon(
+                            Icons.Filled.PlayArrow,
+                            contentDescription = "Favorite",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(recordButtonText)
+                    }
+                }
             }
         }
     }
@@ -108,7 +150,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
             else{
                 //else when permission granted, start recording
-                startRecording()
+
             }
         }
     }
@@ -129,7 +171,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         // Start recording
         audioRecorder.startRecording()
         isRecording = true
-        recordButton.text = "Stop Recording"
 
         // Write the audio data to a file
         val buffer = ByteArray(bufferSize)
@@ -149,16 +190,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             outputStream.close()
         }).start()
 
-        // Set the timer
-        timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-                recordingTimeText.text = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
-            }
-
-            override fun onFinish() {
-                // Do nothing
-            }
-        }
         // Start the timer
         timer.start()
     }
@@ -171,11 +202,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.release()
         // Set recording not in progress
         isRecording = false
-        // Change the button text
-        recordButton.text = "Start Recording"
         // Stop the timer
         timer.cancel()
-        // Set the recording time to 0
-        recordingTimeText.text = "Recording saved!"
     }
 }
