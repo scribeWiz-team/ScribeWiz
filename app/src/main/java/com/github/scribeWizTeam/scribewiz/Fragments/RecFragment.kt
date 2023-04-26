@@ -24,8 +24,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -74,45 +76,47 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 var recordButtonText by remember { mutableStateOf("Start recording") }
 
 
-                Column(
+                Box(
                     modifier = Modifier.fillMaxSize().padding(all = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = counterText, fontSize = 24.sp)
-                    Button(modifier = Modifier
-                        .height(40.dp)
-                        .width(180.dp),
-                        onClick = {
-                            if (!isRecording) {
-                                // Set the timer
-                                timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
-                                    override fun onTick(millisUntilFinished: Long) {
-                                        counterText = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+                    Column (horizontalAlignment = CenterHorizontally) {
+                        Text(text = counterText, fontSize = 24.sp, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Center)
+                        Button(modifier = Modifier
+                            .height(40.dp)
+                            .width(180.dp),
+                            onClick = {
+                                if (!isRecording) {
+                                    // Set the timer
+                                    timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
+                                        override fun onTick(millisUntilFinished: Long) {
+                                            counterText = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+                                        }
+
+                                        override fun onFinish() {
+                                            // Do nothing
+                                        }
                                     }
 
-                                    override fun onFinish() {
-                                        // Do nothing
-                                    }
+                                    //start recording
+                                    recordButtonText = "Stop recording"
+                                    startRecording()
+                                } else {
+                                    //stop recording
+                                    // Set the recording time to 0
+                                    counterText = "Recording saved!"
+                                    recordButtonText = "Start recording"
+                                    stopRecording()
                                 }
-
-                                //start recording
-                                recordButtonText = "Stop recording"
-                                startRecording()
-                            } else {
-                                //stop recording
-                                // Set the recording time to 0
-                                counterText = "Recording saved!"
-                                recordButtonText = "Start recording"
-                                stopRecording()
-                            }
-                    }) {
-                        Icon(
-                            Icons.Filled.PlayArrow,
-                            contentDescription = "Favorite",
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(recordButtonText)
+                        }) {
+                            Icon(
+                                Icons.Filled.PlayArrow,
+                                contentDescription = "Favorite",
+                                modifier = Modifier.size(ButtonDefaults.IconSize)
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(recordButtonText)
+                        }
                     }
                 }
             }
