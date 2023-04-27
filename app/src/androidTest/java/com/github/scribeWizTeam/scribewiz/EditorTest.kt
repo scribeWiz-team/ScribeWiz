@@ -224,8 +224,8 @@ class EditorTest {
         val inputNoteAttributes = extractNoteAttributes(inputXMLContent)
         val outputNoteAttributes = extractNoteAttributes(outputXMLContent)
 
-        println("Input note attributes: $inputNoteAttributes")
-        println("Output note attributes: $outputNoteAttributes")
+        //println("Input note attributes: $inputNoteAttributes")
+        //println("Output note attributes: $outputNoteAttributes")
 
         Assert.assertEquals(inputNoteAttributes, outputNoteAttributes)
     }
@@ -239,7 +239,7 @@ class EditorTest {
 
         return noteMatches.map { noteTag ->
             val attributeMatches = attributePattern.findAll(noteTag.value).toList()
-            println("Attribute matches for ${noteTag.value}: $attributeMatches")
+            //println("Attribute matches for ${noteTag.value}: $attributeMatches")
             attributeMatches.associate { attrMatch ->
                 attrMatch.groupValues[1] to attrMatch.groupValues[2]
             }
