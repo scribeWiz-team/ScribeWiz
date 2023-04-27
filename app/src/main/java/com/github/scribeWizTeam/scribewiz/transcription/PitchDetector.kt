@@ -9,7 +9,16 @@ typealias Signal = List<Double>
 typealias Frequency = Double
 typealias Energy = Double
 
-class PitchDetector(val samplingFreq: Frequency){
+interface PitchDetectorInterface {
+
+    val samplingFreq: Frequency
+
+    fun detect_pitch(signal: Signal): Frequency?
+}
+
+class PitchDetector(override val samplingFreq: Frequency): PitchDetectorInterface {
+    // samplingFreq: the sampling frequency of the microphone
+    //               a typical value is 44000.0 Hz
 
     init {
         if (samplingFreq <= 0){
@@ -50,7 +59,7 @@ class PitchDetector(val samplingFreq: Frequency){
         return (samplingFreq / frequency).roundToInt()
     }
 
-    fun detect_pitch(signal: Signal): Frequency? {
+    override fun detect_pitch(signal: Signal): Frequency? {
         val highLag = freq_to_lag(50.0)
         val lowLag = freq_to_lag(4000.0)
         var bestCorr = -1.0
