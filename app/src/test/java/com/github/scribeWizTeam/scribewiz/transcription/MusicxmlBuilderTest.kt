@@ -12,10 +12,10 @@ class MusicxmlBuilderTest {
         val signature = Signature(0, 200, 4, divisions=2, tempo=120)
         val builder = MusicxmlBuilder("Test conversion", signature)
         val inputs = listOf(
-            Pair(60, 2.0),
-            Pair(67, 0.5),
-            Pair(42, 1.5),
-            Pair(-1, 3.0),
+            MidiNote(60, 0.0, 2.0),
+            MidiNote(67, 0.0, 0.5),
+            MidiNote(42, 0.0, 1.5),
+            MidiNote(-1, 0.0, 3.0),
         )
         val expected_notes = listOf(
             StaffNote("C", 4, 0, 8, "whole", false),
@@ -71,7 +71,7 @@ class MusicxmlBuilderTest {
 </score-partwise>"""
         val signature = Signature(0, 4, 4, tempo=60)
         val builder = MusicxmlBuilder("Test music", signature)
-        builder.add_note(Pair(60, 4.0))
+        builder.add_note(MidiNote(60, 0.0, 4.0))
 
         assertEquals(expected, builder.build())
     }
@@ -303,27 +303,27 @@ class MusicxmlBuilderTest {
         val signature = Signature(-3, 6, 8, divisions=2, tempo=60)
         val builder = MusicxmlBuilder("A more complex example", signature)
         val notes = listOf(
-                Pair(67, 1.5),
-                Pair(68, 0.5),
-                Pair(70, 1.0),
-                Pair(72, 2.0),
-                Pair(-1, 0.5),
-                Pair(68, 0.5),
-                Pair(68, 1.5),
-                Pair(-1, 1.0),
-                Pair(71, 0.5),
-                Pair(72, 1.5),
-                Pair(73, 1.5),
-                Pair(62, 1.5),
-                Pair(70, 1.5),
-                Pair(65, 1.5),
-                Pair(67, 1.5),
-                Pair(63, 0.5),
-                Pair(62, 0.5),
-                Pair(63, 0.5),
-                Pair(62, 0.5),
-                Pair(63, 1.0),
-                Pair(58, 3.0),
+                MidiNote(67, 0.0, 1.5),
+                MidiNote(68, 0.0, 0.5),
+                MidiNote(70, 0.0, 1.0),
+                MidiNote(72, 0.0, 2.0),
+                MidiNote(-1, 0.0, 0.5),
+                MidiNote(68, 0.0, 0.5),
+                MidiNote(68, 0.0, 1.5),
+                MidiNote(-1, 0.0, 1.0),
+                MidiNote(71, 0.0, 0.5),
+                MidiNote(72, 0.0, 1.5),
+                MidiNote(73, 0.0, 1.5),
+                MidiNote(62, 0.0, 1.5),
+                MidiNote(70, 0.0, 1.5),
+                MidiNote(65, 0.0, 1.5),
+                MidiNote(67, 0.0, 1.5),
+                MidiNote(63, 0.0, 0.5),
+                MidiNote(62, 0.0, 0.5),
+                MidiNote(63, 0.0, 0.5),
+                MidiNote(62, 0.0, 0.5),
+                MidiNote(63, 0.0, 1.0),
+                MidiNote(58, 0.0, 3.0),
         )
         for (note in notes){
             builder.add_note(note)
