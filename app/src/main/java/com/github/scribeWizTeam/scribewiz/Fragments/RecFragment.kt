@@ -56,7 +56,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
-    private var isRecording = false //boolean to check if recording is in progress
+    var isRecording = false //boolean to check if recording is in progress
 
     private var metronomeIsPlaying = false
 
