@@ -48,7 +48,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        notesStorageManager = NotesStorageManager(this, this.requireContext())
+        notesStorageManager = NotesStorageManager(this.requireContext())
         return ComposeView(requireContext()).apply {
             setContent {
                 ScribeWizTheme {
@@ -116,7 +116,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             .padding(10.dp, 5.dp)
     }
 
-    @OptIn(ExperimentalContracts::class)
     @Composable
     fun NoteTile(name: String) {
         Surface(modifier =  Modifier.getTileModifier()

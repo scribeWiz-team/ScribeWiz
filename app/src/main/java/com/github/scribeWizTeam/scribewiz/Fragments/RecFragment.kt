@@ -2,7 +2,6 @@ package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaPlayer
@@ -12,7 +11,6 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -27,9 +25,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 import java.io.FileOutputStream
@@ -38,7 +35,6 @@ import java.io.IOException
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     companion object {
-        private const val REQUEST_RECORD_AUDIO_PERMISSION = 200 //request code for permission
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
@@ -70,7 +66,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         savedInstanceState: Bundle?
     ): View {
         //check if the app has permission to record audio
-        checkPermission()
+        PermissionsManager().checkPermissionThenExecute(this, requireContext(), Manifest.permission.RECORD_AUDIO) {}
 
         mediaPlayer = MediaPlayer.create(context, R.raw.tick)
 
@@ -88,8 +84,13 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         .padding(all = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column (horizontalAlignment = CenterHorizontally) {
-                        Text(text = counterText.value, fontSize = 24.sp, modifier = Modifier.padding(10.dp), textAlign = TextAlign.Center)
+                    Column(horizontalAlignment = CenterHorizontally) {
+                        Text(
+                            text = counterText.value,
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center
+                        )
                         PlayButton(recordButtonText) {
                             switchRecordState(counterText, recordButtonText)
                         }
@@ -97,13 +98,13 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             switchMetronomeState(metronomeButtonText, tempoValue)
                         }
                         OutlinedTextField(tempoValue.value,
-                            {tempoValue.value = it},
+                            { tempoValue.value = it },
                             modifier = Modifier
                                 .height(70.dp)
                                 .width(190.dp)
                                 .padding(5.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            label = { Text(text = "Tempo")})
+                            label = { Text(text = "Tempo") })
                     }
                 }
             }
@@ -188,41 +189,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //if not, request permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.RECORD_AUDIO),
-                Companion.REQUEST_RECORD_AUDIO_PERMISSION
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        //set the result of the permission request
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //check if the request code is same as the one we sent
-        if (requestCode == Companion.REQUEST_RECORD_AUDIO_PERMISSION) {
-            //check if the permission is granted
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                //if not, show a toast "Permission Denied"
-                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                //else when permission granted, start recording
-
-            }
-        }
-    }
 
     fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
