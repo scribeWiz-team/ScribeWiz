@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz.Fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -28,13 +33,22 @@ import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
 import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
+import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
 
 class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+
+    // Get the current user
+    private val user = FirebaseAuth.getInstance().currentUser
+
+    // Retrieve the database
+    private val db = Firebase.firestore
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,16 +69,11 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     constructor() : this(0) {
         // Default constructor
     }
-
     @Composable
     fun ProfilePage(){
         val context = LocalContext.current
 
-        // Get the current user
-        val user = FirebaseAuth.getInstance().currentUser
 
-        // Retrieve the database
-        val db = Firebase.firestore
 
         // Check if user is logged in, set default values otherwise
         var userName = "Guest"
@@ -101,7 +110,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     model = user.photoUrl,
                     contentDescription = "User profile picture",
                     modifier = Modifier
-                        .size(100.dp)
+                        .size(60.dp)
                         .clip(CircleShape)
                 )
             }else {
@@ -141,20 +150,43 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Text(
                 text = "My total recordings : $numRecordings",
                 style = MaterialTheme.typography.h4,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 modifier = Modifier.align(Alignment.Start)
             )
             Spacer(Modifier.height(20.dp))
 
+            if(user != null) {
+                var text = remember { mutableStateOf("") }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextField(
+                        value = text.value,
+                        onValueChange = { text.value = it },
+                        label = { Text("Search for user") },
+                        modifier = Modifier.height(50.dp).width(250.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            AddFriend(text.value)
+                        },
+                        modifier = Modifier.height(50.dp)
+                            .width(100.dp)
+                    )
+                    {
+                        Text("Add friend", textAlign = TextAlign.Center)
+                    }
+                }
+            }
             // TODO: Add user null check once bug is fixed
             //if(user != null){
                 Text(
                     text = "My friends",
                     style = MaterialTheme.typography.h4,
                     fontSize = 22.sp,
+                    modifier = Modifier.padding(top = 10.dp)
                 )
                 DrawFriendsGrid(friendsList)
-            //}
+
 
         }
     }
@@ -193,6 +225,44 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     // Default profile picture
 
                 }
+            }
+        }
+    }
+
+    fun AddFriend(friend:String){
+
+        if(user != null) {
+            // Cannot add oneself as friend
+            if(friend == user.displayName){
+                return
+            }
+            thread {
+                // Data abstraction leak, will fix in future
+                var snapshot = await(db.collection("Users").get())
+                if (snapshot.isEmpty) {
+                    Log.w("ADDINGFRIEND", "EMPTYDB")
+                }
+                snapshot.forEach {
+                    Log.w("ADDINGFRIEND", "READINGUSER")
+                    if (it.get("userName") == friend) {
+                        db.collection("Users").document(it.id)
+                            .collection("friendRequests").add(
+                                hashMapOf("name" to user.displayName, "uid" to user.uid)
+                            ).addOnFailureListener {
+                                Log.w("ADDINGFRIEND", "FAILED", it)
+                            }
+                    }
+                }
+                /*
+            db.collection("Users").document(user.uid)
+                .collection("friendRequests").add(hashMapOf("friendName" to friend))
+                .addOnSuccessListener {
+                    Log.d("ADDINGFRIEND", "SUCCESSFULLY ADDED FRIEND")
+                }.addOnFailureListener{
+                    Log.w("ADDINGFRIEND", "FAILED TO ADD FRIEND", it)
+                }
+
+             */
             }
         }
     }

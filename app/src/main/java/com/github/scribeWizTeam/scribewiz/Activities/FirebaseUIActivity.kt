@@ -57,14 +57,18 @@ class FirebaseUIActivity : ComponentActivity()  {
         if(curUser != null) {
              val userData = hashMapOf(
                 "userName" to curUser.displayName,
-                "userNumRecordings" to 99,
-                "friends" to ""
+                "userNumRecordings" to 42,
              )
 
             db.collection("Users").document(curUser.uid).set(
             userData, SetOptions.merge())
                 .addOnSuccessListener {
-                    Log.d("SETTINGUPDB", "ADDED USER")
+                    Log.d("SETTINGUPDB", "ADDED USER BASE")
+                    db.collection("Users").document(curUser.uid)
+                        .collection("friends").add(hashMapOf("friendID" to "")).addOnSuccessListener {
+                            Log.d("SETTINGUPDB", "ADDED USER FRIENDSLIST")
+                        }.addOnFailureListener{
+                        Log.w("SETTINGUPDB", "Error adding user", it)           }
                 }
                 .addOnFailureListener { e ->
                     Log.w("SETTINGUPDB", "Error adding user", e)
