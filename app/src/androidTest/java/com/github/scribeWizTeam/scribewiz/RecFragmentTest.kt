@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
@@ -34,7 +35,6 @@ class RecFragmentTest {
 
         // Start recording
         composeTestRule.onNodeWithText("Start recording").performClick()
-
         composeTestRule.onNodeWithText("Stop recording").assertExists()
 
         // Stop recording
@@ -48,5 +48,26 @@ class RecFragmentTest {
              assertTrue(recordingFile.exists())
              assertTrue(recordingFile.length() > 0)
         }
+    }
+
+    @Test
+    fun startAndStopMetronome() {
+        launchFragmentInContainer<RecFragment>()
+        // Start metronome
+        composeTestRule.onNodeWithText("Start metronome").performClick()
+        composeTestRule.onNodeWithText("Stop metronome").assertExists()
+
+        // Stop metronome
+        composeTestRule.onNodeWithText("Stop metronome").performClick()
+        composeTestRule.onNodeWithText("Start metronome").assertExists()
+    }
+
+    @Test
+    fun badFormatTempoReplacedByDefaultValue() {
+        launchFragmentInContainer<RecFragment>()
+        // write invalid input with a coma at the end
+        composeTestRule.onNodeWithText("60").performTextInput(",")
+        composeTestRule.onNodeWithText("Start metronome").performClick()
+        composeTestRule.onNodeWithText("60").assertExists()
     }
 }

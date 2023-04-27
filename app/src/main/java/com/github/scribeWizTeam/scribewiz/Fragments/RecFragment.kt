@@ -16,7 +16,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -52,9 +55,12 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
-    var isRecording = false //boolean to check if recording is in progress
+    private var isRecording = false //boolean to check if recording is in progress
 
     private var metronomeIsPlaying = false
+
+    private var recordTimer = onTickTimer(1) {}
+    private var metronomeTimer = onTickTimer(1) {}
 
     constructor() : this(0) {
         // Default constructor
@@ -145,22 +151,26 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         if (metronomeIsPlaying) {
             metronomeButtonText.value = "Start metronome"
             metronomeIsPlaying = false
-            timer.cancel()
+            metronomeTimer.cancel()
         } else {
             val tempo : Long = try {
                tempoValue.value.toLong()
             } catch (_: java.lang.NumberFormatException) {
+                tempoValue.value = "60"
                 60L
             }
 
-            timer = onTickTimer(1000 * 60 / tempo) {
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.pause()
-                    mediaPlayer.seekTo(0)
+            metronomeTimer = onTickTimer(1000 * 60 / tempo) {
+                if (this::mediaPlayer.isInitialized) {
+                    if (mediaPlayer.isPlaying) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                    }
+                    mediaPlayer.start()
                 }
-                mediaPlayer.start()
             }
-            timer.start()
+
+            metronomeTimer.start()
             metronomeIsPlaying = true
             metronomeButtonText.value = "Stop metronome"
         }
@@ -169,19 +179,19 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     private fun switchRecordState(counterText : MutableState<String>, recordButtonText : MutableState<String>) {
         if (!isRecording) {
             // Set the timer
-            timer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
+            recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
                 counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / Companion.COUNT_DOWN_INTERVAL).toString()
             }
 
             //start recording
             recordButtonText.value = "Stop recording"
             // Start the timer
-            timer.start()
+            recordTimer.start()
             startRecording()
         } else {
             //stop recording
             // Stop the timer
-            timer.cancel()
+            recordTimer.cancel()
             // Set the recording time to 0
             counterText.value = "Recording saved!"
             recordButtonText.value = "Start recording"
@@ -238,11 +248,17 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
 
-    override fun onDestroy() {
-        if (this::mediaPlayer.isInitialized) {
-            mediaPlayer.stop()
-            mediaPlayer.release()
+    override fun onStop() {
+        try {
+            recordTimer.cancel()
+            metronomeTimer.cancel()
+            if (this::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
         }
-        super.onDestroy()
+        super.onStop()
     }
 }
