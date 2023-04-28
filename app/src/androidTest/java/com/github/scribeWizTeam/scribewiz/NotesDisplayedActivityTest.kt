@@ -75,7 +75,7 @@ class NotesDisplayedActivityTest {
         intent.putExtra("FILE", uriOfFile.toString())
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use{ scenario ->
-            Thread.sleep(10000) //Let time to the player to display the data
+            Thread.sleep(1000) //Let time to the player to display the data
             onView(withId(R.id.play_button)).perform(click())
             scenario.onActivity {
                 assertTrue(it.isPlaying(),"The player should be playing" )
