@@ -46,12 +46,10 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     private val audioSource = MediaRecorder.AudioSource.MIC
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-    private val bufferSize = AudioRecord.getMinBufferSize(Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
+    private val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
 
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var mediaPlayer: MediaPlayer//media player to play sound
-
-    private lateinit var timer: CountDownTimer //timer to show recording time
 
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
