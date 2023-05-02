@@ -159,16 +159,19 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
         Surface(modifier = Modifier
             .getTileModifier()
-            .clickable {
-                makeTheMusicBeDisplayed(name)
-            }
+//            .clickable {
+//                makeTheMusicBeDisplayed(name)
+//            }
             .pointerInput(Unit){
-                detectTapGestures(onLongPress = {
-                    val noteToRename = name
-                    renamingNoteName.value = name
-                    showRenameDialog.value = true
-
-                })
+                detectTapGestures(
+                    onLongPress = {
+                        val noteToRename = name
+                        renamingNoteName.value = name
+                        showRenameDialog.value = true
+                    },
+                    onTap = {
+                        makeTheMusicBeDisplayed(name)
+                    })
             }
         ) {
 
@@ -222,7 +225,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             },
             confirmButton = {
                 Button(onClick = { onRename(nameDisplayed.value) }) {
-                    Text(ql"Rename")
+                    Text("Rename")
                 }
             },
             dismissButton = {
