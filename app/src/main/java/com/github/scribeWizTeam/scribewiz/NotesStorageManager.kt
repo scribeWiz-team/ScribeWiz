@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 
 
@@ -74,7 +75,8 @@ class NotesStorageManager() {
 
         when (file) {
             is File -> fileHasBeenSuccessfullyRenamed = file.renameTo(File(storageFolder,"$newName.$MUSIC_XML_EXTENSION"))
-            else -> throw Exception("The file couldn't be found")
+            else -> {Log.e("errorTag","The file couldn't be loaded")
+                     throw Exception("The file couldn't be found")}
         }
 
         return fileHasBeenSuccessfullyRenamed

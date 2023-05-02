@@ -3,6 +3,7 @@ package com.github.scribeWizTeam.scribewiz.Fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +39,7 @@ import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.lang.IllegalStateException
 import kotlin.contracts.ExperimentalContracts
+import kotlin.math.log
 
 
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
@@ -73,9 +75,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         val hasSucceeded = notesStorageManager.renameFile(renamingNoteName.value, newName)
 
                         if(hasSucceeded) {
-                            val index = notesNames.indexOf(newName)
+                            val index = notesNames.indexOf(renamingNoteName.value)
                             notesNames[index] = newName
-                            showRenameDialog.value = false
+                            Log.i("tag","The name was correctly changed")
+
                         }
 
                         else Toast.makeText(this.context, "Couldn't rename the file", Toast.LENGTH_LONG).show()
@@ -224,7 +227,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 )
             },
             confirmButton = {
-                Button(onClick = { onRename(nameDisplayed.value) }) {
+                Button(onClick = {
+                    onRename(nameDisplayed.value.trim())
+                    onDismissRequest()
+                }) {
                     Text("Rename")
                 }
             },
