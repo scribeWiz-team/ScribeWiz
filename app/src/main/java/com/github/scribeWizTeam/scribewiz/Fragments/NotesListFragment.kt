@@ -29,6 +29,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,10 +47,14 @@ import kotlin.math.log
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private lateinit var notesStorageManager: NotesStorageManager
+    val dialogName = "Rename Note"
+    val contentDescriptionDialog = "New Name"
 
     constructor() : this(0) {
         // Default constructor
     }
+
+
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
@@ -216,14 +222,14 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         var nameDisplayed = remember{mutableStateOf(renamingNoteName.value)}
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Rename Note") },
+            title = { Text(dialogName) },
             text = {
                 OutlinedTextField(
                     value = nameDisplayed.value,
                     onValueChange = { nameInput -> nameDisplayed.value = nameInput },
                     label = { Text("New Name") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier =Modifier.fillMaxWidth().semantics { contentDescription = contentDescriptionDialog }
                 )
             },
             confirmButton = {
