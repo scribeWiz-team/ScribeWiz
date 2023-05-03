@@ -9,11 +9,12 @@ class Transcriber(val pitch_detector: PitchDetectorInterface,
     // for note_guesser, see NoteGuesser
     // for renderer, see MusicxmlBuilder
 
-    fun process_samples(samples: Signal){
+    fun process_samples(samples: Signal): Frequency?{
         // call this method with raw audio samples from the microphone
         // every `noteSamplingDelay` seconds
         val pitch = pitch_detector.detect_pitch(samples)
         note_guesser.add_sample(pitch)
+        return pitch
     }
 
     fun end_transcription(){

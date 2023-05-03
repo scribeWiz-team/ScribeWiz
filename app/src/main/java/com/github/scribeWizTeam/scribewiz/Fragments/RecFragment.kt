@@ -35,12 +35,15 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+import com.github.scribeWizTeam.scribewiz.transcription.*
+
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     companion object {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
+        private const val NOTE_SAMPLE_INTERVAL = 100L //number of milliseconds between two note guesses
     }
 
     private val audioSource = MediaRecorder.AudioSource.MIC
@@ -51,12 +54,16 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var mediaPlayer: MediaPlayer//media player to play sound
 
+    private lateinit var transcriber: Transcriber
+
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
     private var isRecording = false //boolean to check if recording is in progress
 
     private var metronomeIsPlaying = false
+    private var tempo: Long = 60L
 
+    private var processSamplesTimer = onTickTimer(1) {}
     private var recordTimer = onTickTimer(1) {}
     private var metronomeTimer = onTickTimer(1) {}
 
@@ -81,6 +88,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 val recordButtonText = remember { mutableStateOf("Start recording") }
                 val metronomeButtonText = remember { mutableStateOf("Start metronome") }
                 val tempoValue = remember { mutableStateOf("60") }
+                val debugValueText = remember { mutableStateOf("") }
 
                 Box(
                     modifier = Modifier
@@ -96,7 +104,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             textAlign = TextAlign.Center
                         )
                         PlayButton(recordButtonText) {
-                            switchRecordState(counterText, recordButtonText)
+                            switchRecordState(counterText, recordButtonText,
+                                              debugValueText)
                         }
                         PlayButton(metronomeButtonText) {
                             switchMetronomeState(metronomeButtonText, tempoValue)
@@ -109,6 +118,14 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 .padding(5.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             label = { Text(text = "Tempo") })
+                        // this is to display information when debugging
+                        // the signal processing
+                        Text(
+                            text = debugValueText.value,
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -151,7 +168,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             metronomeIsPlaying = false
             metronomeTimer.cancel()
         } else {
-            val tempo : Long = try {
+            tempo = try {
                tempoValue.value.toLong()
             } catch (_: java.lang.NumberFormatException) {
                 tempoValue.value = "60"
@@ -174,22 +191,33 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun switchRecordState(counterText : MutableState<String>, recordButtonText : MutableState<String>) {
+    private fun switchRecordState(counterText : MutableState<String>,
+                                  recordButtonText : MutableState<String>,
+                                  debugValueText : MutableState<String>) {
         if (!isRecording) {
             // Set the timer
             recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
                 counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / Companion.COUNT_DOWN_INTERVAL).toString()
             }
 
+            processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL){
+                val samples = ShortArray(bufferSize)
+                val bytesRead = audioRecorder.read(samples, 0, bufferSize)
+                val debugValue = transcriber.process_samples(samples)
+                debugValueText.value = debugValue.toString()
+            }
+
             //start recording
             recordButtonText.value = "Stop recording"
             // Start the timer
             recordTimer.start()
+            processSamplesTimer.start()
             startRecording()
         } else {
             //stop recording
             // Stop the timer
             recordTimer.cancel()
+            processSamplesTimer.cancel()
             // Set the recording time to 0
             counterText.value = "Recording saved!"
             recordButtonText.value = "Start recording"
@@ -208,6 +236,14 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder = AudioRecord(audioSource,
             Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
 
+        // Initialize the Transcriber
+        val pitch_detector = PitchDetector(Companion.SAMPLE_RATE_IN_HZ.toDouble())
+        val note_guesser = NoteGuesser(Companion.NOTE_SAMPLE_INTERVAL / 1000.0)
+        val score_name = "sample score"
+        val signature = Signature(0, 4, 4, tempo=tempo.toInt())
+        val renderer = MusicxmlBuilder(score_name, signature)
+        transcriber = Transcriber(pitch_detector, note_guesser, renderer)
+
         // Set the output file path
         outputFilePath = getOutputFilePath()
         outputFile = File(outputFilePath)
@@ -220,19 +256,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         val buffer = ByteArray(bufferSize)
         val outputStream = FileOutputStream(outputFile)
 
-        Thread(Runnable {
-            while (isRecording) {
-                val bytesRead = audioRecorder.read(buffer, 0, bufferSize)
-                if (bytesRead > 0) {
-                    try {
-                        outputStream.write(buffer, 0, bytesRead)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-            outputStream.close()
-        }).start()
     }
 
     // Method to stop recording
@@ -243,6 +266,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.release()
         // Set recording not in progress
         isRecording = false
+        // end the transcription
+        transcriber.end_transcription()
     }
 
 

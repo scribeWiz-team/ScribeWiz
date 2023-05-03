@@ -5,7 +5,7 @@ import kotlin.math.*
 // for pitch detection:
 // https://en.wikipedia.org/wiki/Pitch_detection_algorithm
 
-typealias Signal = List<Double>
+typealias Signal = ShortArray
 typealias Frequency = Double
 typealias Energy = Double
 
@@ -29,19 +29,21 @@ class PitchDetector(override val samplingFreq: Frequency): PitchDetectorInterfac
     }
 
     private fun autocorrelation(signal: Signal, lag: Int): Energy{
-        var energy = 0.0
+        var energy = 0
         for (i in 0 until signal.size - lag){
             energy += signal[i]*signal[i+lag]
         }
-        return energy
+        return energy.toDouble()
     }
 
     private fun square_sum(signal: Signal, lag: Int): Energy{
-        var energy = 0.0
+        var energy = 0
         for (i in 0 until signal.size - lag){
-            energy += signal[i].pow(2)+signal[i+lag].pow(2)
+            val i_square = signal[i]*signal[i]
+            val i_lag_square = signal[i+lag]*signal[i+lag]
+            energy += i_square + i_lag_square
         }
-        return energy
+        return energy.toDouble()
     }
 
     private fun normal_square_diff(signal: Signal, lag: Int): Energy{
