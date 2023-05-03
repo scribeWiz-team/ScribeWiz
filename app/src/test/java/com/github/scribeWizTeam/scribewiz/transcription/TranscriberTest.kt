@@ -58,7 +58,7 @@ class TranscriberTest {
 
     @Test
     fun transcriber_calls_processing_blocks_as_expected(){
-        val dummy_signal = listOf(2.0, 3.0)
+        val dummy_signal = Signal(2, { 3.0f })
         transcriber.process_samples(dummy_signal)
         assertEquals("2", transcriber.get_transcription())
         transcriber.process_samples(dummy_signal)

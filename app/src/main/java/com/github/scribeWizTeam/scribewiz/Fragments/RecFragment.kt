@@ -8,6 +8,7 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,9 @@ import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
+
+import kotlin.math.*
 
 import com.github.scribeWizTeam.scribewiz.transcription.*
 
@@ -44,12 +48,16 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
         private const val NOTE_SAMPLE_INTERVAL = 100L //number of milliseconds between two note guesses
+        //number of a samples used for each note guess
+        //this should be equal to SAMPLE_RATE_IN_HZ*NOTE_SAMPLE_INTERVAL/1000
+        private const val NOTE_SAMPLE_WINDOW_SIZE = 4410
+
     }
 
     private val audioSource = MediaRecorder.AudioSource.MIC
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-    private val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
+    private val bufferSize = 2*AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
 
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var mediaPlayer: MediaPlayer//media player to play sound
@@ -201,9 +209,19 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
 
             processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL){
-                val samples = ShortArray(bufferSize)
-                val bytesRead = audioRecorder.read(samples, 0, bufferSize)
+                val raw_samples = ShortArray(NOTE_SAMPLE_WINDOW_SIZE)
+                val bytesRead = audioRecorder.read(raw_samples, 0, NOTE_SAMPLE_WINDOW_SIZE)
+                val samples = Signal(NOTE_SAMPLE_WINDOW_SIZE)
+                var maxSample: Float = -100.0f
+                var minSample: Float = 100.0f
+                for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE){
+                    val sample: Float = raw_samples[i].toFloat() * (1.0f / 32768.0f)
+                    samples[i] = sample
+                    maxSample = max(maxSample, sample)
+                    minSample = min(minSample, sample)
+                }
                 val debugValue = transcriber.process_samples(samples)
+                Log.i("RecProcess", "Min : $minSample | Max : $maxSample | pitch: $debugValue")
                 debugValueText.value = debugValue.toString()
             }
 
@@ -252,10 +270,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.startRecording()
         isRecording = true
 
-        // Write the audio data to a file
-        val buffer = ByteArray(bufferSize)
-        val outputStream = FileOutputStream(outputFile)
-
     }
 
     // Method to stop recording
@@ -275,6 +289,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         try {
             recordTimer.cancel()
             metronomeTimer.cancel()
+            processSamplesTimer.cancel()
             if (this::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
                 mediaPlayer.release()
