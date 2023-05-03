@@ -93,7 +93,16 @@ class Editor {
                 )
             }
         }
+
+        // Function to help convert from Midi Ticks to MusicXML noteLocaction
+        fun convertTicksToNoteLocation(ticks: Int): Int {
+            return ticks / 24
+        }
+
     }
+
+
+
 
 
 }
