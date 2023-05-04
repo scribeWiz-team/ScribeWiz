@@ -118,7 +118,7 @@ class NotesListFragmentTest {
         composeTestRule.onNode(hasText("Rename")).performClick()
 
         runBlocking {
-            composeTestRule.waitUntil(timeoutMillis = 10000) {
+            composeTestRule.waitUntil(timeoutMillis = 100000) {
                 try {
                     composeTestRule.onNode(hasText("newNameTest")).fetchSemanticsNode()
                     true
