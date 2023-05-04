@@ -226,10 +226,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     samples[i] = raw_samples[i].toFloat() * (1.0f / 32768.0f)
                 }
                 val debugValue = transcriber.process_samples(samples)
-                // Log.i("RecProcess", "pitch: ${debugValue}")
                 debugValueText.value = debugValue.toString()
             }
-
             //start recording
             recordButtonText.value = "Stop recording"
             // Start the timer
@@ -247,7 +245,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             stopRecording()
         }
     }
-
 
     fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
@@ -295,7 +292,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         // end the transcription
         transcriber.end_transcription()
     }
-
 
     override fun onStop() {
         try {
