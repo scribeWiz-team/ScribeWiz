@@ -12,16 +12,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
-import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
-import com.github.scribeWizTeam.scribewiz.models.UserModel
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 import kotlin.contracts.ExperimentalContracts
 
 
@@ -46,17 +44,17 @@ class NotesListFragmentTest {
 
     private val expectedFiles = 'a'..'g'
 
-    //private val invalidFileName = "NOT_A_VALID_FILE"
+    private val invalidFileName = "NOT_A_VALID_FILE"
 
-    //private var notesDir = File("test")
+    private var notesDir = File("test")
 
-    private val db = Firebase.firestore
-
-    private val userDocRef = db.collection(UserModel.COLLECTION).document()
-
-    private val user = UserModel(userDocRef.id, "test user")
-
-    private val testNoteIds = mutableListOf<String>()
+//    private val db = Firebase.firestore
+//
+//    private val userDocRef = db.collection(UserModel.COLLECTION).document()
+//
+//    private val user = UserModel(userDocRef.id, "test user")
+//
+//    private val testNoteIds = mutableListOf<String>()
 
     @Before
     fun initialize() {
@@ -64,21 +62,21 @@ class NotesListFragmentTest {
         //notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
 
         for (name in expectedFiles) {
-            //File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
+            File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
 
-            val docRef = db.collection(MusicNoteModel.COLLECTION).document()
-
-            testNoteIds.add(docRef.id)
-
-            MusicNoteModel(docRef.id, name.toString()).updateInDB()
-
-            user.musicNoteList.add(docRef.id)
+//            val docRef = db.collection(MusicNoteModel.COLLECTION).document()
+//
+//            testNoteIds.add(docRef.id)
+//
+//            MusicNoteModel(docRef.id, name.toString()).updateInDB()
+//
+//            user.musicNoteList.add(docRef.id)
         }
 
-        user.registerAsCurrentUser(composeTestRule.activity)
-        user.updateInDB()
+//        user.registerAsCurrentUser(composeTestRule.activity)
+//        user.updateInDB()
 
-        //File(notesDir, invalidFileName).createNewFile()
+        File(notesDir, invalidFileName).createNewFile()
 
         FragmentScenario.launchInContainer(NotesListFragment::class.java)
     }
@@ -89,18 +87,6 @@ class NotesListFragmentTest {
             composeTestRule.onNodeWithText(title.toString()).assertExists()
         }
     }
-
-//    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
-//    @Test
-//    fun displayNotesWhenClickOnPlay() {
-//        Intents.init()
-//
-//        composeTestRule.onNode(hasText("a")).performClick()
-//
-//        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
-//
-//        Intents.release()
-//    }
 
     @Test
     fun dismissNoteDeleteCorrectly() {
@@ -116,21 +102,70 @@ class NotesListFragmentTest {
         }
     }
 
-//    @Test
-//    fun onlyMusicXMLFiles() {
-//        composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
-//    }
+    @Test
+    fun onlyMusicXMLFiles() {
+        composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
+    }
 
+    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
+    @Test
+    fun displayNotesWhenClickOnPlay() {
+        Intents.init()
+
+        composeTestRule.onNode(hasText("a")).performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
+    fun openDialogForChangingNameWhenLongClick() {
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithText(NotesListFragment().dialogName).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileIsModifiedToTheGoodValue() {
+
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithContentDescription("New Name").performTextClearance()
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
+        composeTestRule.onNode(hasText("Rename")).performClick()
+
+        runBlocking {
+            composeTestRule.waitUntil(timeoutMillis = 100000) {
+                try {
+                    composeTestRule.onNode(hasText("newNameTest")).fetchSemanticsNode()
+                    true
+                } catch (e: AssertionError) {
+                    false
+                }
+            }
+        }
+
+        composeTestRule.onNode(hasText("newNameTest")).assertIsDisplayed()
+    }
+
+    @Test
+    fun dialogGetCanceledCorrectly() {
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
+        composeTestRule.onNode(hasText("Cancel")).performClick()
+
+        composeTestRule.onNode(hasText("a")).assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
+
+    }
 
 
     @After
     fun removeTestFiles(){
-        //notesDir.deleteRecursively()
+        notesDir.deleteRecursively()
 
-        for (testNoteId in testNoteIds) {
-            db.collection(MusicNoteModel.COLLECTION).document(testNoteId).delete()
-        }
-
-        db.collection(UserModel.COLLECTION).document(user.id).delete()
+//        for (testNoteId in testNoteIds) {
+//            db.collection(MusicNoteModel.COLLECTION).document(testNoteId).delete()
+//        }
+//
+//        db.collection(UserModel.COLLECTION).document(user.id).delete()
     }
 }

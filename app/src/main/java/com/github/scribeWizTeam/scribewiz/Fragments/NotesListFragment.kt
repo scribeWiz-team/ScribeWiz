@@ -3,26 +3,33 @@ package com.github.scribeWizTeam.scribewiz.Fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +37,6 @@ import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
-import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.lang.IllegalStateException
@@ -40,10 +46,14 @@ import kotlin.contracts.ExperimentalContracts
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private lateinit var notesStorageManager: NotesStorageManager
+    val dialogName = "Rename Note"
+    val contentDescriptionDialog = "New Name"
 
     constructor() : this(0) {
         // Default constructor
     }
+
+
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
@@ -57,8 +67,26 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 ScribeWizTheme {
                     // A surface container using the 'background' color from the theme
 
-                    val notesNames = remember {
-                        MusicNoteModel.getAllNotesFromUser(UserModel.getCurrentUser(context)).toMutableStateList()
+                    val notesNames  = remember {
+                        notesStorageManager.getNotesNames().toMutableStateList()
+                    }
+
+                    // Add this state variable to control the visibility of the rename dialog
+                    val showRenameDialog = remember { mutableStateOf(false) }
+                    val renamingNoteName = remember { mutableStateOf("") }
+
+                    // Function to handle renaming
+                    fun handleRename(newName: String) {
+                        val hasSucceeded = notesStorageManager.renameFile(renamingNoteName.value, newName)
+
+                        if(hasSucceeded) {
+                            val index = notesNames.indexOf(renamingNoteName.value)
+                            notesNames[index] = newName
+                            Log.i("tag","The name was correctly changed")
+
+                        }
+
+                        else Toast.makeText(this.context, "Couldn't rename the file", Toast.LENGTH_LONG).show()
                     }
 
                     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -71,20 +99,19 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            items(notesNames, key={ note -> note.id }) { note ->
+                            items(notesNames, key={ note -> note }) { name ->
 
                                 val state = rememberDismissState(
                                     confirmStateChange = {
                                         if (it == DismissValue.DismissedToStart) {
-                                            notesStorageManager.deleteNote(note.name)
-                                            notesNames.remove(note)
+                                            notesStorageManager.deleteNote(name)
+                                            notesNames.remove(name)
                                         }
                                         true
                                     }
                                 )
-
                                 Row(verticalAlignment = CenterVertically) {
-                                    Button(onClick = { shareNoteToOtherUser(note.id) },
+                                    Button(onClick = { shareNoteToOtherUser(name) },
                                         modifier = Modifier
                                             .width(85.dp)
                                             .height(45.dp)
@@ -92,11 +119,26 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                             .padding(5.dp)) {
                                         Text(text = "share")
                                     }
-                                    SwipeToDismissNote(state, note.name)
+                                    SwipeToDismissNote(
+                                        state,
+                                        name,
+                                        showRenameDialog = showRenameDialog,
+                                        renamingNoteName = renamingNoteName,
+                                        onDelete = ::handleRename
+                                    )
                                 }
                             }
                         }
                     }
+
+                    if (showRenameDialog.value) {
+                        RenameDialog(
+                            renamingNoteName = renamingNoteName,
+                            onRename = { newName -> handleRename(newName) },
+                            onDismissRequest = { showRenameDialog.value = false }
+                        )
+                    }
+
                 }
             }
         }
@@ -104,7 +146,9 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun SwipeToDismissNote(state: DismissState, name: String) {
+    fun SwipeToDismissNote(state: DismissState, name: String, showRenameDialog : MutableState<Boolean>,
+                            renamingNoteName: MutableState<String>, onDelete: (String) -> Unit
+    ) {
         SwipeToDismiss(
             state = state,
             background = {
@@ -112,10 +156,12 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 ) {}
             },
             dismissContent = {
-                NoteTile(name = name)
+                NoteTile(name = name, showRenameDialog, renamingNoteName, onDelete)
             },
             directions = setOf(DismissDirection.EndToStart)
         )
+
+
     }
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
@@ -130,14 +176,26 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @Composable
-    fun NoteTile(name: String) {
+    fun NoteTile(name: String, showRenameDialog : MutableState<Boolean>, renamingNoteName: MutableState<String>,
+                 onDelete: (String) -> Unit) {
+
         Surface(modifier = Modifier
             .getTileModifier()
-            .clickable {
-                //commented out this part since it wouldn't make the app compile
-                //Indeed I would have had to add @experimentalContracts everywhere to support notesDisplayedActivity
-                makeTheMusicBeDisplayed(name)
-            }) {
+//            .clickable {
+//                makeTheMusicBeDisplayed(name)
+//            }
+            .pointerInput(Unit){
+                detectTapGestures(
+                    onLongPress = {
+                        val noteToRename = name
+                        renamingNoteName.value = name
+                        showRenameDialog.value = true
+                    },
+                    onTap = {
+                        makeTheMusicBeDisplayed(name)
+                    })
+            }
+        ) {
             Row {
                 Image(painter = painterResource(R.drawable.music_note),
                         modifier = Modifier
@@ -167,6 +225,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         startActivity(newNotesDisplayedActivity)
     }
 
+
     private fun shareNoteToOtherUser(noteId: String) {
         val curUser = UserModel.getCurrentUser(requireContext())
 
@@ -174,5 +233,40 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
         toUser.musicNoteList.add(noteId)
         toUser.updateInDB()
+    }
+
+    @Composable
+    fun RenameDialog(
+        renamingNoteName: MutableState<String>,
+        onRename: (String) -> Unit,
+        onDismissRequest: () -> Unit
+    ) {
+        val nameDisplayed = remember{mutableStateOf(renamingNoteName.value)}
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text(dialogName) },
+            text = {
+                OutlinedTextField(
+                    value = nameDisplayed.value,
+                    onValueChange = { nameInput -> nameDisplayed.value = nameInput },
+                    label = { Text("New Name") },
+                    singleLine = true,
+                    modifier =Modifier.fillMaxWidth().semantics { contentDescription = contentDescriptionDialog }
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onRename(nameDisplayed.value.trim())
+                    onDismissRequest()
+                }) {
+                    Text("Rename")
+                }
+            },
+            dismissButton = {
+                Button(onClick = onDismissRequest) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

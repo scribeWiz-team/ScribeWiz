@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 
 
@@ -62,5 +63,22 @@ class NotesStorageManager() {
      */
     fun clearFolder() {
         storageFolder.deleteRecursively()
+    }
+
+    /**
+     * Rename the file with oldName by newName
+     * Returns true if the renaming has succeeded
+     * */
+    fun renameFile(oldName: String, newName: String) : Boolean{
+        val file: File? = getNoteFile(oldName)
+        var fileHasBeenSuccessfullyRenamed = false
+
+        when (file) {
+            is File -> fileHasBeenSuccessfullyRenamed = file.renameTo(File(storageFolder,"$newName.$MUSIC_XML_EXTENSION"))
+            else -> {Log.e("errorTag","The file couldn't be loaded")
+                     throw Exception("The file couldn't be found")}
+        }
+
+        return fileHasBeenSuccessfullyRenamed
     }
 }
