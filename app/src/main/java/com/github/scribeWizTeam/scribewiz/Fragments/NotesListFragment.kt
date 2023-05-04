@@ -71,7 +71,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            items(notesNames, key={ note -> note }) { note ->
+                            items(notesNames, key={ note -> note.id }) { note ->
 
                                 val state = rememberDismissState(
                                     confirmStateChange = {

@@ -4,9 +4,12 @@ import android.content.Context
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 data class UserModel (
-    override var id: String,
+    override var id: String = "",
     var userName: String? = "null",
     var userNumRecordings: Int = 0,
     var friendsList: MutableSet<String> = mutableSetOf(),
@@ -43,13 +46,17 @@ data class UserModel (
 
             var user = UserModel(userId)
 
-            db.collection(MusicNoteModel.COLLECTION)
-                .document(userId)
-                .get()
-                .addOnSuccessListener { documentSnapshot ->
-                    val ret = documentSnapshot.toObject<UserModel>()
-                    if (ret != null) user = ret
+            runBlocking {
+                val job = launch {
+                    user = db.collection(MusicNoteModel.COLLECTION)
+                        .document(userId)
+                        .get()
+                        .await()
+                        .toObject<UserModel>() ?: UserModel(userId)
                 }
+                job.join()
+            }
+
             return user
         }
     }

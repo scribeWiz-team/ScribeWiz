@@ -55,8 +55,9 @@ class FirebaseUIActivity : ComponentActivity()  {
         val curUser = FirebaseAuth.getInstance().currentUser
         if(curUser != null) {
              val userData = UserModel(
-                 db.collection(UserModel.COLLECTION).document().id,
-                 curUser.displayName
+                 curUser.uid,
+                 curUser.displayName,
+                 musicNoteList = mutableSetOf("A84wPlG1DaRuyJZJ7B2f")
              )
 
             userData.registerAsCurrentUser(this)

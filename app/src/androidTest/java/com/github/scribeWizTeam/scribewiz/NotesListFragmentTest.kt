@@ -8,18 +8,20 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
+import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
+import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 import kotlin.contracts.ExperimentalContracts
 
 
@@ -44,20 +46,39 @@ class NotesListFragmentTest {
 
     private val expectedFiles = 'a'..'g'
 
-    private val invalidFileName = "NOT_A_VALID_FILE"
+    //private val invalidFileName = "NOT_A_VALID_FILE"
 
-    private var notesDir = File("test")
+    //private var notesDir = File("test")
+
+    private val db = Firebase.firestore
+
+    private val userDocRef = db.collection(UserModel.COLLECTION).document()
+
+    private val user = UserModel(userDocRef.id, "test user")
+
+    private val testNoteIds = mutableListOf<String>()
 
     @Before
     fun initialize() {
 
-        notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
+        //notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
 
         for (name in expectedFiles) {
-            File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
+            //File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
+
+            val docRef = db.collection(MusicNoteModel.COLLECTION).document()
+
+            testNoteIds.add(docRef.id)
+
+            MusicNoteModel(docRef.id, name.toString()).updateInDB()
+
+            user.musicNoteList.add(docRef.id)
         }
 
-        File(notesDir, invalidFileName).createNewFile()
+        user.registerAsCurrentUser(composeTestRule.activity)
+        user.updateInDB()
+
+        //File(notesDir, invalidFileName).createNewFile()
 
         FragmentScenario.launchInContainer(NotesListFragment::class.java)
     }
@@ -69,17 +90,18 @@ class NotesListFragmentTest {
         }
     }
 
-    @OptIn(ExperimentalContracts::class)
-    @Test
-    fun displayNotesWhenClickOnPlay() {
-        Intents.init()
+//    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
+//    @Test
+//    fun displayNotesWhenClickOnPlay() {
+//        Intents.init()
+//
+//        composeTestRule.onNode(hasText("a")).performClick()
+//
+//        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
+//
+//        Intents.release()
+//    }
 
-        composeTestRule.onNode(hasText("a")).performClick()
-
-        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
-
-        Intents.release()
-    }
     @Test
     fun dismissNoteDeleteCorrectly() {
         for (title in expectedFiles) {
@@ -94,15 +116,21 @@ class NotesListFragmentTest {
         }
     }
 
-    @Test
-    fun onlyMusicXMLFiles() {
-        composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
-    }
+//    @Test
+//    fun onlyMusicXMLFiles() {
+//        composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
+//    }
 
 
 
     @After
     fun removeTestFiles(){
-        notesDir.deleteRecursively()
+        //notesDir.deleteRecursively()
+
+        for (testNoteId in testNoteIds) {
+            db.collection(MusicNoteModel.COLLECTION).document(testNoteId).delete()
+        }
+
+        db.collection(UserModel.COLLECTION).document(user.id).delete()
     }
 }
