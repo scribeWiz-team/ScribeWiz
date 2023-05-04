@@ -114,7 +114,8 @@ class NotesListFragmentTest {
     fun fileIsModifiedToTheGoodValue() {
 
         composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
-        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
+        composeTestRule.onNodeWithContentDescription("New Name").performTextClearance()
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
         composeTestRule.onNode(hasText("Rename")).performClick()
 
         runBlocking {
@@ -134,7 +135,7 @@ class NotesListFragmentTest {
     @Test
     fun dialogGetCanceledCorrectly() {
         composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
-        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
         composeTestRule.onNode(hasText("Cancel")).performClick()
 
         composeTestRule.onNode(hasText("a")).assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
