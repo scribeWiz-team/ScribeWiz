@@ -21,10 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -33,12 +35,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.lang.IllegalStateException
 import kotlin.contracts.ExperimentalContracts
 
@@ -71,6 +77,9 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         notesStorageManager.getNotesNames().toMutableStateList()
                     }
 
+                    val showShareMenu = remember { mutableStateOf(false) }
+                    val sharedNoteName = remember { mutableStateOf("") }
+
                     // Add this state variable to control the visibility of the rename dialog
                     val showRenameDialog = remember { mutableStateOf(false) }
                     val renamingNoteName = remember { mutableStateOf("") }
@@ -90,6 +99,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     }
 
                     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        if(showShareMenu.value) {
+                            ShareMenu(sharedNoteName.value, showShareMenu)
+                        }
+
                         Text("All notes:",  fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier
                             .padding(15.dp)
                             .height(25.dp))
@@ -111,7 +124,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                     }
                                 )
                                 Row(verticalAlignment = CenterVertically) {
-                                    Button(onClick = { shareNoteToOtherUser(name) },
+                                    Button(onClick = {
+                                        showShareMenu.value = true
+                                        sharedNoteName.value = name
+                                    },
                                         modifier = Modifier
                                             .width(85.dp)
                                             .height(45.dp)
@@ -184,7 +200,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 //            .clickable {
 //                makeTheMusicBeDisplayed(name)
 //            }
-            .pointerInput(Unit){
+            .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
                         val noteToRename = name
@@ -225,14 +241,69 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         startActivity(newNotesDisplayedActivity)
     }
 
+    @Composable
+    private fun ShareMenu(noteName: String, showShareMenu: MutableState<Boolean>) {
+        Popup(
+            alignment = Alignment.Center,
+            onDismissRequest = { showShareMenu.value = false },
+        ) {
 
-    private fun shareNoteToOtherUser(noteId: String) {
+            val user = UserModel.getCurrentUser(requireContext())
+            val mExpanded = remember { mutableStateOf(true) }
+            val mSelectedText = remember { mutableStateOf("") }
+
+            Column(Modifier.padding(20.dp)) {
+
+                // Create an Outlined Text Field
+                // with icon and not expanded
+                Text(text = mSelectedText.value)
+//                Button(onClick = { mExpanded.value = mExpanded.value.not() }) {
+//
+//                }
+
+                DropdownMenu(
+                    expanded = mExpanded.value,
+                    onDismissRequest = { mExpanded.value = false },
+                    modifier = Modifier.align(CenterHorizontally)
+                ) {
+                    user.friendsList.forEach { id ->
+                        DropdownMenuItem(onClick = {
+                            mSelectedText.value = UserModel.getUser(id).userName
+                            mExpanded.value = false
+                        }) {
+                            Text(text = UserModel.getUser(id).userName)
+                        }
+                    }
+                }
+                Button(onClick = {
+                    showShareMenu.value = false
+                    shareNoteToOtherUser(noteName, mSelectedText.value)
+                }) {
+                    Text("share")
+                }
+            }
+        }
+    }
+
+    private fun shareNoteToOtherUser(noteName: String, userId: String) {
+
+        val docRef = Firebase.firestore.collection(MusicNoteModel.COLLECTION).document()
+        val musicNoteModel = MusicNoteModel(docRef.id, noteName)
+        musicNoteModel.updateInDB()
+
         val curUser = UserModel.getCurrentUser(requireContext())
 
-        val toUser = UserModel.getUser(curUser.friendsList.first())
+        if (!curUser.musicNoteList.contains(musicNoteModel.id)) {
+            curUser.musicNoteList.add(musicNoteModel.id)
+            curUser.updateInDB()
+        }
 
-        toUser.musicNoteList.add(noteId)
-        toUser.updateInDB()
+        val toUser = UserModel.getUser(userId)
+
+        if (!toUser.musicNoteList.contains(musicNoteModel.id)) {
+            toUser.musicNoteList.add(musicNoteModel.id)
+            toUser.updateInDB()
+        }
     }
 
     @Composable
@@ -251,7 +322,9 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     onValueChange = { nameInput -> nameDisplayed.value = nameInput },
                     label = { Text("New Name") },
                     singleLine = true,
-                    modifier =Modifier.fillMaxWidth().semantics { contentDescription = contentDescriptionDialog }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics { contentDescription = contentDescriptionDialog }
                 )
             },
             confirmButton = {

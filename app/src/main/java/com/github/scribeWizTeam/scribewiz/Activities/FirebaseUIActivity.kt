@@ -38,9 +38,6 @@ class FirebaseUIActivity : ComponentActivity()  {
         }
     }
 
-    // The main firebase database
-    private val db = Firebase.firestore
-
     private val user = FirebaseAuth.getInstance().currentUser
 
     private val signInLauncher = registerForActivityResult(
@@ -56,8 +53,9 @@ class FirebaseUIActivity : ComponentActivity()  {
         if(curUser != null) {
              val userData = UserModel(
                  curUser.uid,
-                 curUser.displayName,
-                 musicNoteList = mutableSetOf("A84wPlG1DaRuyJZJ7B2f")
+                 curUser.displayName ?: "new user",
+                 musicNoteList = mutableSetOf("A84wPlG1DaRuyJZJ7B2f"),
+                 friendsList = mutableSetOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
              )
 
             userData.registerAsCurrentUser(this)

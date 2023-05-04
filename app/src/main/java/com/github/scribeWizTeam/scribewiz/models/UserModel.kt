@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 
 data class UserModel (
     override var id: String = "",
-    var userName: String? = "null",
+    var userName: String = "null",
     var userNumRecordings: Int = 0,
     var friendsList: MutableSet<String> = mutableSetOf(),
     var musicNoteList: MutableSet<String> = mutableSetOf()
@@ -18,7 +18,7 @@ data class UserModel (
     companion object Controller {
         const val COLLECTION = "Users"
 
-        private const val USER_ID = "userId"
+        private const val USER_ID = "id"
         private const val USER_NAME = "userName"
         private const val USER_NUM_NOTES = "userNumRecordings"
         private const val FRIEND_LIST = "friendsList"
@@ -34,7 +34,7 @@ data class UserModel (
 
             return UserModel(
                 userId,
-                reader.getString(USER_NAME, ""),
+                reader.getString(USER_NAME, "") ?: "",
                 reader.getInt(USER_NUM_NOTES, 0),
                 reader.getStringSet(FRIEND_LIST, mutableSetOf()) ?: mutableSetOf(),
                 reader.getStringSet(NOTES_LIST, mutableSetOf()) ?: mutableSetOf()

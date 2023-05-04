@@ -48,33 +48,14 @@ class NotesListFragmentTest {
 
     private var notesDir = File("test")
 
-//    private val db = Firebase.firestore
-//
-//    private val userDocRef = db.collection(UserModel.COLLECTION).document()
-//
-//    private val user = UserModel(userDocRef.id, "test user")
-//
-//    private val testNoteIds = mutableListOf<String>()
-
     @Before
     fun initialize() {
 
-        //notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
+        notesDir = composeTestRule.activity.getExternalFilesDir(NOTES_FOLDER)?.absoluteFile!!
 
         for (name in expectedFiles) {
             File(notesDir, "$name.$MUSIC_XML_EXTENSION").createNewFile()
-
-//            val docRef = db.collection(MusicNoteModel.COLLECTION).document()
-//
-//            testNoteIds.add(docRef.id)
-//
-//            MusicNoteModel(docRef.id, name.toString()).updateInDB()
-//
-//            user.musicNoteList.add(docRef.id)
         }
-
-//        user.registerAsCurrentUser(composeTestRule.activity)
-//        user.updateInDB()
 
         File(notesDir, invalidFileName).createNewFile()
 
@@ -161,11 +142,5 @@ class NotesListFragmentTest {
     @After
     fun removeTestFiles(){
         notesDir.deleteRecursively()
-
-//        for (testNoteId in testNoteIds) {
-//            db.collection(MusicNoteModel.COLLECTION).document(testNoteId).delete()
-//        }
-//
-//        db.collection(UserModel.COLLECTION).document(user.id).delete()
     }
 }
