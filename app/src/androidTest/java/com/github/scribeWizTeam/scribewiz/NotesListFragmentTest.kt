@@ -114,7 +114,7 @@ class NotesListFragmentTest {
     fun fileIsModifiedToTheGoodValue() {
 
         composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
-        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
         composeTestRule.onNode(hasText("Rename")).performClick()
 
         runBlocking {
