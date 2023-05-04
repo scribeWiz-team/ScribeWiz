@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -29,6 +30,8 @@ import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
+import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.lang.IllegalStateException
 import kotlin.contracts.ExperimentalContracts
@@ -55,7 +58,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     // A surface container using the 'background' color from the theme
 
                     val notesNames = remember {
-                        notesStorageManager.getNotesNames().toMutableStateList()
+                        MusicNoteModel.getAllNotesFromUser(UserModel.getCurrentUser(context)).toMutableStateList()
                     }
 
                     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -68,19 +71,29 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            items(notesNames, key={ name -> name }) { name ->
+                            items(notesNames, key={ note -> note }) { note ->
 
                                 val state = rememberDismissState(
                                     confirmStateChange = {
                                         if (it == DismissValue.DismissedToStart) {
-                                            notesStorageManager.deleteNote(name)
-                                            notesNames.remove(name)
+                                            notesStorageManager.deleteNote(note.name)
+                                            notesNames.remove(note)
                                         }
                                         true
                                     }
                                 )
 
-                                SwipeToDismissNote(state, name)
+                                Row(verticalAlignment = CenterVertically) {
+                                    Button(onClick = { shareNoteToOtherUser(note.id) },
+                                        modifier = Modifier
+                                            .width(85.dp)
+                                            .height(45.dp)
+                                            .background(Color.White, CircleShape)
+                                            .padding(5.dp)) {
+                                        Text(text = "share")
+                                    }
+                                    SwipeToDismissNote(state, note.name)
+                                }
                             }
                         }
                     }
@@ -111,28 +124,29 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             .padding(0.dp, 5.dp)
             .border(1.dp, borderColor, CircleShape)
             .background(color, CircleShape)
-            .width(300.dp)
+            .width(280.dp)
             .height(50.dp)
             .padding(10.dp, 5.dp)
     }
 
     @Composable
     fun NoteTile(name: String) {
-        Surface(modifier =  Modifier.getTileModifier()
-                .clickable {
-                    //commented out this part since it wouldn't make the app compile
-                    //Indeed I would have had to add @experimentalContracts everywhere to support notesDisplayedActivity
-                    makeTheMusicBeDisplayed(name)
-                }) {
+        Surface(modifier = Modifier
+            .getTileModifier()
+            .clickable {
+                //commented out this part since it wouldn't make the app compile
+                //Indeed I would have had to add @experimentalContracts everywhere to support notesDisplayedActivity
+                makeTheMusicBeDisplayed(name)
+            }) {
             Row {
                 Image(painter = painterResource(R.drawable.music_note),
                         modifier = Modifier
-                                .height(20.dp)
-                                .align(Alignment.CenterVertically),
+                            .height(20.dp)
+                            .align(CenterVertically),
                         contentDescription = "music_file")
                 Text(text = name, modifier = Modifier
-                        .padding(10.dp)
-                        .width(220.dp))
+                    .padding(10.dp)
+                    .width(220.dp))
             }
         }
     }
@@ -151,5 +165,14 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
         newNotesDisplayedActivity.putExtra("FILE", stringUri)
         startActivity(newNotesDisplayedActivity)
+    }
+
+    private fun shareNoteToOtherUser(noteId: String) {
+        val curUser = UserModel.getCurrentUser(requireContext())
+
+        val toUser = UserModel.getUser(curUser.friendsList.first())
+
+        toUser.musicNoteList.add(noteId)
+        toUser.updateInDB()
     }
 }
