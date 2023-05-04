@@ -14,7 +14,10 @@ import android.widget.Toast
 import java.io.ByteArrayOutputStream
 import kotlin.contracts.ExperimentalContracts
 import androidx.lifecycle.ViewModelProvider
+import com.github.scribeWizTeam.scribewiz.Util.Editor
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.File
+import java.io.FileOutputStream
 
 
 //This activity displays dynamically the notes of a passed MusicXML file
@@ -25,7 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class NotesDisplayedActivity : AppCompatActivity() {
 
     private lateinit var _alphaTabView: AlphaTabView
-    private lateinit var _viewModel: ViewScoreViewModel
+    lateinit var _viewModel: ViewScoreViewModel
     val fileKey : String = "FILE"
     var exceptionCaught: Boolean = false //Used in the unit tests to make sure the exception was handled
 
@@ -135,4 +138,52 @@ class NotesDisplayedActivity : AppCompatActivity() {
             shouldSetPosition = false
         }
     }
+
+    // This function is used to edit the note at the current tick position.
+    // It takes in the filePassed parameter which is a URI string pointing to the input musicXML file
+    // and the newNote parameter which is the note to replace the existing note with.
+    public fun editNote(filePassed: String, newNote: String): File {
+
+        // Convert the filePassed URI string to a file and create a temporary file to store the modified musicXML
+        val inputFileUri = Uri.parse(filePassed)
+        val inputFile = Companion.createTempFileFromUri(this, inputFileUri)
+        val outputFile = File.createTempFile("temp_musicxml_modified", ".xml", cacheDir)
+
+        // Get the current tick position and convert it to a note location in the input musicXML file
+        val tickPosition = _viewModel.currentTickPosition.value
+        val noteLocation = Editor.convertTicksToNoteLocation(inputFile, tickPosition!!)
+
+        // Edit the note in the input musicXML file and write the modified content to the output file
+        Editor.editNoteInMusicXML(outputFile, inputFile, noteLocation, newNote)
+
+        // Delete the input file since it's no longer needed and uses up storage space
+        inputFile.delete()
+
+        // Open the modified musicXML file in the app (refreshes the view)
+        openFile(Uri.fromFile(outputFile))
+
+        // Return the output file
+        return outputFile
+    }
+
+    companion object {
+        // A helper function that creates a temporary file from a content URI
+        fun createTempFileFromUri(notesDisplayedActivity: NotesDisplayedActivity, uri: Uri): File {
+            // Create a temporary file with a prefix "temp_musicxml" and a suffix ".xml" in the cache directory of the activity
+            val tempFile = File.createTempFile("temp_musicxml", ".xml", notesDisplayedActivity.cacheDir)
+
+            // Open an input stream for the content URI
+            notesDisplayedActivity.contentResolver.openInputStream(uri)?.use { inputStream ->
+                // Copy the input stream to the temporary file using a FileOutputStream
+                FileOutputStream(tempFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+
+            // Return the temporary file
+            return tempFile
+        }
+    }
+
+
 }
