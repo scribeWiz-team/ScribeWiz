@@ -47,10 +47,9 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
-        private const val NOTE_SAMPLE_INTERVAL = 100L //number of milliseconds between two note guesses
+        private const val NOTE_SAMPLE_INTERVAL = 80L //number of milliseconds between two note guesses
         //number of a samples used for each note guess
-        //this should be equal to SAMPLE_RATE_IN_HZ*NOTE_SAMPLE_INTERVAL/1000
-        private const val NOTE_SAMPLE_WINDOW_SIZE = 4410
+        private const val NOTE_SAMPLE_WINDOW_SIZE = (SAMPLE_RATE_IN_HZ*NOTE_SAMPLE_INTERVAL/1000).toInt()
 
     }
 
@@ -96,6 +95,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 val recordButtonText = remember { mutableStateOf("Start recording") }
                 val metronomeButtonText = remember { mutableStateOf("Start metronome") }
                 val tempoValue = remember { mutableStateOf("60") }
+                val thresholdValue = remember { mutableStateOf("0.95") }
                 val debugValueText = remember { mutableStateOf("") }
 
                 Box(
@@ -113,7 +113,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         )
                         PlayButton(recordButtonText) {
                             switchRecordState(counterText, recordButtonText,
-                                              debugValueText)
+                                              debugValueText, thresholdValue)
                         }
                         PlayButton(metronomeButtonText) {
                             switchMetronomeState(metronomeButtonText, tempoValue)
@@ -128,6 +128,14 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             label = { Text(text = "Tempo") })
                         // this is to display information when debugging
                         // the signal processing
+                        OutlinedTextField(thresholdValue.value,
+                            { thresholdValue.value = it },
+                            modifier = Modifier
+                                .height(70.dp)
+                                .width(190.dp)
+                                .padding(5.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            label = { Text(text = "Threshold") })
                         Text(
                             text = debugValueText.value,
                             fontSize = 24.sp,
@@ -183,6 +191,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 60L
             }
 
+
             metronomeTimer = onTickTimer(1000 * 60 / tempo) {
                 if (this::mediaPlayer.isInitialized) {
                     if (mediaPlayer.isPlaying) {
@@ -201,7 +210,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     private fun switchRecordState(counterText : MutableState<String>,
                                   recordButtonText : MutableState<String>,
-                                  debugValueText : MutableState<String>) {
+                                  debugValueText : MutableState<String>,
+                                  thresholdValue : MutableState<String>) {
         if (!isRecording) {
             // Set the timer
             recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
@@ -212,16 +222,11 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 val raw_samples = ShortArray(NOTE_SAMPLE_WINDOW_SIZE)
                 val bytesRead = audioRecorder.read(raw_samples, 0, NOTE_SAMPLE_WINDOW_SIZE)
                 val samples = Signal(NOTE_SAMPLE_WINDOW_SIZE)
-                var maxSample: Float = -100.0f
-                var minSample: Float = 100.0f
                 for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE){
-                    val sample: Float = raw_samples[i].toFloat() * (1.0f / 32768.0f)
-                    samples[i] = sample
-                    maxSample = max(maxSample, sample)
-                    minSample = min(minSample, sample)
+                    samples[i] = raw_samples[i].toFloat() * (1.0f / 32768.0f)
                 }
                 val debugValue = transcriber.process_samples(samples)
-                Log.i("RecProcess", "Min : $minSample | Max : $maxSample | pitch: $debugValue")
+                // Log.i("RecProcess", "pitch: ${debugValue}")
                 debugValueText.value = debugValue.toString()
             }
 
@@ -230,7 +235,7 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             // Start the timer
             recordTimer.start()
             processSamplesTimer.start()
-            startRecording()
+            startRecording(thresholdValue)
         } else {
             //stop recording
             // Stop the timer
@@ -249,13 +254,20 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
-    private fun startRecording() {
+    private fun startRecording(thresholdValue: MutableState<String>) {
         // Initialize the AudioRecord
         audioRecorder = AudioRecord(audioSource,
             Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
 
+        val threshold = try {
+           thresholdValue.value.toDouble()
+        } catch (_: java.lang.NumberFormatException) {
+            thresholdValue.value = "0.95"
+            0.95
+        }
         // Initialize the Transcriber
-        val pitch_detector = PitchDetector(Companion.SAMPLE_RATE_IN_HZ.toDouble())
+        val pitch_detector = PitchDetector(Companion.SAMPLE_RATE_IN_HZ.toDouble(),
+                                           threshold)
         val note_guesser = NoteGuesser(Companion.NOTE_SAMPLE_INTERVAL / 1000.0)
         val score_name = "sample score"
         val signature = Signature(0, 4, 4, tempo=tempo.toInt())

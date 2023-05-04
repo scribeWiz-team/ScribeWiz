@@ -21,8 +21,9 @@ class TranscriberTest {
         override val sampleDelay = 1.0
         override var notes: List<MidiNote> = listOf()
 
-        override fun add_sample(pitchFreq: Double?){
+        override fun add_sample(pitchFreq: Double?): Int{
             notes += MidiNote(2, 0.0, 1.0)
+            return 0
         }
 
         override fun end_guessing(){

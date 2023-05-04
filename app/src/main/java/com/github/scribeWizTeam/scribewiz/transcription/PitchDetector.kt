@@ -16,9 +16,14 @@ interface PitchDetectorInterface {
     fun detect_pitch(signal: Signal): Frequency?
 }
 
-class PitchDetector(override val samplingFreq: Frequency): PitchDetectorInterface {
+class PitchDetector(override val samplingFreq: Frequency,
+                    val corrThreshold: Double=1.0): PitchDetectorInterface {
     // samplingFreq: the sampling frequency of the microphone
     //               a typical value is 44000.0 Hz
+    companion object {
+        private const val MIN_FREQ = 50.0 // lowest detectable frequency
+        private const val MAX_FREQ = 2000.0 // highest detectable frequency
+    }
 
     init {
         if (samplingFreq <= 0){
@@ -62,8 +67,8 @@ class PitchDetector(override val samplingFreq: Frequency): PitchDetectorInterfac
     }
 
     override fun detect_pitch(signal: Signal): Frequency? {
-        val highLag = freq_to_lag(50.0)
-        val lowLag = freq_to_lag(4000.0)
+        val highLag = freq_to_lag(MIN_FREQ)
+        val lowLag = freq_to_lag(MAX_FREQ)
         var bestCorr = -1.0
         var bestLag : Int? = null
         var candidateMax : List<Pair<Int, Energy>> = emptyList()
@@ -86,7 +91,6 @@ class PitchDetector(override val samplingFreq: Frequency): PitchDetectorInterfac
             return null
         }
         val (lagOfMax, maxCorr) = candidateMax.maxBy { it.second }
-        val corrThreshold = 1.0
         val fundamental = candidateMax.find { it.second >= corrThreshold }
         if (fundamental == null){
             return null
