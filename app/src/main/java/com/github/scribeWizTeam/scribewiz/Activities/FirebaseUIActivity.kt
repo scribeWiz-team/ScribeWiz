@@ -4,7 +4,6 @@ package com.github.scribeWizTeam.scribewiz
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -18,8 +17,8 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -40,7 +39,7 @@ class FirebaseUIActivity : ComponentActivity()  {
     }
 
     // The main firebase database
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
 
     private val user = FirebaseAuth.getInstance().currentUser
 
@@ -55,20 +54,14 @@ class FirebaseUIActivity : ComponentActivity()  {
         // User needs to be refreshed for the code to detect the change
         val curUser = FirebaseAuth.getInstance().currentUser
         if(curUser != null) {
-             val userData = hashMapOf(
-                "userName" to curUser.displayName,
-                "userNumRecordings" to 99,
-                "friends" to ""
-             )
+            val userData = UserModel(
+                curUser.uid,
+                curUser.displayName
+            )
 
-            db.collection("Users").document(curUser.uid).set(
-            userData, SetOptions.merge())
-                .addOnSuccessListener {
-                    Log.d("SETTINGUPDB", "ADDED USER")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("SETTINGUPDB", "Error adding user", e)
-                }
+            userData.registerAsCurrentUser(this)
+
+            userData.updateInDB()
         }
     }
     private fun createSignInIntent() {
@@ -146,7 +139,9 @@ class FirebaseUIActivity : ComponentActivity()  {
     fun LoginPage() {
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -189,11 +184,10 @@ class FirebaseUIActivity : ComponentActivity()  {
                 onClick = {
                     val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
                     startActivity(goHome)
-                          },
+                },
             ) {
                 Text("Home")
             }
-
         }
     }
 }
