@@ -289,7 +289,6 @@ class EditorTest {
     }
 
 
-
     private fun getNotes(xmlContent: String): List<String> {
         val notePattern = "<note>.*?</note>".toRegex()
         return notePattern.findAll(xmlContent).map { it.value }.toList()

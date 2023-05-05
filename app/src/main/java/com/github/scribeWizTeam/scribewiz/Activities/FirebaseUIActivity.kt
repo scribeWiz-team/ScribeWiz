@@ -19,8 +19,6 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 class FirebaseUIActivity : ComponentActivity()  {
@@ -55,7 +53,7 @@ class FirebaseUIActivity : ComponentActivity()  {
                  curUser.uid,
                  curUser.displayName ?: "new user",
                  musicNoteList = mutableSetOf("A84wPlG1DaRuyJZJ7B2f"),
-                 friendsList = mutableSetOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
+                 friendsList = mutableMapOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2" to "John Doe")
              )
 
             userData.registerAsCurrentUser(this)
@@ -183,7 +181,7 @@ class FirebaseUIActivity : ComponentActivity()  {
                 onClick = {
                     val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
                     startActivity(goHome)
-                          },
+                },
             ) {
                 Text("Home")
             }

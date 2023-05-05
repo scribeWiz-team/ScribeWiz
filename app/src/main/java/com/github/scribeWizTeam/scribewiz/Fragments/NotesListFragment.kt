@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -250,13 +249,14 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
             val user = UserModel.getCurrentUser(requireContext())
             val mExpanded = remember { mutableStateOf(true) }
-            val mSelectedText = remember { mutableStateOf("") }
+            val mSelectedName = remember { mutableStateOf("") }
+            val mSelectedID = remember { mutableStateOf("") }
 
             Column(Modifier.padding(20.dp)) {
 
                 // Create an Outlined Text Field
                 // with icon and not expanded
-                Text(text = mSelectedText.value)
+                Text(text = mSelectedName.value)
 //                Button(onClick = { mExpanded.value = mExpanded.value.not() }) {
 //
 //                }
@@ -266,18 +266,19 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     onDismissRequest = { mExpanded.value = false },
                     modifier = Modifier.align(CenterHorizontally)
                 ) {
-                    user.friendsList.forEach { id ->
+                    user.friendsList.forEach { (id, name) ->
                         DropdownMenuItem(onClick = {
-                            mSelectedText.value = UserModel.getUser(id).userName
+                            mSelectedName.value = name
+                            mSelectedID.value = id
                             mExpanded.value = false
                         }) {
-                            Text(text = UserModel.getUser(id).userName)
+                            Text(text = name)
                         }
                     }
                 }
                 Button(onClick = {
                     showShareMenu.value = false
-                    shareNoteToOtherUser(noteName, mSelectedText.value)
+                    shareNoteToOtherUser(noteName, mSelectedID.value)
                 }) {
                     Text("share")
                 }

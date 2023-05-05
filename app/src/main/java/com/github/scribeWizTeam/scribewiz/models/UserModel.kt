@@ -12,8 +12,10 @@ data class UserModel (
     override var id: String = "",
     var userName: String = "null",
     var userNumRecordings: Int = 0,
-    var friendsList: MutableSet<String> = mutableSetOf(),
-    var musicNoteList: MutableSet<String> = mutableSetOf()
+    var friendsList: MutableMap<String, String> = mutableMapOf(),
+    var musicNoteList: MutableSet<String> = mutableSetOf(),
+    var friendRequests: MutableMap<String, String> = mutableMapOf()
+
 ) : Model {
     companion object Controller {
         const val COLLECTION = "Users"
@@ -23,6 +25,7 @@ data class UserModel (
         private const val USER_NUM_NOTES = "userNumRecordings"
         private const val FRIEND_LIST = "friendsList"
         private const val NOTES_LIST = "musicNoteList"
+        private const val FRIEND_REQUESTS = "friendRequests"
 
         fun getCurrentUser(context: Context) : UserModel {
             val reader = context.getSharedPreferences(
@@ -32,13 +35,7 @@ data class UserModel (
             val userId = reader.getString(USER_ID, "") ?: throw Exception("Invalid user registered")
             if (userId.isEmpty()) throw Exception("Invalid user registered")
 
-            return UserModel(
-                userId,
-                reader.getString(USER_NAME, "") ?: "",
-                reader.getInt(USER_NUM_NOTES, 0),
-                reader.getStringSet(FRIEND_LIST, mutableSetOf()) ?: mutableSetOf(),
-                reader.getStringSet(NOTES_LIST, mutableSetOf()) ?: mutableSetOf()
-            )
+            return getUser(userId)
         }
 
         fun getUser(userId: String) : UserModel {
@@ -66,8 +63,9 @@ data class UserModel (
             USER_ID to id,
             USER_NAME to userName,
             USER_NUM_NOTES to userNumRecordings,
-            FRIEND_LIST to friendsList.toString(),
-            NOTES_LIST to musicNoteList.toString()
+            FRIEND_LIST to friendsList,
+            NOTES_LIST to musicNoteList.toString(),
+            FRIEND_REQUESTS to friendRequests
         )
     }
 
@@ -75,12 +73,7 @@ data class UserModel (
         val editor = context.getSharedPreferences(
             "LOGGED_USER", Context.MODE_PRIVATE
         ).edit()
-
         editor.putString(USER_ID, id)
-        editor.putString(USER_NAME, userName)
-        editor.putInt(USER_NUM_NOTES, userNumRecordings)
-        editor.putStringSet(FRIEND_LIST, friendsList)
-        editor.putStringSet(NOTES_LIST, musicNoteList)
         editor.apply()
     }
 
