@@ -8,6 +8,7 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,11 @@ import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
+
+import kotlin.math.*
+
+import com.github.scribeWizTeam.scribewiz.transcription.*
 
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
@@ -41,22 +47,30 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
+        private const val NOTE_SAMPLE_INTERVAL = 80L //number of milliseconds between two note guesses
+        //number of a samples used for each note guess
+        private const val NOTE_SAMPLE_WINDOW_SIZE = (SAMPLE_RATE_IN_HZ*NOTE_SAMPLE_INTERVAL/1000).toInt()
+
     }
 
     private val audioSource = MediaRecorder.AudioSource.MIC
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-    private val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
+    private val bufferSize = 2*AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
 
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var mediaPlayer: MediaPlayer//media player to play sound
+
+    private lateinit var transcriber: Transcriber
 
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
     private var isRecording = false //boolean to check if recording is in progress
 
     private var metronomeIsPlaying = false
+    private var tempo: Long = 60L
 
+    private var processSamplesTimer = onTickTimer(1) {}
     private var recordTimer = onTickTimer(1) {}
     private var metronomeTimer = onTickTimer(1) {}
 
@@ -81,6 +95,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 val recordButtonText = remember { mutableStateOf("Start recording") }
                 val metronomeButtonText = remember { mutableStateOf("Start metronome") }
                 val tempoValue = remember { mutableStateOf("60") }
+                val thresholdValue = remember { mutableStateOf("0.95") }
+                val debugValueText = remember { mutableStateOf("") }
 
                 Box(
                     modifier = Modifier
@@ -96,7 +112,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             textAlign = TextAlign.Center
                         )
                         PlayButton(recordButtonText) {
-                            switchRecordState(counterText, recordButtonText)
+                            switchRecordState(counterText, recordButtonText,
+                                              debugValueText, thresholdValue)
                         }
                         PlayButton(metronomeButtonText) {
                             switchMetronomeState(metronomeButtonText, tempoValue)
@@ -109,6 +126,22 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 .padding(5.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             label = { Text(text = "Tempo") })
+                        // this is to display information when debugging
+                        // the signal processing
+                        OutlinedTextField(thresholdValue.value,
+                            { thresholdValue.value = it },
+                            modifier = Modifier
+                                .height(70.dp)
+                                .width(190.dp)
+                                .padding(5.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            label = { Text(text = "Threshold") })
+                        Text(
+                            text = debugValueText.value,
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -151,12 +184,13 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             metronomeIsPlaying = false
             metronomeTimer.cancel()
         } else {
-            val tempo : Long = try {
+            tempo = try {
                tempoValue.value.toLong()
             } catch (_: java.lang.NumberFormatException) {
                 tempoValue.value = "60"
                 60L
             }
+
 
             metronomeTimer = onTickTimer(1000 * 60 / tempo) {
                 if (this::mediaPlayer.isInitialized) {
@@ -174,22 +208,37 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun switchRecordState(counterText : MutableState<String>, recordButtonText : MutableState<String>) {
+    private fun switchRecordState(counterText : MutableState<String>,
+                                  recordButtonText : MutableState<String>,
+                                  debugValueText : MutableState<String>,
+                                  thresholdValue : MutableState<String>) {
         if (!isRecording) {
             // Set the timer
             recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
                 counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / Companion.COUNT_DOWN_INTERVAL).toString()
             }
 
+            processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL){
+                val raw_samples = ShortArray(NOTE_SAMPLE_WINDOW_SIZE)
+                val bytesRead = audioRecorder.read(raw_samples, 0, NOTE_SAMPLE_WINDOW_SIZE)
+                val samples = Signal(NOTE_SAMPLE_WINDOW_SIZE)
+                for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE){
+                    samples[i] = raw_samples[i].toFloat() * (1.0f / 32768.0f)
+                }
+                val debugValue = transcriber.process_samples(samples)
+                debugValueText.value = debugValue.toString()
+            }
             //start recording
             recordButtonText.value = "Stop recording"
             // Start the timer
             recordTimer.start()
-            startRecording()
+            processSamplesTimer.start()
+            startRecording(thresholdValue)
         } else {
             //stop recording
             // Stop the timer
             recordTimer.cancel()
+            processSamplesTimer.cancel()
             // Set the recording time to 0
             counterText.value = "Recording saved!"
             recordButtonText.value = "Start recording"
@@ -197,16 +246,30 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-
     fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
     }
 
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
-    private fun startRecording() {
+    private fun startRecording(thresholdValue: MutableState<String>) {
         // Initialize the AudioRecord
         audioRecorder = AudioRecord(audioSource,
             Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
+
+        val threshold = try {
+           thresholdValue.value.toDouble()
+        } catch (_: java.lang.NumberFormatException) {
+            thresholdValue.value = "0.95"
+            0.95
+        }
+        // Initialize the Transcriber
+        val pitch_detector = PitchDetector(Companion.SAMPLE_RATE_IN_HZ.toDouble(),
+                                           threshold)
+        val note_guesser = NoteGuesser(Companion.NOTE_SAMPLE_INTERVAL / 1000.0)
+        val score_name = "sample score"
+        val signature = Signature(0, 4, 4, tempo=tempo.toInt())
+        val renderer = MusicxmlBuilder(score_name, signature)
+        transcriber = Transcriber(pitch_detector, note_guesser, renderer)
 
         // Set the output file path
         outputFilePath = getOutputFilePath()
@@ -216,23 +279,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.startRecording()
         isRecording = true
 
-        // Write the audio data to a file
-        val buffer = ByteArray(bufferSize)
-        val outputStream = FileOutputStream(outputFile)
-
-        Thread(Runnable {
-            while (isRecording) {
-                val bytesRead = audioRecorder.read(buffer, 0, bufferSize)
-                if (bytesRead > 0) {
-                    try {
-                        outputStream.write(buffer, 0, bytesRead)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-            outputStream.close()
-        }).start()
     }
 
     // Method to stop recording
@@ -243,13 +289,15 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.release()
         // Set recording not in progress
         isRecording = false
+        // end the transcription
+        transcriber.end_transcription()
     }
-
 
     override fun onStop() {
         try {
             recordTimer.cancel()
             metronomeTimer.cancel()
+            processSamplesTimer.cancel()
             if (this::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
                 mediaPlayer.release()

@@ -14,7 +14,7 @@ interface NoteGuesserInterface {
     val sampleDelay: Double
     var notes: List<MidiNote>
 
-    fun add_sample(pitchFreq: Double?)
+    fun add_sample(pitchFreq: Double?): Int
 
     fun end_guessing()
 }
@@ -35,14 +35,16 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
     private var time: Double = 0.0
     private var currentNote: MidiNote = MidiNote(SILENT_PITCH, 0.0, 0.0)
 
-    override fun add_sample(pitchFreq: Double?){
+    override fun add_sample(pitchFreq: Double?): Int {
         val midiPitch = compute_midi_pitch(pitchFreq)
         if (midiPitch != currentNote.pitch){
             push_current_note()
             currentNote = MidiNote(midiPitch, time, time+sampleDelay)
+        } else {
+            currentNote = MidiNote(currentNote.pitch, currentNote.startTime, time+sampleDelay)
         }
-        currentNote = MidiNote(currentNote.pitch, currentNote.startTime, time+sampleDelay)
         time += sampleDelay
+        return currentNote.pitch
     }
 
     override fun end_guessing(){
