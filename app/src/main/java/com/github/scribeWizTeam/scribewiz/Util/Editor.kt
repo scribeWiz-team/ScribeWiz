@@ -93,7 +93,75 @@ class Editor {
                 )
             }
         }
+        /**
+         * Function to help convert from Midi Ticks to MusicXML note location.
+         *
+         * @param inputFile the input MusicXML file
+         * @param ticks the midi ticks
+         *
+         * @return the corresponding note location in MusicXML
+         */
+        fun convertTicksToNoteLocation(inputFile: File, ticks: Int): Int {
+            // Create a new instance of XmlPullParserFactory and XmlPullParser
+            val parserFactory = XmlPullParserFactory.newInstance()
+            val parser = parserFactory.newPullParser()
+
+            // Create an input stream for the input file and set it as the input for the parser
+            val inputStream = FileInputStream(inputFile)
+            parser.setInput(inputStream, null)
+
+            // Initialize variables
+            var eventType = parser.eventType
+            var currentTicks = 0
+            var noteLocation = 0
+            var divisions = 0
+            var currentDivisionTicks = 0
+
+            // Iterate through the XML file
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        // If the current tag is "note", increment the note location
+                        val tagName = parser.name
+                        if (tagName == "note") {
+                            if (currentTicks >= ticks) {
+                                return noteLocation
+                            }
+                            noteLocation++
+                        }
+                        // If the current tag is "divisions", get the divisions value
+                        else if (tagName == "divisions") {
+                            eventType = parser.next()
+                            divisions = parser.text.toInt()
+                        }
+                        // If the current tag is "duration", get the duration and calculate the current division ticks
+                        else if (tagName == "duration") {
+                            eventType = parser.next()
+                            val duration = parser.text.toInt()
+                            currentDivisionTicks = duration * divisions
+                        }
+                    }
+                    XmlPullParser.END_TAG -> {
+                        // If the current tag is "note", update the current ticks
+                        val tagName = parser.name
+                        if (tagName == "note") {
+                            currentTicks += currentDivisionTicks
+                        }
+                    }
+                }
+                eventType = parser.next()
+            }
+
+            // Close the input stream and return the note location
+            inputStream.close()
+            return noteLocation
+        }
+
+
     }
+
+
+
 
 
 }
