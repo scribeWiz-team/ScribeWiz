@@ -45,7 +45,7 @@ class ProfilePageFragmentTest {
     }
     @Test
     fun friendsListIsDisplayed(){
-        composeTestRule.onNodeWithText("Chris").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bob").assertIsDisplayed()
     }
 
     /* Due to the adaptable screen size, the CI does not work well with this test,
