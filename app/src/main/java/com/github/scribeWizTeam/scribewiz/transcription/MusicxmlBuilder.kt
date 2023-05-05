@@ -29,7 +29,7 @@ fun String.tagattr(vararg attr: Pair<String, String>): Tag {
     return Tag(this, attr.toList())
 }
 
-abstract class Tree(){
+abstract class Tree {
 
     abstract fun render(depth: Int = 0): String
 

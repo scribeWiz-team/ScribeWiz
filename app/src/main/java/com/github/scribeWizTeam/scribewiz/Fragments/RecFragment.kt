@@ -4,14 +4,30 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.media.AudioFormat
 import android.media.AudioRecord
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
@@ -21,23 +37,28 @@ import java.io.IOException
 
 class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
+    companion object {
+        private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
+        private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
+        private const val SAMPLE_RATE_IN_HZ = 44100
+    }
 
     private val audioSource = MediaRecorder.AudioSource.MIC
-    private val sampleRateInHz = 44100
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-    private val bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat)
+    private val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
 
-    private lateinit var recordButton: Button //button to start and stop recording
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
-    private lateinit var recordingTimeText: TextView //text to show recording time
-    private lateinit var timer: CountDownTimer //timer to show recording time
+    private lateinit var mediaPlayer: MediaPlayer//media player to play sound
 
     private lateinit var outputFile: File
     private lateinit var outputFilePath: String
-    var isRecording = false //boolean to check if recording is in progress
-    val MILLISINFUTURE = 9999999L //number of milliseconds maximum record time
-    val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
+    private var isRecording = false //boolean to check if recording is in progress
+
+    private var metronomeIsPlaying = false
+
+    private var recordTimer = onTickTimer(1) {}
+    private var metronomeTimer = onTickTimer(1) {}
 
     constructor() : this(0) {
         // Default constructor
@@ -47,32 +68,135 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_rec, container, false) //inflate the layout
-        recordButton = view.findViewById(R.id.record_button) //get the button
-        recordingTimeText = view.findViewById(R.id.time_recording) //get the text
-
+    ): View {
         //check if the app has permission to record audio
-        PermissionsManager().checkPermissionThenExecute(this, requireContext(), Manifest.permission.RECORD_AUDIO) {
-            //set the event for the button
-            setEvent()
-        }
-        return view
-    }
-    //This function is called when the record button is clicked
-    private fun setEvent() {
-        recordButton.setOnClickListener {
-            //set the event you want to perform when button is clicked
-            //you can go to another activity in your app by creating Intent
-            if (!isRecording) {
-                //start recording
-                startRecording()
-            } else {
-                //stop recording
-                stopRecording()
+        PermissionsManager().checkPermissionThenExecute(this, requireContext(), Manifest.permission.RECORD_AUDIO) {}
+
+        mediaPlayer = MediaPlayer.create(context, R.raw.tick)
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+
+                val counterText = remember { mutableStateOf("00:00") }
+                val recordButtonText = remember { mutableStateOf("Start recording") }
+                val metronomeButtonText = remember { mutableStateOf("Start metronome") }
+                val tempoValue = remember { mutableStateOf("60") }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = CenterHorizontally) {
+                        Text(
+                            text = counterText.value,
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        PlayButton(recordButtonText) {
+                            switchRecordState(counterText, recordButtonText)
+                        }
+                        PlayButton(metronomeButtonText) {
+                            switchMetronomeState(metronomeButtonText, tempoValue)
+                        }
+                        OutlinedTextField(tempoValue.value,
+                            { tempoValue.value = it },
+                            modifier = Modifier
+                                .height(70.dp)
+                                .width(190.dp)
+                                .padding(5.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            label = { Text(text = "Tempo") })
+                    }
+                }
             }
         }
     }
+
+    @Composable
+    private fun PlayButton(text: MutableState<String>,  onClick : () -> Unit) {
+        Button(
+            modifier = Modifier
+                .height(50.dp)
+                .width(190.dp)
+                .padding(5.dp),
+            onClick = onClick) {
+            Icon(
+                Icons.Filled.PlayArrow,
+                contentDescription = "play",
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text.value)
+        }
+    }
+
+    private fun onTickTimer(interval: Long, onTick: (Long) -> Unit) : CountDownTimer {
+        return object : CountDownTimer(MILLIS_IN_FUTURE, interval) {
+            override fun onTick(millisUntilFinished: Long) {
+                onTick(millisUntilFinished)
+            }
+
+            override fun onFinish() {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun switchMetronomeState(metronomeButtonText: MutableState<String>, tempoValue: MutableState<String>) {
+        if (metronomeIsPlaying) {
+            metronomeButtonText.value = "Start metronome"
+            metronomeIsPlaying = false
+            metronomeTimer.cancel()
+        } else {
+            val tempo : Long = try {
+               tempoValue.value.toLong()
+            } catch (_: java.lang.NumberFormatException) {
+                tempoValue.value = "60"
+                60L
+            }
+
+            metronomeTimer = onTickTimer(1000 * 60 / tempo) {
+                if (this::mediaPlayer.isInitialized) {
+                    if (mediaPlayer.isPlaying) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                    }
+                    mediaPlayer.start()
+                }
+            }
+
+            metronomeTimer.start()
+            metronomeIsPlaying = true
+            metronomeButtonText.value = "Stop metronome"
+        }
+    }
+
+    private fun switchRecordState(counterText : MutableState<String>, recordButtonText : MutableState<String>) {
+        if (!isRecording) {
+            // Set the timer
+            recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
+                counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / Companion.COUNT_DOWN_INTERVAL).toString()
+            }
+
+            //start recording
+            recordButtonText.value = "Stop recording"
+            // Start the timer
+            recordTimer.start()
+            startRecording()
+        } else {
+            //stop recording
+            // Stop the timer
+            recordTimer.cancel()
+            // Set the recording time to 0
+            counterText.value = "Recording saved!"
+            recordButtonText.value = "Start recording"
+            stopRecording()
+        }
+    }
+
 
     fun getOutputFilePath(): String {
         return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
@@ -81,7 +205,8 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
     private fun startRecording() {
         // Initialize the AudioRecord
-        audioRecorder = AudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSize)
+        audioRecorder = AudioRecord(audioSource,
+            Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
 
         // Set the output file path
         outputFilePath = getOutputFilePath()
@@ -90,7 +215,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         // Start recording
         audioRecorder.startRecording()
         isRecording = true
-        recordButton.text = "Stop Recording"
 
         // Write the audio data to a file
         val buffer = ByteArray(bufferSize)
@@ -109,19 +233,6 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
             outputStream.close()
         }).start()
-
-        // Set the timer
-        timer = object : CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-                recordingTimeText.text = ((MILLISINFUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
-            }
-
-            override fun onFinish() {
-                // Do nothing
-            }
-        }
-        // Start the timer
-        timer.start()
     }
 
     // Method to stop recording
@@ -132,11 +243,20 @@ class RecFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         audioRecorder.release()
         // Set recording not in progress
         isRecording = false
-        // Change the button text
-        recordButton.text = "Start Recording"
-        // Stop the timer
-        timer.cancel()
-        // Set the recording time to 0
-        recordingTimeText.text = "Recording saved!"
+    }
+
+
+    override fun onStop() {
+        try {
+            recordTimer.cancel()
+            metronomeTimer.cancel()
+            if (this::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
+        super.onStop()
     }
 }

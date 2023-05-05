@@ -59,7 +59,7 @@ class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 context.packageName,
                 uri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
-            );
+            )
 
             // add the FLAG_ACTIVITY_NEW_TASK flag to start the activity from a non-activity context
             shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -70,7 +70,7 @@ class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         } catch (
             e: SecurityException
         ) {
-            Log.d("TAG", "Error message: " + e.message);
+            Log.d("TAG", "Error message: " + e.message)
         }
         return true
     }

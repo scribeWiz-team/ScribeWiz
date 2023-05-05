@@ -142,6 +142,154 @@ class EditorTest {
         Assert.assertEquals(expectedNotes, actualNotes)
     }
 
+    @Test
+    fun testEditNoteInMusicXML_ReplaceNoteText() {
+        val inputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <note>
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>B</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+        writeToFile(inputMusicXMLFile, inputXMLContent)
+
+        val expectedOutputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <note>
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>F</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+
+        Editor.editNoteInMusicXML(inputMusicXMLFile, outputMusicXMLFile, 2, "F")
+
+        val expectedNotes = getNotes(expectedOutputXMLContent)
+        val actualNotes = getNotes(outputMusicXMLFile.readText())
+
+        Assert.assertEquals(expectedNotes, actualNotes)
+    }
+    @Test
+    fun testEditNoteInMusicXML_CopyAttributes() {
+        val inputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <note duration="4" type="quarter">
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note duration="4" type="quarter">
+                <pitch>
+                    <step>B</step>
+                </pitch>
+            </note>
+            <note duration="4" type="quarter">
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+        writeToFile(inputMusicXMLFile, inputXMLContent)
+
+        Editor.editNoteInMusicXML(outputMusicXMLFile, inputMusicXMLFile, 2, "F")
+
+        val outputXMLContent = outputMusicXMLFile.readText()
+        val inputNoteAttributes = extractNoteAttributes(inputXMLContent)
+        val outputNoteAttributes = extractNoteAttributes(outputXMLContent)
+
+        Assert.assertEquals(inputNoteAttributes, outputNoteAttributes)
+    }
+
+    @Test
+    fun testConvertTicksToNoteLocation() {
+        val inputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <divisions>2</divisions>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>B</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>D</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>E</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+        writeToFile(inputMusicXMLFile, inputXMLContent)
+
+        val noteLocation = Editor.convertTicksToNoteLocation(inputMusicXMLFile, 3)
+
+        Assert.assertEquals(2, noteLocation)
+    }
+
+    private fun extractNoteAttributes(xmlContent: String): List<Map<String, String>> {
+        val notePattern = """<note\s[^>]*>""".toRegex()
+        val attributePattern = """(\w+)="([^"]*)"""".toRegex()
+
+        val noteMatches = notePattern.findAll(xmlContent).toList()
+        println("Note matches: $noteMatches")
+
+        return noteMatches.map { noteTag ->
+            val attributeMatches = attributePattern.findAll(noteTag.value).toList()
+            //println("Attribute matches for ${noteTag.value}: $attributeMatches")
+            attributeMatches.associate { attrMatch ->
+                attrMatch.groupValues[1] to attrMatch.groupValues[2]
+            }
+        }
+    }
+
+
+
     private fun getNotes(xmlContent: String): List<String> {
         val notePattern = "<note>.*?</note>".toRegex()
         return notePattern.findAll(xmlContent).map { it.value }.toList()

@@ -13,6 +13,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
+import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -69,17 +71,8 @@ class NotesListFragmentTest {
         }
     }
 
-    @OptIn(ExperimentalContracts::class)
-    @Test
-    fun displayNotesWhenClickOnPlay() {
-        Intents.init()
 
-        composeTestRule.onNode(hasText("a")).performClick()
 
-        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
-
-        Intents.release()
-    }
     @Test
     fun dismissNoteDeleteCorrectly() {
         for (title in expectedFiles) {
@@ -99,6 +92,55 @@ class NotesListFragmentTest {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
+    @OptIn(ExperimentalContracts::class)
+    @Test
+    fun displayNotesWhenClickOnPlay() {
+        Intents.init()
+
+        composeTestRule.onNode(hasText("a")).performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(NotesDisplayedActivity::class.java.name))
+
+        Intents.release()
+    }
+
+    @Test
+    fun openDialogForChangingNameWhenLongClick() {
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithText(NotesListFragment().dialogName).assertIsDisplayed()
+    }
+
+    @Test
+    fun fileIsModifiedToTheGoodValue() {
+
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithContentDescription("New Name").performTextClearance()
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
+        composeTestRule.onNode(hasText("Rename")).performClick()
+
+        runBlocking {
+            composeTestRule.waitUntil(timeoutMillis = 100000) {
+                try {
+                    composeTestRule.onNode(hasText("newNameTest")).fetchSemanticsNode()
+                    true
+                } catch (e: AssertionError) {
+                    false
+                }
+            }
+        }
+
+        composeTestRule.onNode(hasText("newNameTest")).assertIsDisplayed()
+    }
+
+    @Test
+    fun dialogGetCanceledCorrectly() {
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
+        composeTestRule.onNode(hasText("Cancel")).performClick()
+
+        composeTestRule.onNode(hasText("a")).assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
+
+    }
 
 
     @After

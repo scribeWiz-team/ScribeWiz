@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Note
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -14,8 +15,11 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity.Companion.createTempFileFromUri
+import kotlinx.coroutines.runBlocking
 import okhttp3.internal.wait
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,6 +28,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import kotlin.contracts.ExperimentalContracts
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
@@ -32,6 +37,7 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 class NotesDisplayedActivityTest {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
+
     @Before
     fun setUp() {
         // Initialize Intents before each test
@@ -75,14 +81,14 @@ class NotesDisplayedActivityTest {
         intent.putExtra("FILE", uriOfFile.toString())
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use{ scenario ->
-            Thread.sleep(10000) //Let time to the player to display the data
+            Thread.sleep(1000) //Let time to the player to display the data
             onView(withId(R.id.play_button)).perform(click())
             scenario.onActivity {
                 assertTrue(it.isPlaying(),"The player should be playing" )
             }
         }
     }
-    //
+
 
     private fun getUriFromAsset(context: Context, assetFileName: String): Uri? {
         val assetManager = context.assets
@@ -107,4 +113,52 @@ class NotesDisplayedActivityTest {
             tempFile?.deleteOnExit()
         }
     }
+
+    @Test
+    fun testCreateTempFileFromUri() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val inputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <note>
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>B</step>
+                </pitch>
+            </note>
+            <note>
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+
+        val inputFile = File.createTempFile("temp_musicxml_input", ".xml", context.cacheDir)
+        inputFile.writeText(inputXMLContent)
+
+        var scenario: ActivityScenario<NotesDisplayedActivity>? = null
+        scenario = ActivityScenario.launch(Intent(context, NotesDisplayedActivity::class.java).apply {
+            putExtra("FILE", inputFile.toURI().toString())
+        })
+
+        scenario.onActivity { activity ->
+            val inputFileUri = Uri.parse(inputFile.toURI().toString())
+
+            val tempFile = NotesDisplayedActivity.createTempFileFromUri(activity, inputFileUri)
+
+            val inputXMLContent = inputFile.readText()
+            val outputXMLContent = tempFile.readText()
+            assertEquals(inputXMLContent, outputXMLContent)
+        }
+
+        scenario.close()
+
+        inputFile.delete()
+    }
+
 }
