@@ -15,9 +15,6 @@ data class MusicNoteModel (
     companion object Controller {
         const val COLLECTION = "MusicNotes"
 
-        private const val NOTE_ID = "id"
-        private const val NOTE_NAME = "name"
-
         fun getAllNotesFromUser(user: UserModel) : Set<MusicNoteModel> {
             val db = Firebase.firestore
 
@@ -25,7 +22,7 @@ data class MusicNoteModel (
 
             runBlocking {
                 val job = launch {
-                    for (id in user.musicNoteList) {
+                    for (id in user.musicNotes!!) {
                         db.collection(COLLECTION)
                             .document(id)
                             .get()
@@ -41,14 +38,7 @@ data class MusicNoteModel (
         }
     }
 
-    override fun getMapping(): HashMap<String, Any?> {
-        return hashMapOf(
-            NOTE_ID to id,
-            NOTE_NAME to name
-        )
-    }
-
-    override fun getCollectionName(): String {
+    override fun collectionName(): String {
         return COLLECTION
     }
 }

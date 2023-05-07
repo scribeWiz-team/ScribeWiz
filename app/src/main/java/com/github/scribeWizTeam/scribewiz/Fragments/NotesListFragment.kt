@@ -202,7 +202,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
-                        val noteToRename = name
                         renamingNoteName.value = name
                         showRenameDialog.value = true
                     },
@@ -241,13 +240,21 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @Composable
-    private fun ShareMenu(noteName: String, showShareMenu: MutableState<Boolean>) {
+    private fun ShareMenu(noteName: String,  showShareMenu: MutableState<Boolean>) {
         Popup(
             alignment = Alignment.Center,
             onDismissRequest = { showShareMenu.value = false },
         ) {
 
-            val user = UserModel.getCurrentUser(requireContext())
+            val ret = UserModel.currentUser(requireContext())
+
+            if (ret.isFailure) {
+                Toast.makeText(context, "You're not logged in", Toast.LENGTH_LONG).show()
+                return@Popup
+            }
+
+            val user = ret.getOrThrow()
+
             val mExpanded = remember { mutableStateOf(true) }
             val mSelectedName = remember { mutableStateOf("") }
             val mSelectedID = remember { mutableStateOf("") }
@@ -266,13 +273,15 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     onDismissRequest = { mExpanded.value = false },
                     modifier = Modifier.align(CenterHorizontally)
                 ) {
-                    user.friendsList.forEach { (id, name) ->
-                        DropdownMenuItem(onClick = {
-                            mSelectedName.value = name
-                            mSelectedID.value = id
-                            mExpanded.value = false
-                        }) {
-                            Text(text = name)
+                    user.friends?.forEach { id ->
+                        UserModel.user(id).onSuccess { friend ->
+                            DropdownMenuItem(onClick = {
+                                mSelectedName.value = friend.userName.toString()
+                                mSelectedID.value = id
+                                mExpanded.value = false
+                            }) {
+                                friend.userName?.let { Text(text = it) }
+                            }
                         }
                     }
                 }
@@ -292,18 +301,20 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         val musicNoteModel = MusicNoteModel(docRef.id, noteName)
         musicNoteModel.updateInDB()
 
-        val curUser = UserModel.getCurrentUser(requireContext())
+        UserModel.currentUser(requireContext()).onFailure {
+            Toast.makeText(context, "You're not logged in", Toast.LENGTH_LONG).show()
+        }.onSuccess { curUser ->
+            if (!curUser.musicNotes?.contains(musicNoteModel.id)!!) {
+                curUser.musicNotes!!.add(musicNoteModel.id)
+                curUser.updateInDB()
+            }
 
-        if (!curUser.musicNoteList.contains(musicNoteModel.id)) {
-            curUser.musicNoteList.add(musicNoteModel.id)
-            curUser.updateInDB()
-        }
-
-        val toUser = UserModel.getUser(userId)
-
-        if (!toUser.musicNoteList.contains(musicNoteModel.id)) {
-            toUser.musicNoteList.add(musicNoteModel.id)
-            toUser.updateInDB()
+            UserModel.currentUser(requireContext()).onSuccess { toUser ->
+                if (!toUser.musicNotes?.contains(musicNoteModel.id)!!) {
+                    toUser.musicNotes!!.add(musicNoteModel.id)
+                    toUser.updateInDB()
+                }
+            }
         }
     }
 

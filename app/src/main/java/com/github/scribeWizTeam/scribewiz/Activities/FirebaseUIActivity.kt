@@ -52,8 +52,8 @@ class FirebaseUIActivity : ComponentActivity()  {
              val userData = UserModel(
                  curUser.uid,
                  curUser.displayName ?: "new user",
-                 musicNoteList = mutableSetOf("A84wPlG1DaRuyJZJ7B2f"),
-                 friendsList = mutableMapOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2" to "John Doe")
+                 musicNotes = mutableListOf("A84wPlG1DaRuyJZJ7B2f"),
+                 friends = mutableListOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
              )
 
             userData.registerAsCurrentUser(this)
@@ -101,6 +101,8 @@ class FirebaseUIActivity : ComponentActivity()  {
 
     private fun signOut() {
         // [START auth_fui_signout]
+        UserModel.currentUser(this).onSuccess { it.unregisterAsCurrentUser(this) }
+
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {
