@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
 import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -73,7 +74,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         // Check if user is logged in, set default values otherwise
         var userName = "Guest"
         var numRecordings = "0"
-        var friendsList = hashMapOf(Pair("exampleFriendID0", "Chris"),
+        val friendsList = hashMapOf(Pair("exampleFriendID0", "Chris"),
             Pair("exampleFriendID1", "Louis"),
             Pair("exampleFriendID2", "Baptiste"),
             Pair("exampleFriendID3", "Noe"),
@@ -88,7 +89,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                  .get().addOnSuccessListener { data ->
                      numRecordings = data.get("userNumRecordings").toString()
                      // TODO: Currently bugging
-                     friendsList = data.get("friendsList") as HashMap<String, String>
+                     //friendsList = data.get("friendsList") as HashMap<String, String>
                  }
 
             userName = user.displayName!!
@@ -157,7 +158,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Spacer(Modifier.height(20.dp))
 
             if(user != null) {
-                var text = remember { mutableStateOf("") }
+                val text = remember { mutableStateOf("") }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
                         value = text.value,
@@ -168,7 +169,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            SendFriendRequest(text.value)
+                            sendFriendRequest(text.value)
                         },
                         modifier = Modifier.height(50.dp)
                             .width(100.dp)
@@ -231,9 +232,16 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    fun SendFriendRequest(friendName:String){
+    private fun sendFriendRequest(friendName: String){
 
-        if(user != null && friendName != null) {
+        val ret = UserModel.currentUser(requireContext())
+        if (ret.isFailure) {
+            return
+        }
+
+        val localUser = ret.getOrThrow()
+
+        if(user != null) {
             // Cannot add oneself as friend
             if(friendName == user.displayName){
                 return
@@ -241,7 +249,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             thread {
 
                 // Data abstraction leak, will fix in future
-                var snapshot = await(db.collection("Users").get())
+                val snapshot = await(db.collection(UserModel.COLLECTION).get())
 
                 // Check if no users exist in the database
                 if(snapshot.isEmpty) {
@@ -254,18 +262,14 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     // Checking for a match in the database
                     if (doc.get("userName") == friendName) {
                         // Check that the user is not already in the local friend list
-                        var localUser =
-                            await(db.collection("Users").document(user.uid).get())
-
-                        if(localUser.exists()){
-                            if(localUser.data?.get("friendsList").toString().contains(doc.id)){
-                                return@thread
-                            }
+                        if(localUser.friends?.contains(doc.id) == true){
+                            return@thread
                         }
 
-                        db.collection("Users")
-                            .document(doc.id)
-                            .update("friendRequests", hashMapOf(user.uid to user.displayName))
+                        UserModel.user(doc.get("id") as String).onSuccess { toUser ->
+                            localUser.id?.let { toUser.friendRequests?.add(it) }
+                            toUser.updateInDB()
+                        }
                     }
                 }
             }

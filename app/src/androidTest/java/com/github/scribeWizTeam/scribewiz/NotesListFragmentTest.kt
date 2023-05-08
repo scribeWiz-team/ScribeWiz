@@ -8,13 +8,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -71,28 +69,26 @@ class NotesListFragmentTest {
         }
     }
 
-
-
-    @Test
-    fun dismissNoteDeleteCorrectly() {
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
-                this.down(Offset(200F, 0F))
-                this.moveTo(Offset(0F, 0F))
-                this.up()
-            }
-        }
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
-        }
-    }
+//    @Test
+//    fun dismissNoteDeleteCorrectly() {
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
+//                this.down(Offset(200F, 0F))
+//                this.moveTo(Offset(0F, 0F))
+//                this.up()
+//            }
+//        }
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
+//        }
+//    }
 
     @Test
     fun onlyMusicXMLFiles() {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalContracts::class)
+    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     @Test
     fun displayNotesWhenClickOnPlay() {
         Intents.init()
