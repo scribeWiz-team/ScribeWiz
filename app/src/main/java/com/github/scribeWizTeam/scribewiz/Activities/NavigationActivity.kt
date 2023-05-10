@@ -15,7 +15,6 @@ import com.github.scribeWizTeam.scribewiz.R
 import com.google.android.material.navigation.NavigationView
 
 
-
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawer: DrawerLayout
@@ -76,12 +75,18 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.nav_help -> showFragment(HelpFragment())
             R.id.nav_rec -> showFragment(RecFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
-            R.id.nav_share -> ShareFragment(0).shareMidiFile("/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp", this)
+            R.id.nav_share -> ShareFragment(0).shareMidiFile(
+                "/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp",
+                this
+            )
+
+            R.id.nav_challenges -> showFragment(ChallengesFragment())
         }
         //close the navigation drawer
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
+
     //auxiliary function to show a fragment
     fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

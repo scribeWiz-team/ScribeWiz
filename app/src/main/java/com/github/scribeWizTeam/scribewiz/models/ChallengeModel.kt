@@ -1,11 +1,13 @@
 package com.github.scribeWizTeam.scribewiz.models
 
+import java.time.LocalDateTime
 import java.util.Date
 
 data class ChallengeModel(
     override val id: String = "",
-    val name: String? = "",
-    val date: Date? = Date(),
+    val name: String = "",
+    val dateBeginning: LocalDateTime?,
+    val dateEnd: LocalDateTime?,
     val description: String? = "",
     val badge: String? = ""
 ) : Model {
@@ -13,26 +15,32 @@ data class ChallengeModel(
     companion object Controller {
         const val COLLECTION = "Challenges"
         const val SUBMISSION_COLLECTION = "Submissions"
-    }
 
-    fun challenge(challengeId : String) : ChallengeModel {
-        TODO("Not yet implemented")
-    }
+        fun challenge(challengeId: String): ChallengeModel {
+            TODO("Not yet implemented")
+        }
 
-    fun latestChallenge() : ChallengeModel {
-        TODO("Not yet implemented")
-    }
+        fun latestChallenge(): ChallengeModel {
+            TODO("Not yet implemented")
+        }
 
-    fun allSubmissions() : List<ChallengeSubmissionModel> {
-        TODO("Not yet implemented")
-    }
+        fun challengesAvailable(): List<ChallengeModel> {
+            TODO("Not yet implemented")
+        }
 
-    fun winningSubmission() : ChallengeSubmissionModel {
-        TODO("Not yet implemented")
-    }
 
-    fun addSubmission() {
-        TODO("Not yet implemented")
+        fun allSubmissions(): List<ChallengeSubmissionModel> {
+            TODO("Not yet implemented")
+        }
+
+        fun winningSubmission(): ChallengeSubmissionModel {
+            TODO("Not yet implemented")
+        }
+
+        fun addSubmission() {
+            TODO("Not yet implemented")
+        }
+
     }
 
     override fun getMapping(): HashMap<String, Any?> {
@@ -42,4 +50,5 @@ data class ChallengeModel(
     override fun getCollectionName(): String {
         return COLLECTION
     }
+
 }
