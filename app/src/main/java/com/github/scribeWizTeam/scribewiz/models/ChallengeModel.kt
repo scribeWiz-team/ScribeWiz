@@ -7,12 +7,14 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDateTime
 import java.util.Date
 
 data class ChallengeModel(
     override val id: String = "",
     val name: String? = "",
-    val date: Date? = Date(),
+    val startDate: Date? = Date(),
+    val endDate: Date? = Date(),
     val description: String? = "",
     val badge: String? = ""
 ) : Model {
@@ -40,6 +42,26 @@ data class ChallengeModel(
             } else {
                 Result.success(challenge!!)
             }
+        }
+
+        fun challengesAvailable() : List<ChallengeModel> {
+            val challengesList : MutableList<ChallengeModel> = mutableListOf()
+
+            runBlocking {
+                val job = launch {
+                    Firebase.firestore
+                        .collection(COLLECTION)
+                        .whereGreaterThan("endDate", Date())
+                        .get()
+                        .await()
+                        .forEach {
+                            challengesList.add(it.toObject())
+                        }
+                }
+                job.join()
+            }
+
+            return challengesList
         }
 
         fun latestChallenge() : Result<ChallengeModel> {
