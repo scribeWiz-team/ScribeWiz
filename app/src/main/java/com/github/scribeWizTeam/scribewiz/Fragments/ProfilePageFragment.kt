@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,11 +32,14 @@ import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
 import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.DateFormat
+import java.util.*
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -140,7 +144,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     val goHome = Intent(context, FirebaseUIActivity::class.java)
                     context.startActivity(goHome)
                 },
-                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp, bottom = 10.dp)
+                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
             ) {
                 if(user == null) {
                     Text("Sign in")
@@ -148,14 +152,39 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     Text("Sign out")
                 }
             }
+            Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                horizontalArrangement = Arrangement.SpaceBetween){
+                Text(
+                    text = "My recordings : $numRecordings",
+                    style = MaterialTheme.typography.h4,
+                    fontSize = 20.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                if(user != null){
+                    Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            //TODO: BRING UP BADGE MENU WHEN CLICKED
+                            val time = Calendar.getInstance().time
+                            val formatter = DateFormat.getDateTimeInstance()
+                            val badgeData = BadgeModel(
+                            "testBadge",
+                     "Test Challenge",
+                                formatter.format(time),
+                            )
+                            Firebase.firestore
+                                .collection("Users")
+                                .document(user.uid)
+                                .collection("Badges").add(badgeData)
 
-            Text(
-                text = "My total recordings : $numRecordings",
-                style = MaterialTheme.typography.h4,
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.Start)
-            )
-            Spacer(Modifier.height(20.dp))
+                            //badgeData.updateInDB()
+                        }
+                    )
+
+                }
+
+            }
+
 
             if(user != null) {
                 val text = remember { mutableStateOf("") }

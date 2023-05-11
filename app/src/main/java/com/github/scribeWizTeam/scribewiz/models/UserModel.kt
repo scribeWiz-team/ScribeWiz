@@ -14,7 +14,8 @@ data class UserModel (
     var userNumRecordings: Long? = 0,
     var friends: MutableList<String>? = mutableListOf(),
     var musicNotes: MutableList<String>? = mutableListOf(),
-    var friendRequests: MutableList<String>? = mutableListOf()
+    var friendRequests: MutableList<String>? = mutableListOf(),
+    var badges: MutableList<String>? = mutableListOf()
 
 ) : Model {
     companion object Controller {
