@@ -20,50 +20,60 @@ data class ChallengeModel(
     companion object Controller {
         const val COLLECTION = "Challenges"
         const val SUBMISSION_COLLECTION = "Submissions"
+
+        fun challenge(challengeId : String) : Result<ChallengeModel> {
+            var challenge : ChallengeModel? = null
+
+            runBlocking {
+                val job = launch {
+                    challenge = Firebase.firestore.collection(COLLECTION)
+                        .document(challengeId)
+                        .get()
+                        .await()
+                        .toObject()
+                }
+                job.join()
+            }
+
+            return if (challenge == null) {
+                Result.failure(Exception("No challenge with id $challengeId"))
+            } else {
+                Result.success(challenge!!)
+            }
+        }
+
+        fun latestChallenge() : Result<ChallengeModel> {
+            var challenge : ChallengeModel? = null
+
+            runBlocking {
+                val job = launch {
+                    challenge = Firebase.firestore.collection(COLLECTION)
+                        .orderBy("date", Query.Direction.DESCENDING)
+                        .get()
+                        .await()
+                        .documents
+                        .first()
+                        .toObject()
+                }
+                job.join()
+            }
+
+            return if (challenge == null) {
+                Result.failure(Exception("No challenge found"))
+            } else {
+                Result.success(challenge!!)
+            }
+        }
     }
 
-    fun challenge(challengeId : String) : Result<ChallengeModel> {
-        var challenge : ChallengeModel? = null
+    fun addSubmission(recordId: String, userId: String) {
+        val id = Firebase.firestore
+            .collection(COLLECTION)
+            .document(id)
+            .collection(
+            SUBMISSION_COLLECTION).id
 
-        runBlocking {
-            val job = launch {
-                challenge = Firebase.firestore.collection(COLLECTION)
-                    .document(challengeId)
-                    .get()
-                    .await()
-                    .toObject()
-            }
-            job.join()
-        }
-
-        return if (challenge == null) {
-            Result.failure(Exception("No challenge with id $challengeId"))
-        } else {
-            Result.success(challenge!!)
-        }
-    }
-
-    fun latestChallenge() : Result<ChallengeModel> {
-        var challenge : ChallengeModel? = null
-
-        runBlocking {
-            val job = launch {
-                challenge = Firebase.firestore.collection(COLLECTION)
-                    .orderBy("date", Query.Direction.DESCENDING)
-                    .get()
-                    .await()
-                    .documents
-                    .first()
-                    .toObject()
-            }
-            job.join()
-        }
-
-        return if (challenge == null) {
-            Result.failure(Exception("No challenge found"))
-        } else {
-            Result.success(challenge!!)
-        }
+        ChallengeSubmissionModel(id, Date(), recordId, id, userId).updateInDB()
     }
 
     fun allSubmissions() : List<ChallengeSubmissionModel> {
@@ -77,16 +87,6 @@ data class ChallengeModel(
         } else {
             Result.success(submissions.minByOrNull { it.upVote?:0 }!!)
         }
-    }
-
-    fun addSubmission(recordId: String, userId: String) {
-        val id = Firebase.firestore
-            .collection(COLLECTION)
-            .document(id)
-            .collection(
-            SUBMISSION_COLLECTION).id
-
-        ChallengeSubmissionModel(id, Date(), recordId, id, userId).updateInDB()
     }
 
     override fun collectionName(): String {

@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 class MusicNoteModelTest {
 
     @Test
-    fun putAndRetrieveUserInDBSucceed(){
+    fun putAndRetrieveMusicNoteInDBSucceed(){
         val id = "test-id"
         val musicNote = MusicNoteModel(id)
 
