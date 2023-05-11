@@ -68,7 +68,7 @@ android {
 
 dependencies {
     // Compose
-    def composeVersion = '1.4.3'
+    def composeVersion = '1.4.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     // Fragment
     def fragmentVersion = '1.5.7'
@@ -93,12 +93,12 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     implementation 'androidx.test:core-ktx:1.5.0'
     debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation "androidx.compose.ui:ui-tooling-preview:1.4.3"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.4.2"
 
 
     // Compose
@@ -129,7 +129,7 @@ dependencies {
 
     // Testing
 
-    
+
     def kotlin_version = "1.8.0"
 
     testImplementation 'junit:junit:4.13.2'
@@ -140,7 +140,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.2")
     // Needed for createAndroidComposeRule, but not createComposeRule:
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
 
@@ -159,11 +159,11 @@ dependencies {
 }
 
 tasks.withType(Test) {
-   jacoco.includeNoLocationClasses = true
-   jacoco.excludes = ['jdk.internal.*']
-   testLogging {
-       showStandardStreams = true
-   }
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+    testLogging {
+        showStandardStreams = true
+    }
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
