@@ -23,6 +23,7 @@ class PitchDetector(override val samplingFreq: Frequency,
     companion object {
         private const val MIN_FREQ = 50.0 // lowest detectable frequency
         private const val MAX_FREQ = 2000.0 // highest detectable frequency
+        private const val TRANSLUCENCY_TH = 1.0 // minimum translucency to detect a frequency
     }
 
     init {
@@ -97,6 +98,12 @@ class PitchDetector(override val samplingFreq: Frequency,
         }
         val (fundamentalLag, fundamentalCorr) = fundamental
         val fundFreq = lag_to_freq(fundamentalLag)
+        val power = sqrt(autocorrelation(signal, 0))
+        val clarity = autocorrelation(signal, fundamentalLag)
+        val translucency = power * clarity
+        if (translucency < TRANSLUCENCY_TH){
+            return null
+        }
         return fundFreq
     }
 }
