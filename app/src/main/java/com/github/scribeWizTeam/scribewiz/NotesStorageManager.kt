@@ -3,6 +3,7 @@ package com.github.scribeWizTeam.scribewiz
 import android.content.Context
 import android.util.Log
 import java.io.File
+import java.io.FileOutputStream
 
 
 const val MUSIC_XML_EXTENSION : String = "xml"
@@ -47,6 +48,19 @@ class NotesStorageManager() {
      */
     fun getAllNotesFiles(): Array<out File>? {
         return storageFolder.listFiles()
+    }
+
+    /**
+     *  Write some content to a file
+     *
+     *  @param name: the name of the file
+     *  @param content: the content of the file
+     */
+    fun writeNoteFile(name: String, content: String) {
+        val file = File(storageFolder, "$name.$MUSIC_XML_EXTENSION")
+        FileOutputStream(file).use {
+            it.write(content.toByteArray())
+        }
     }
 
     /**
