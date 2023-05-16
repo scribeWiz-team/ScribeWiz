@@ -107,7 +107,7 @@ data class ChallengeModel(
         return if (submissions.isEmpty()) {
             Result.failure(Exception("No submission yet"))
         } else {
-            Result.success(submissions.minByOrNull { it.upVote?:0 }!!)
+            Result.success(submissions.maxByOrNull { it.upVote?:0 }!!)
         }
     }
 

@@ -14,7 +14,8 @@ data class ChallengeSubmissionModel (
     val recordId : String? = "",
     val challengeId : String? = "",
     val userId : String? = "",
-    val upVote : Int? = 0,
+    var upVote : Int? = 0,
+    var votersUser : MutableList<String> = mutableListOf()
 ) : Model {
 
     companion object Controller {
@@ -65,6 +66,26 @@ data class ChallengeSubmissionModel (
         } else {
             Result.success(submission!!)
         }
+    }
+
+    fun upVote(userId: String?) : Boolean {
+        if (userId != null && !votersUser.contains(userId)) {
+            votersUser.add(userId)
+            upVote = upVote?.plus(1)
+            updateInDB()
+            return true
+        }
+        return false
+    }
+
+    fun downVote(userId: String?) : Boolean {
+        if (userId != null && votersUser.contains(userId)) {
+            votersUser.remove(userId)
+            upVote = upVote?.plus(1)?.let { minOf(it, 0) }
+            updateInDB()
+            return true
+        }
+        return false
     }
 
     override fun collectionName(): String {

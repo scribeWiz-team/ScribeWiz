@@ -10,16 +10,17 @@ interface Model {
 //    fun getMapping(): HashMap<String, Any?>
 
     fun updateInDB() {
-        id?.let {
-            Firebase.firestore
-                .collection(collectionName()).document(it).set(this)
-                .addOnSuccessListener {
-                    Log.d("SETTINGUPDB", "data added")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("SETTINGUPDB", "Error adding data", e)
-                }
-        }
+
+        val id = id?:Firebase.firestore.collection(collectionName()).document().id
+
+        Firebase.firestore
+            .collection(collectionName()).document(id).set(this)
+            .addOnSuccessListener {
+                Log.d("SETTINGUPDB", "data added")
+            }
+            .addOnFailureListener { e ->
+                Log.w("SETTINGUPDB", "Error adding data", e)
+            }
     }
 
     fun delete() {
