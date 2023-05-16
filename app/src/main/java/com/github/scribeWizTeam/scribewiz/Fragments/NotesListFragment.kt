@@ -55,7 +55,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
 
-
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +67,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 ScribeWizTheme {
                     // A surface container using the 'background' color from the theme
 
-                    val notesNames  = remember {
+                    val notesNames = remember {
                         notesStorageManager.getNotesNames().toMutableStateList()
                     }
 
@@ -78,29 +77,42 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
                     // Function to handle renaming
                     fun handleRename(newName: String) {
-                        val hasSucceeded = notesStorageManager.renameFile(renamingNoteName.value, newName)
+                        val hasSucceeded =
+                            notesStorageManager.renameFile(renamingNoteName.value, newName)
 
-                        if(hasSucceeded) {
+                        if (hasSucceeded) {
                             val index = notesNames.indexOf(renamingNoteName.value)
                             notesNames[index] = newName
-                            Log.i("tag","The name was correctly changed")
+                            Log.i("tag", "The name was correctly changed")
 
-                        }
-
-                        else Toast.makeText(this.context, "Couldn't rename the file", Toast.LENGTH_LONG).show()
+                        } else Toast.makeText(
+                            this.context,
+                            "Couldn't rename the file",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
 
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("All notes:",  fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier
-                            .padding(15.dp)
-                            .height(25.dp))
-                        LazyColumn (modifier = Modifier
-                            .padding(all = 8.dp)
-                            .testTag("columnList"),
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "All notes:",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .height(25.dp)
+                        )
+                        LazyColumn(
+                            modifier = Modifier
+                                .padding(all = 8.dp)
+                                .testTag("columnList"),
                             verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
-                            items(notesNames, key={ name -> name }) { name ->
+                            items(notesNames, key = { name -> name }) { name ->
 
                                 val state = rememberDismissState(
                                     confirmStateChange = {
@@ -112,8 +124,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                     }
                                 )
 
-                                SwipeToDismissNote(state, name, showRenameDialog = showRenameDialog,
-                                renamingNoteName = renamingNoteName, onDelete = ::handleRename)
+                                SwipeToDismissNote(
+                                    state, name, showRenameDialog = showRenameDialog,
+                                    renamingNoteName = renamingNoteName, onDelete = ::handleRename
+                                )
                             }
                         }
                     }
@@ -133,13 +147,15 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun SwipeToDismissNote(state: DismissState, name: String, showRenameDialog : MutableState<Boolean>,
-                            renamingNoteName: MutableState<String>, onDelete: (String) -> Unit
+    fun SwipeToDismissNote(
+        state: DismissState, name: String, showRenameDialog: MutableState<Boolean>,
+        renamingNoteName: MutableState<String>, onDelete: (String) -> Unit
     ) {
         SwipeToDismiss(
             state = state,
             background = {
-                Surface(color = Color.Red, modifier = Modifier.getTileModifier(Color.Red, Color.Red)
+                Surface(
+                    color = Color.Red, modifier = Modifier.getTileModifier(Color.Red, Color.Red)
                 ) {}
             },
             dismissContent = {
@@ -152,7 +168,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getTileModifier(color: Color = Color.White, borderColor: Color = Color.Black) : Modifier {
+    fun Modifier.getTileModifier(
+        color: Color = Color.White,
+        borderColor: Color = Color.Black
+    ): Modifier {
         return Modifier
             .padding(0.dp, 5.dp)
             .border(1.dp, borderColor, CircleShape)
@@ -163,20 +182,19 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @Composable
-    fun NoteTile(name: String, showRenameDialog : MutableState<Boolean>, renamingNoteName: MutableState<String>,
-                 onDelete: (String) -> Unit) {
+    fun NoteTile(
+        name: String,
+        showRenameDialog: MutableState<Boolean>,
+        renamingNoteName: MutableState<String>,
+        onDelete: (String) -> Unit
 
+    ) {
+        var showMenu = remember { mutableStateOf(false) }
         Surface(modifier = Modifier
-            .getTileModifier()
-//            .clickable {
-//                makeTheMusicBeDisplayed(name)
-//            }
-            .pointerInput(Unit){
+            .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
-                        val noteToRename = name
-                        renamingNoteName.value = name
-                        showRenameDialog.value = true
+                        showMenu.value = true
                     },
                     onTap = {
                         makeTheMusicBeDisplayed(name)
@@ -185,20 +203,47 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         ) {
 
             Row {
-                Image(painter = painterResource(R.drawable.music_note),
-                        modifier = Modifier
-                            .height(20.dp)
-                            .align(Alignment.CenterVertically),
-                        contentDescription = "music_file")
-                Text(text = name, modifier = Modifier
-                    .padding(10.dp)
-                    .width(220.dp))
+                Image(
+                    painter = painterResource(R.drawable.music_note),
+                    modifier = Modifier
+                        .height(20.dp)
+                        .align(Alignment.CenterVertically),
+                    contentDescription = "music_file"
+                )
+                Text(
+                    text = name, modifier = Modifier
+                        .padding(10.dp)
+                        .width(220.dp)
+                )
+
+                DropdownMenu(
+                    expanded = showMenu.value,
+                    onDismissRequest = { showMenu.value = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        val noteToRename = name
+                        renamingNoteName.value = name
+                        showRenameDialog.value = true
+                    }) {
+                        Text("Rename")
+                    }
+                    DropdownMenuItem(onClick = {
+
+                    }) {
+                        Text("Challenges")
+                    }
+
+                    // Add more DropdownMenuItem here for more options
+                }
+
             }
         }
     }
+
     @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     fun makeTheMusicBeDisplayed(name: String) {
-        val newNotesDisplayedActivity = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
+        val newNotesDisplayedActivity =
+            Intent(this.requireContext(), NotesDisplayedActivity::class.java)
         val file = notesStorageManager.getNoteFile(name)
         var stringUri = ""
 
@@ -219,7 +264,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         onRename: (String) -> Unit,
         onDismissRequest: () -> Unit
     ) {
-        var nameDisplayed = remember{mutableStateOf(renamingNoteName.value)}
+        var nameDisplayed = remember { mutableStateOf(renamingNoteName.value) }
         AlertDialog(
             onDismissRequest = onDismissRequest,
             title = { Text(dialogName) },
@@ -229,7 +274,9 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     onValueChange = { nameInput -> nameDisplayed.value = nameInput },
                     label = { Text("New Name") },
                     singleLine = true,
-                    modifier =Modifier.fillMaxWidth().semantics { contentDescription = contentDescriptionDialog }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics { contentDescription = contentDescriptionDialog }
                 )
             },
             confirmButton = {

@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -56,7 +58,6 @@ class ChallengesFragment : Fragment() {
                     remember {
                         ChallengeModel.challengesAvailable().toMutableStateList()
                     }
-                
                 ChallengeList(challenges = challenges)
             }
         }
@@ -109,9 +110,12 @@ class ChallengesFragment : Fragment() {
 
     @Composable
     fun ChallengeList(challenges: List<ChallengeModel>) {
+
         Column {
+            Spacer(modifier = Modifier.height(8.dp))
             challenges.forEach { challenge ->
                 specificChallengeButton(challenge = challenge)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
