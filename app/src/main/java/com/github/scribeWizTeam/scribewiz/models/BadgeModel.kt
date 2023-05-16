@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 data class BadgeModel(override var id: String? = "",
+                      var badgeName: String? = "",
                       var challengeID: String? = "",
                       var dateObtained: String? = "",
                       var photoID: String? = ""
@@ -17,7 +18,7 @@ data class BadgeModel(override var id: String? = "",
     companion object Controller {
         const val COLLECTION = "Badges"
 
-        fun getAllBadgesFromUser(user: UserModel) : Set<BadgeModel> {
+        fun getAllBadgesFromUser(user: UserModel) : MutableSet<BadgeModel> {
             val db = Firebase.firestore
 
             val badges : MutableSet<BadgeModel> = mutableSetOf()
@@ -25,7 +26,9 @@ data class BadgeModel(override var id: String? = "",
             runBlocking {
                 val job = launch {
                     for (id in user.badges!!) {
-                        db.collection(COLLECTION)
+                        db.collection("Users")
+                            .document(user.id!!)
+                            .collection(COLLECTION)
                             .document(id)
                             .get()
                             .await()

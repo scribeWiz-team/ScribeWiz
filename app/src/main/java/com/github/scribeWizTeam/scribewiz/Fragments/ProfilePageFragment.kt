@@ -13,9 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
-import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
+import com.github.scribeWizTeam.scribewiz.Activities.BadgeDisplayActivity
+import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
@@ -152,6 +151,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     Text("Sign out")
                 }
             }
+
             Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
                 horizontalArrangement = Arrangement.SpaceBetween){
                 Text(
@@ -160,31 +160,40 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     fontSize = 20.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
+                // Badge collection button/display
                 if(user != null){
-                    Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            //TODO: BRING UP BADGE MENU WHEN CLICKED
-                            val time = Calendar.getInstance().time
-                            val formatter = DateFormat.getDateTimeInstance()
-                            val badgeData = BadgeModel(
-                            "testBadge",
-                     "Test Challenge",
-                                formatter.format(time),
-                            )
-                            Firebase.firestore
-                                .collection("Users")
-                                .document(user.uid)
-                                .collection("Badges").add(badgeData)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                //TODO: BRING UP BADGE MENU WHEN CLICKED
+                                val time = Calendar.getInstance().time
+                                val formatter = DateFormat.getDateTimeInstance()
+                                val badgeData = BadgeModel(
+                                    "456",
+                                    "Test Badge2",
+                                    "222",
+                                    formatter.format(time),
+                                )
 
-                            //badgeData.updateInDB()
-                        }
-                    )
+                                Firebase.firestore
+                                    .collection("Users")
+                                    .document(user.uid)
+                                    .collection("Badges").document(badgeData.id!!)
+                                    .set(badgeData)
 
+                                badgeData.updateInDB()
+                                val openBadges = Intent(context, BadgeDisplayActivity::class.java)
+                                startActivity(openBadges)
+                            }
+                        )
+
+                        Text("My badges", modifier=Modifier.offset(y= (-20).dp))
+                    }
                 }
-
             }
-
 
             if(user != null) {
                 val text = remember { mutableStateOf("") }
