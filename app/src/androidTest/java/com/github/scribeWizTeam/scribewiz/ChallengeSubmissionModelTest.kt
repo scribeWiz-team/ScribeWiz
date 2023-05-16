@@ -14,11 +14,19 @@ class ChallengeSubmissionModelTest {
         val challenge = ChallengeModel(id)
         challenge.updateInDB()
 
+        Thread.sleep(2000)
+
         challenge.addSubmission(recordId, userId)
+
+        Thread.sleep(2000)
 
         val submissions = challenge.allSubmissions()
 
-        assertTrue(submissions.size == 1)
+        Thread.sleep(2000)
+
+        println(submissions)
+
+        assertEquals(1, submissions.size)
         assertEquals(userId, submissions.first().userId)
         assertEquals(recordId, submissions.first().recordId)
 

@@ -1,5 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.models
 
+import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -14,7 +16,7 @@ data class ChallengeSubmissionModel (
     val recordId : String? = "",
     val challengeId : String? = "",
     val userId : String? = "",
-    val upVote : Int? = 0,
+    val upVote : Long? = 0,
 ) : Model {
 
     companion object Controller {
@@ -28,13 +30,12 @@ data class ChallengeSubmissionModel (
                         .document(challengeId)
                         .collection(ChallengeModel.SUBMISSION_COLLECTION)
                         .get()
-                        .addOnSuccessListener { submissions ->
-                            for (submission in submissions) {
+                        .addOnSuccessListener {
+                            for (submission in it) {
                                 submissionsList.add(submission.toObject())
                             }
                         }
                         .await()
-
                 }
                 job.join()
             }
@@ -64,6 +65,24 @@ data class ChallengeSubmissionModel (
             Result.failure(Exception("No challenge with id $challengeId"))
         } else {
             Result.success(submission!!)
+        }
+    }
+
+
+    override fun updateInDB() {
+        if (challengeId != null) {
+            Firebase.firestore
+                .collection(ChallengeModel.COLLECTION)
+                .document(challengeId)
+                .collection(collectionName())
+                .document(id)
+                .set(this)
+                .addOnSuccessListener {
+                    Log.d("SETTINGUPDB", "data added with id $id")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("SETTINGUPDB", "Error adding data", e)
+                }
         }
     }
 

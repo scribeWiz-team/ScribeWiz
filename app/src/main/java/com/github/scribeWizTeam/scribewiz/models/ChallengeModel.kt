@@ -89,13 +89,14 @@ data class ChallengeModel(
     }
 
     fun addSubmission(recordId: String, userId: String) {
-        val id = Firebase.firestore
+        val subId = Firebase.firestore
             .collection(COLLECTION)
             .document(id)
-            .collection(
-            SUBMISSION_COLLECTION).id
+            .collection(SUBMISSION_COLLECTION)
+            .document()
+            .id
 
-        ChallengeSubmissionModel(id, Date(), recordId, id, userId).updateInDB()
+        return ChallengeSubmissionModel(subId, Date(), recordId, id, userId).updateInDB()
     }
 
     fun allSubmissions() : List<ChallengeSubmissionModel> {
@@ -113,5 +114,18 @@ data class ChallengeModel(
 
     override fun collectionName(): String {
         return COLLECTION
+    }
+
+    override fun delete() {
+        Firebase.firestore.collection(collectionName())
+            .document(id)
+            .collection(SUBMISSION_COLLECTION)
+            .get()
+            .addOnSuccessListener {
+                for (sub in it) {
+                    sub.reference.delete()
+                }
+        }
+        super.delete()
     }
 }
