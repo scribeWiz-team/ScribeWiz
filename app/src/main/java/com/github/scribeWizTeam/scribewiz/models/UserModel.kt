@@ -33,13 +33,12 @@ data class UserModel (
         }
 
         fun user(userId: String) : Result<UserModel> {
-            val db = Firebase.firestore
-
             var user : UserModel? = null
 
             runBlocking {
                 val job = launch {
-                    user = db.collection(COLLECTION)
+                    user = Firebase.firestore
+                        .collection(COLLECTION)
                         .document(userId)
                         .get()
                         .await()
@@ -55,17 +54,6 @@ data class UserModel (
             }
         }
     }
-
-//    override fun getMapping(): HashMap<String, Any?> {
-//        return hashMapOf(
-//            USER_ID to id,
-//            USER_NAME to userName,
-//            USER_NUM_NOTES to userNumRecordings,
-//            FRIEND_LIST to friendsList.toString(),
-//            NOTES_LIST to musicNoteList.toString(),
-//            FRIEND_REQUESTS to friendRequests.toString()
-//        )
-//    }
 
     fun registerAsCurrentUser(context: Context) {
         val editor = context.getSharedPreferences(

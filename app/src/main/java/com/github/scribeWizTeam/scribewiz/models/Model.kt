@@ -22,5 +22,9 @@ interface Model {
         }
     }
 
+    fun delete() {
+        id?.let { Firebase.firestore.collection(collectionName()).document(it).delete() }
+    }
+
     fun collectionName(): String
 }
