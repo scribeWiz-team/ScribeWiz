@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
+import com.github.scribeWizTeam.scribewiz.models.BadgeRanks
 import com.github.scribeWizTeam.scribewiz.models.UserModel
-import kotlin.random.Random
 
 class BadgeDisplayActivity : ComponentActivity(){
 
@@ -59,7 +59,8 @@ class BadgeDisplayActivity : ComponentActivity(){
                 ) {
                     Text("<-")
                 }
-                Text("My badges", fontSize = 20.sp, textAlign = TextAlign.Center)
+                Text("My badges", fontSize = 20.sp, textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 100.dp).align(Alignment.CenterVertically))
             }
             displayBadges()
 
@@ -67,7 +68,11 @@ class BadgeDisplayActivity : ComponentActivity(){
     }
 
 
-
+    private val cardColors = mapOf<Int, Color>(
+        Pair(BadgeRanks.GOLD.ordinal, Color(215,183,64)),
+        Pair(BadgeRanks.SILVER.ordinal, Color(224, 224, 224)),
+        Pair(BadgeRanks.BRONZE.ordinal, Color(184, 115, 51))
+        )
     // Displays the user's current badges in a grid
     @Composable
     fun displayBadges(){
@@ -81,13 +86,10 @@ class BadgeDisplayActivity : ComponentActivity(){
         ){
             Log.w("DISPLAYINGBADGE", badges.size.toString())
             items(badges.size) {i ->
+
                 Card(
                     modifier = Modifier.padding(4.dp),
-                    backgroundColor = Color(
-                        red = Random.nextInt(0, 255),
-                        green = Random.nextInt(0, 255),
-                        blue = Random.nextInt(0, 255)
-                    )
+                    backgroundColor = cardColors[badges.elementAt(i).rank!!]!!
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
 

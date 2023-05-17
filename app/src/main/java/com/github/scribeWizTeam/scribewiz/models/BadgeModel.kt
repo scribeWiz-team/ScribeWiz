@@ -65,12 +65,12 @@ data class BadgeModel(override var id: String? = "",
             val formatter = DateFormat.getDateInstance()
 
             var badgeData = BadgeModel(
-                "123",
+                "789",
                 "Test Badge",
                 "abc",
                 formatter.format(time),
                 "",
-                BadgeRanks.BRONZE.ordinal
+                BadgeRanks.GOLD.ordinal
             )
             if(badge != null){
                 badgeData = badge
@@ -88,7 +88,10 @@ data class BadgeModel(override var id: String? = "",
                 .set(badgeData)
 
             // Add badge in badge list
-            user.badges!!.add(badgeData.id.toString())
+            if(!user.badges!!.contains(badgeData.id.toString())){
+                user.badges!!.add(badgeData.id.toString())
+            }
+
 
             // Update user and badge in DB
             user.updateInDB()
