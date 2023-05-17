@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.Util.RecordingParameters
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
@@ -44,28 +45,6 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 import kotlin.math.*
-
-
-class RecordingParameters() {
-    companion object {
-        const val DEFAULT_SCORE_NAME = ""
-        const val FALLBACK_SCORE_NAME = "new_score"
-        const val DEFAULT_TONALITY = 0 // C major
-        const val DEFAULT_BEATS = 4
-        const val DEFAULT_BEAT_TYPE = 4
-        const val DEFAULT_TEMPO = 120
-        const val DEFAULT_KEY_SIGNATURE = false // use F key
-    }
-
-    var scoreName: String = DEFAULT_SCORE_NAME
-    var fifths: Int = DEFAULT_TONALITY
-    var beats: Int = DEFAULT_BEATS
-    var beat_type: Int = DEFAULT_BEAT_TYPE
-    var tempo: Int = DEFAULT_TEMPO
-    var use_g_key_signature: Boolean = DEFAULT_KEY_SIGNATURE
-}
-
-
 
 
 class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
