@@ -74,6 +74,7 @@ data class BadgeModel(override var id: String? = "",
             )
             if(badge != null){
                 badgeData = badge
+                badgeData.dateObtained = formatter.format(time)
             }
 
             val userDoc : DocumentReference =

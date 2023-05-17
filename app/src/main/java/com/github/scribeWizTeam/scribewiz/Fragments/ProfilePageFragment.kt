@@ -71,6 +71,11 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     @Composable
     fun ProfilePage(){
         val context = LocalContext.current
+        var userProfile : UserModel = remember{ UserModel() }
+        // Badge collection button/display
+        UserModel.currentUser(context).onSuccess{
+            userProfile = it
+        }
 
         // Check if user is logged in, set default values otherwise
         var userName = "Guest"
@@ -84,16 +89,16 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Pair("exampleFriendID6", "George"),
             Pair("exampleFriendID7", "Alice"),
             Pair("exampleFriendID8", "Bob"))
-        if(user != null) {
+        if(userProfile.id != "") {
             Log.w("READINGFRIENDSLIST", "USER EXISTS")
-             db.collection("Users").document(user.uid)
+             db.collection("Users").document(userProfile.id!!)
                  .get().addOnSuccessListener { data ->
                      numRecordings = data.get("userNumRecordings").toString()
                      // TODO: Currently bugging
                      //friendsList = data.get("friendsList") as HashMap<String, String>
                  }
 
-            userName = user.displayName!!
+            userName = userProfile.userName!!
         }
         friendsList.forEach{Log.w(it.key, it.value)}
         Column(
@@ -138,6 +143,10 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     if(user != null){
                         AuthUI.getInstance().signOut(context)
                     }
+                    UserModel.currentUser(context).onSuccess{
+                        it.unregisterAsCurrentUser(context)
+                    }
+
                     val goHome = Intent(context, FirebaseUIActivity::class.java)
                     context.startActivity(goHome)
                 },
@@ -158,20 +167,17 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     fontSize = 20.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-                // Badge collection button/display
-                if(user != null){
+
+
+                if(userProfile.id != ""){
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
-                            contentDescription = null,
+                            contentDescription = "My badges button",
                             modifier = Modifier.clickable {
 
-                                UserModel.currentUser(context).onSuccess {
-                                    BadgeModel.addBadgeToUser(it, null)
-                                }.onFailure {
-                                    Log.e("ADDBADGETOUSER", "FAILED", it)
-                                }
+                                BadgeModel.addBadgeToUser(userProfile, null)
 
                                 val openBadges = Intent(context, BadgeDisplayActivity::class.java)
                                 startActivity(openBadges)
@@ -221,7 +227,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @Composable
     fun DrawFriendsGrid(friendsList : MutableMap<String, String>){
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
