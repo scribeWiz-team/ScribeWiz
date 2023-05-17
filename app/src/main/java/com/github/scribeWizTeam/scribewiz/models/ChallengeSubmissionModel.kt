@@ -17,6 +17,7 @@ data class ChallengeSubmissionModel (
     val userId : String? = "",
     var upVote : Int? = 0,
     var votersUser : MutableList<String> = mutableListOf()
+
 ) : Model {
 
     companion object Controller {
@@ -30,13 +31,12 @@ data class ChallengeSubmissionModel (
                         .document(challengeId)
                         .collection(ChallengeModel.SUBMISSION_COLLECTION)
                         .get()
-                        .addOnSuccessListener { submissions ->
-                            for (submission in submissions) {
+                        .addOnSuccessListener {
+                            for (submission in it) {
                                 submissionsList.add(submission.toObject())
                             }
                         }
                         .await()
-
                 }
                 job.join()
             }

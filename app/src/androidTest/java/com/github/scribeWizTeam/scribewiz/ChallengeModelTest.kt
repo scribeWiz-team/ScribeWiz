@@ -17,10 +17,7 @@ class ChallengeModelTest {
         val ret = ChallengeModel.challenge(id)
         Assert.assertTrue(ret.isSuccess)
 
-        ret.onSuccess {
-            assertEquals(id, it.id)
-        }
-
+        assertEquals(id, ret.getOrNull()?.id ?: "")
         challenge.delete()
     }
 }
