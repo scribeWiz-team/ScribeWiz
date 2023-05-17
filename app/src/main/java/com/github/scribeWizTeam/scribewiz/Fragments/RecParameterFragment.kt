@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.Util.RecordingParameters
+import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
@@ -47,7 +48,8 @@ import java.nio.ByteBuffer
 import kotlin.math.*
 
 
-class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class RecParameterFragment(contentLayoutId: Int,
+                           val navActivity: NavigationActivity) : Fragment(contentLayoutId) {
 
     companion object {
         private val TONALITIES_NAMES = listOf(
@@ -72,10 +74,6 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     private var recording_parameters = RecordingParameters()
-
-    constructor() : this(0) {
-        // Default constructor
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,6 +114,7 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 displayItems = TONALITIES_NAMES,
                                 dataItems = TONALITIES_FIFTHS,
                                 onItemSelected = {recording_parameters.fifths = it},
+                                startIndex = 2 // start at C major
                             )
                         }
                         // key
@@ -129,6 +128,7 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 displayItems = KEY_NAMES,
                                 dataItems = KEY_VALUES,
                                 onItemSelected = {recording_parameters.use_g_key_signature = it},
+                                startIndex = 1 // start with F key
                             )
                         }
                         // time signature
@@ -150,8 +150,8 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 modifier = Modifier.wrapContentSize(),
                                 displayItems = BEAT_TYPES.map({it.toString()}),
                                 dataItems = BEAT_TYPES,
-                                onItemSelected = {recording_parameters.beat_type = it},
-                                startIndex = 2
+                                onItemSelected = { recording_parameters.beat_type = it },
+                                startIndex = 2 // start on 4 beats
                             )
                         }
                         // tempo
@@ -195,8 +195,8 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         recording_parameters.scoreName = scoreName
         recording_parameters.beats = beats
         recording_parameters.tempo = tempo
-        // TODO: launch recording fragment and pass recording_parameters to it
-        //
+        // launch recording fragment with recording_parameters
+        navActivity.showFragment(RecFragment(0, recording_parameters))
     }
 
     @Composable
@@ -214,7 +214,6 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         var expanded: Boolean by remember { mutableStateOf(false) }
         // set to first element by default
         var currentText: String by remember { mutableStateOf(displayItems[startIndex]) }
-        onItemSelected(dataItems[startIndex])
 
         Box(modifier = modifier.wrapContentSize(Alignment.TopStart)) {
             Button(
@@ -234,6 +233,7 @@ class RecParameterFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             ) {
                 displayItems.zip(dataItems).forEach { (label, data) ->
                     DropdownMenuItem(onClick = {
+                        Log.i("RecParam", "Selected: $label ${data}")
                         onItemSelected(data)
                         expanded = false
                         currentText = label
