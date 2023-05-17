@@ -21,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
@@ -105,6 +104,15 @@ class BadgeDisplayActivity : ComponentActivity(){
                             modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp),
 
                             )
+
+                        Text(
+                            text = badges.elementAt(i).dateObtained!!,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp),
+
+                            )
+
                     }
 
                 }

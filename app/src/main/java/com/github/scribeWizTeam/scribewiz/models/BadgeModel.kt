@@ -10,17 +10,27 @@ import kotlinx.coroutines.tasks.await
 import java.text.DateFormat
 import java.util.*
 
+enum class BadgeRanks{
+    GOLD,
+    SILVER,
+    BRONZE
+}
 data class BadgeModel(override var id: String? = "",
                       var badgeName: String? = "",
                       var challengeID: String? = "",
                       var dateObtained: String? = "",
-                      var photoID: String? = ""
+                      var photoID: String? = "",
+                      var rank: Int? = 0
                       )
 : Model{
 
     companion object Controller {
         const val COLLECTION = "Badges"
 
+        /**
+         * Returns a set containing the badges belonging to the user.
+         * To get the user, LocalContext.current can be used
+         */
         fun getAllBadgesFromUser(user: UserModel) : MutableSet<BadgeModel> {
             val db = Firebase.firestore
 
@@ -45,16 +55,26 @@ data class BadgeModel(override var id: String? = "",
             return badges
         }
 
-        fun addBadgeToUser(user: UserModel){
+        /**
+         * Adds the given badge to the provided user.
+         * If no badge is provided, a default test badge will be added
+         * To get the user, LocalContext.current can be used
+         */
+        fun addBadgeToUser(user: UserModel, badge: BadgeModel?){
             val time = Calendar.getInstance().time
-            val formatter = DateFormat.getDateTimeInstance()
-            val badgeData = BadgeModel(
+            val formatter = DateFormat.getDateInstance()
+
+            var badgeData = BadgeModel(
                 "123",
                 "Test Badge",
                 "abc",
                 formatter.format(time),
-                ""
+                "",
+                BadgeRanks.BRONZE.ordinal
             )
+            if(badge != null){
+                badgeData = badge
+            }
 
             val userDoc : DocumentReference =
                 Firebase.firestore

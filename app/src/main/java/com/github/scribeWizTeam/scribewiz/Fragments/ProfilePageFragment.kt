@@ -37,8 +37,6 @@ import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.text.DateFormat
-import java.util.*
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
@@ -168,7 +166,13 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier.clickable {
-                                )
+
+                                UserModel.currentUser(context).onSuccess {
+                                    BadgeModel.addBadgeToUser(it, null)
+                                }.onFailure {
+                                    Log.e("ADDBADGETOUSER", "FAILED", it)
+                                }
+
                                 val openBadges = Intent(context, BadgeDisplayActivity::class.java)
                                 startActivity(openBadges)
                             }
