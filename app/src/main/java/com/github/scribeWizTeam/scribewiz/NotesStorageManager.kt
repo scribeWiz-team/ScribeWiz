@@ -2,11 +2,17 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import java.io.File
 
 
 const val MUSIC_XML_EXTENSION : String = "xml"
 const val NOTES_FOLDER : String = "music_notes"
+const val FILES_COLLECTION_DB : String = "Files"
 
 class NotesStorageManager() {
 
@@ -71,7 +77,7 @@ class NotesStorageManager() {
      * */
     fun renameFile(oldName: String, newName: String) : Boolean{
         val file: File? = getNoteFile(oldName)
-        var fileHasBeenSuccessfullyRenamed = false
+        var fileHasBeenSuccessfullyRenamed: Boolean
 
         when (file) {
             is File -> fileHasBeenSuccessfullyRenamed = file.renameTo(File(storageFolder,"$newName.$MUSIC_XML_EXTENSION"))
@@ -80,5 +86,53 @@ class NotesStorageManager() {
         }
 
         return fileHasBeenSuccessfullyRenamed
+    }
+
+
+    /** EXAMPLE USAGES
+
+    TO UPLOAD:
+
+    val notesStorageManager = NotesStorageManager(context)
+    notesStorageManager.addFileToDatabase("BeetAnGeSample")
+
+    TO DOWNLOAD:
+    notesStorageManager.downloadFileFromDatabase("UC9ixjIeXnptB0pHtOiX")
+
+    **/
+
+    /**
+     * Uploads a local file to the database file storage
+     * @param filename The local name of the file
+     */
+    fun uploadFileToDatabase(filename: String){
+        val file = getNoteFile(filename)
+        val doc = Firebase.firestore.collection(FILES_COLLECTION_DB).document()
+        doc.set(mutableMapOf(
+                    "fileID" to doc.id,
+                    "filename" to filename,
+                    "content" to file!!.readText(Charsets.UTF_8))
+                )
+    }
+
+    /**
+     * Downloads a file from the database file storage
+     * @param fileID The ID of the file in the database Files collection
+     */
+    fun downloadFileFromDatabase(fileID: String){
+        runBlocking {
+            val job = launch {
+                Firebase.firestore.collection(FILES_COLLECTION_DB)
+                    .document(fileID)
+                    .get()
+                    .await()
+                    .let {
+                        File(storageFolder, it.get("filename")!!.toString()
+                                + "_DOWNLOADED"+ MUSIC_XML_EXTENSION)
+                            .writeText(it.get("content")!!.toString())
+                    }
+            }
+            job.join()
+        }
     }
 }

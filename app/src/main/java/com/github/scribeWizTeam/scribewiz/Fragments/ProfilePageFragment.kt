@@ -178,7 +178,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             modifier = Modifier.clickable {
 
                                 BadgeModel.addBadgeToUser(userProfile, null)
-
                                 val openBadges = Intent(context, BadgeDisplayActivity::class.java)
                                 startActivity(openBadges)
                             }
