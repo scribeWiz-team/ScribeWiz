@@ -74,7 +74,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.nav_library -> showFragment(NotesListFragment(0))
             R.id.nav_profile -> showFragment(ProfilePageFragment(0))
             R.id.nav_help -> showFragment(HelpFragment())
-            R.id.nav_rec -> showFragment(RecFragment(0))
+            R.id.nav_rec -> showFragment(RecParameterFragment(0))
             R.id.nav_settings -> showFragment(SettingsFragment(0))
             R.id.nav_share -> ShareFragment(0).shareMidiFile("/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp", this)
         }
