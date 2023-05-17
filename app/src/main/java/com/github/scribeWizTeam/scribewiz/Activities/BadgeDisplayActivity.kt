@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -42,7 +43,7 @@ class BadgeDisplayActivity : ComponentActivity(){
         val context = LocalContext.current
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             // Title text
@@ -51,7 +52,7 @@ class BadgeDisplayActivity : ComponentActivity(){
             ){
                 Button(
                     onClick = {
-                        val backToProfile = Intent(context, ProfilePageFragment::class.java)
+                        val backToProfile = Intent(context, NavigationActivity::class.java)
                         context.startActivity(backToProfile)
                     },
                     modifier = Modifier.height(50.dp).width(50.dp).align(Alignment.CenterVertically),
@@ -62,8 +63,8 @@ class BadgeDisplayActivity : ComponentActivity(){
                 Text("My badges", fontSize = 20.sp, textAlign = TextAlign.Center)
             }
             displayBadges()
-        }
 
+        }
     }
 
 
@@ -79,6 +80,7 @@ class BadgeDisplayActivity : ComponentActivity(){
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
         ){
+            Log.w("DISPLAYINGBADGE", badges.size.toString())
             items(badges.size) {i ->
                 Card(
                     modifier = Modifier.padding(4.dp),

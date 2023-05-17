@@ -168,23 +168,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier.clickable {
-                                //TODO: BRING UP BADGE MENU WHEN CLICKED
-                                val time = Calendar.getInstance().time
-                                val formatter = DateFormat.getDateTimeInstance()
-                                val badgeData = BadgeModel(
-                                    "456",
-                                    "Test Badge2",
-                                    "222",
-                                    formatter.format(time),
                                 )
-
-                                Firebase.firestore
-                                    .collection("Users")
-                                    .document(user.uid)
-                                    .collection("Badges").document(badgeData.id!!)
-                                    .set(badgeData)
-
-                                badgeData.updateInDB()
                                 val openBadges = Intent(context, BadgeDisplayActivity::class.java)
                                 startActivity(openBadges)
                             }
