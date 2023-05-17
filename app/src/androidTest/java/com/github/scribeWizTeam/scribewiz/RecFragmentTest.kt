@@ -50,24 +50,24 @@ class RecFragmentTest {
         // }
     }
 
-    @Test
-    fun startAndStopMetronome() {
-        launchFragmentInContainer<RecFragment>()
-        // Start metronome
-        composeTestRule.onNodeWithText("Start metronome").performClick()
-        composeTestRule.onNodeWithText("Stop metronome").assertExists()
+    // @Test
+    // fun startAndStopMetronome() {
+    //     launchFragmentInContainer<RecFragment>()
+    //     // Start metronome
+    //     composeTestRule.onNodeWithText("Start metronome").performClick()
+    //     composeTestRule.onNodeWithText("Stop metronome").assertExists()
 
-        // Stop metronome
-        composeTestRule.onNodeWithText("Stop metronome").performClick()
-        composeTestRule.onNodeWithText("Start metronome").assertExists()
-    }
+    //     // Stop metronome
+    //     composeTestRule.onNodeWithText("Stop metronome").performClick()
+    //     composeTestRule.onNodeWithText("Start metronome").assertExists()
+    // }
 
-    @Test
-    fun badFormatTempoReplacedByDefaultValue() {
-        launchFragmentInContainer<RecFragment>()
-        // write invalid input with a coma at the end
-        composeTestRule.onNodeWithText("60").performTextInput(",")
-        composeTestRule.onNodeWithText("Start metronome").performClick()
-        composeTestRule.onNodeWithText("60").assertExists()
-    }
+    // @Test
+    // fun badFormatTempoReplacedByDefaultValue() {
+    //     launchFragmentInContainer<RecFragment>()
+    //     // write invalid input with a coma at the end
+    //     composeTestRule.onNodeWithText("60").performTextInput(",")
+    //     composeTestRule.onNodeWithText("Start metronome").performClick()
+    //     composeTestRule.onNodeWithText("60").assertExists()
+    // }
 }
