@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.util.Date
 
 data class ChallengeModel(
-    override val id: String = "",
+    override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
     val name: String? = "",
     val startDate: Date? = Date(),
     val endDate: Date? = Date(),
@@ -92,8 +92,8 @@ data class ChallengeModel(
         val id = Firebase.firestore
             .collection(COLLECTION)
             .document(id)
-            .collection(
-            SUBMISSION_COLLECTION).id
+            .collection(SUBMISSION_COLLECTION)
+            .id
 
         ChallengeSubmissionModel(id, Date(), recordId, id, userId).updateInDB()
     }

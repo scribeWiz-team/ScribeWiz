@@ -5,14 +5,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 interface Model {
-    val id: String?
-
-//    fun getMapping(): HashMap<String, Any?>
+    val id: String
 
     fun updateInDB() {
-
-        val id = id?:Firebase.firestore.collection(collectionName()).document().id
-
         Firebase.firestore
             .collection(collectionName()).document(id).set(this)
             .addOnSuccessListener {
@@ -24,7 +19,7 @@ interface Model {
     }
 
     fun delete() {
-        id?.let { Firebase.firestore.collection(collectionName()).document(it).delete() }
+        Firebase.firestore.collection(collectionName()).document(id).delete()
     }
 
     fun collectionName(): String

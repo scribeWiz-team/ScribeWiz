@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.models
 
+import android.util.Log
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -86,6 +87,23 @@ data class ChallengeSubmissionModel (
             return true
         }
         return false
+    }
+
+    override fun updateInDB() {
+        if (challengeId != null) {
+            Firebase.firestore
+                .collection(ChallengeModel.COLLECTION)
+                .document(challengeId)
+                .collection(collectionName())
+                .document(id)
+                .set(this)
+                .addOnSuccessListener {
+                    Log.d("SETTINGUPDB", "data added with id $id")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("SETTINGUPDB", "Error adding data", e)
+                }
+        }
     }
 
     override fun collectionName(): String {
