@@ -15,6 +15,28 @@ data class MusicNoteModel (
     companion object Controller {
         const val COLLECTION = "MusicNotes"
 
+        fun musicNote(id: String) : Result<MusicNoteModel> {
+            var musicNote : MusicNoteModel? = null
+
+            runBlocking {
+                val job = launch {
+                    musicNote = Firebase.firestore
+                        .collection(COLLECTION)
+                        .document(id)
+                        .get()
+                        .await()
+                        .toObject()
+                }
+                job.join()
+            }
+
+            return if (musicNote == null) {
+                Result.failure(Exception("No user with id $id"))
+            } else {
+                Result.success(musicNote!!)
+            }
+        }
+
         fun getAllNotesFromUser(user: UserModel) : Set<MusicNoteModel> {
             val db = Firebase.firestore
 
