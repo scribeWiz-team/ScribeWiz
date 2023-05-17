@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.io.FileOutputStream
 
 
 const val MUSIC_XML_EXTENSION : String = "xml"
@@ -56,6 +57,19 @@ class NotesStorageManager() {
     }
 
     /**
+     *  Write some content to a file
+     *
+     *  @param name: the name of the file
+     *  @param content: the content of the file
+     */
+    fun writeNoteFile(name: String, content: String) {
+        val file = File(storageFolder, "$name.$MUSIC_XML_EXTENSION")
+        FileOutputStream(file).use {
+            it.write(content.toByteArray())
+        }
+    }
+
+    /**
      *  Delete a file with name "name.musicxml"
      *
      *  @param name: the name of the file
@@ -87,7 +101,6 @@ class NotesStorageManager() {
 
         return fileHasBeenSuccessfullyRenamed
     }
-
 
     /** EXAMPLE USAGES
 
@@ -136,3 +149,4 @@ class NotesStorageManager() {
         }
     }
 }
+

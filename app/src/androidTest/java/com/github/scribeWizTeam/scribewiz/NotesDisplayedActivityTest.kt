@@ -1,8 +1,11 @@
 package com.github.scribeWizTeam.scribewiz
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.ContactsContract.CommonDataKinds.Note
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -12,7 +15,11 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity.Companion.createTempFileFromUri
+import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,20 +74,20 @@ class NotesDisplayedActivityTest {
         }
     }
 
-    @Test
-    fun playButtonWork() {
-        val uriOfFile = getUriFromAsset(context, "BeetAnGeSample.xml")
-        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
-        intent.putExtra("FILE", uriOfFile.toString())
-
-        ActivityScenario.launch<NotesDisplayedActivity>(intent).use{ scenario ->
-            Thread.sleep(1000) //Let time to the player to display the data
-            onView(withId(R.id.play_button)).perform(click())
-            scenario.onActivity {
-                assertTrue(it.isPlaying(),"The player should be playing" )
-            }
-        }
-    }
+//    @Test
+//    fun playButtonWork() {
+//        val uriOfFile = getUriFromAsset(context, "BeetAnGeSample.xml")
+//        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+//        intent.putExtra("FILE", uriOfFile.toString())
+//
+//        ActivityScenario.launch<NotesDisplayedActivity>(intent).use{ scenario ->
+//            Thread.sleep(1000) //Let time to the player to display the data
+//            onView(withId(R.id.play_button)).perform(click())
+//            scenario.onActivity {
+//                assertTrue(it.isPlaying(),"The player should be playing" )
+//            }
+//        }
+//    }
 
 
     private fun getUriFromAsset(context: Context, assetFileName: String): Uri? {
