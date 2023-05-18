@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -36,8 +37,8 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
         setContent {
             val challenges = remember { ChallengeModel.challengesAvailable().toMutableStateList() }
+
             ChallengeListParticipateIn(challenges = challenges, this, musicName)
-            val context: Context = this
         }
     }
 
@@ -88,7 +89,14 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
     ) {
 
         Column {
+            Text(
+                text = "Participate in a Challenge",
+                style = MaterialTheme.typography.h4, // adjust text style as needed
+                modifier = Modifier.padding(8.dp)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             challenges.forEach { challenge ->
                 specificChallengeButton(challenge = challenge, context, musicName)
                 Spacer(modifier = Modifier.height(8.dp))
