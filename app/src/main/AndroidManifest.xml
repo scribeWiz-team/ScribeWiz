@@ -20,7 +20,13 @@
         <activity
             android:name=".Activities.NavigationActivity"
             android:exported="false" />
+
         <activity
+            android:name=".Activities.ChallengeNotesActivity"
+            android:exported="false" />
+
+        <activity
+
             android:name=".Activities.FirebaseUIActivity"
             android:exported="false">
             <meta-data
