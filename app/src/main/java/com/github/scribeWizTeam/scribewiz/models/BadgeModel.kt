@@ -83,7 +83,7 @@ data class BadgeModel(override var id: String? = "",
                 .document(user.id!!)
 
             // Add badge in badge collection
-            userDoc.collection("Badges")
+            userDoc.collection(COLLECTION)
                 .document(badgeData.id!!)
                 .set(badgeData)
 
