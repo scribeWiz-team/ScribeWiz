@@ -1,6 +1,5 @@
 package com.github.scribeWizTeam.scribewiz.models
 
-import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel.Controller.getSubmissionId
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -12,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 
 data class ChallengeModel(
-    override val id: String = "",
+    override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
     val name: String? = "",
     val startDate: Date? = Date(),
     val endDate: Date? = Date(),
@@ -90,14 +89,10 @@ data class ChallengeModel(
     }
 
     fun addSubmission(recordId: String, userId: String) : Task<Void> {
-        val subId = Firebase.firestore
-            .collection(COLLECTION)
-            .document(id)
-            .collection(SUBMISSION_COLLECTION)
-            .document(getSubmissionId(userId, recordId))
-            .id
-
-        return ChallengeSubmissionModel(subId, Date(), recordId, id, userId).updateInDB()
+        return ChallengeSubmissionModel(
+            recordId = recordId,
+            userId = userId,
+            challengeId = id).updateInDB()
     }
 
     fun allSubmissions() : List<ChallengeSubmissionModel> {
@@ -109,7 +104,7 @@ data class ChallengeModel(
         return if (submissions.isEmpty()) {
             Result.failure(Exception("No submission yet"))
         } else {
-            Result.success(submissions.minByOrNull { it.upVote?:0 }!!)
+            Result.success(submissions.maxByOrNull { it.upVote?:0 }!!)
         }
     }
 

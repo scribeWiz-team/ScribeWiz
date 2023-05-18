@@ -46,8 +46,8 @@ class ChallengeModelTest {
         val ret = ChallengeModel.latestChallenge()
         assertTrue(ret.isSuccess)
         ret.onSuccess {
-            kotlin.test.assertEquals("latest", it.id)
-            kotlin.test.assertEquals(todayDate, it.startDate)
+            assertEquals("latest", it.id)
+            assertEquals(todayDate, it.startDate)
         }
 
         runBlocking {

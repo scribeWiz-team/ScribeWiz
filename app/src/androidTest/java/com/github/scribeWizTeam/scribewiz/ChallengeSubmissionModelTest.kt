@@ -67,4 +67,99 @@ class ChallengeSubmissionModelTest {
         assertContains(submissions.map { it.recordId }, recordId1, recordId2)
         assertContains(submissions.map { it.userId }, userId1, userId2)
     }
+
+    @Test
+    fun upVoteSubmissionIncreaseUpVote() {
+        val userId = "test-user-id"
+        val recordId = "test-record-id"
+        challenge.addSubmission(recordId, userId)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
+            it.upVote(userId)
+            assertEquals(1, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
+
+    @Test
+    fun upVoteSubmissionIncreaseUpVoteOnlyOnce() {
+        val userId = "test-user-id"
+        val recordId = "test-record-id"
+        challenge.addSubmission(recordId, userId)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
+            it.upVote(userId)
+            assertEquals(1, it.upVote)
+            it.upVote(userId)
+            assertEquals(1, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
+
+    @Test
+    fun upVoteSubmissionIncreaseOnceForManyUser() {
+        val userId1 = "test-user-id1"
+        val recordId1 = "test-record-id1"
+        val userId2 = "test-user-id2"
+
+        challenge.addSubmission(recordId1, userId1)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId1, recordId1)).onSuccess {
+            it.upVote(userId1)
+            assertEquals(1, it.upVote)
+            it.upVote(userId2)
+            assertEquals(2, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
+
+    @Test
+    fun downVoteSubmissionNotUnderZeroUpVote() {
+        val userId = "test-user-id"
+        val recordId = "test-record-id"
+        challenge.addSubmission(recordId, userId)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
+            it.votersUser.add(userId)
+            it.downVote(userId)
+            assertEquals(0, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
+
+    @Test
+    fun downVoteSubmissionDecreaseUpVoteCorrectly() {
+        val userId = "test-user-id"
+        val recordId = "test-record-id"
+        challenge.addSubmission(recordId, userId)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
+            it.upVote(userId)
+            it.downVote(userId)
+            assertEquals(0, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
+
+    @Test
+    fun cannotDownVoteTwice() {
+        val userId = "test-user-id"
+        val recordId = "test-record-id"
+        challenge.addSubmission(recordId, userId)
+
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
+            it.upVote = 1
+            it.upVote(userId)
+            it.downVote(userId)
+            it.downVote(userId)
+            assertEquals(1, it.upVote)
+        }.onFailure {
+            throw it
+        }
+    }
 }

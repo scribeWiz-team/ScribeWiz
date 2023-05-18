@@ -11,12 +11,14 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 
 data class ChallengeSubmissionModel (
-    override val id: String = "",
-    val date: Date? = Date(),
-    val recordId : String? = "",
+    val recordId : String = "",
+    val userId : String = "",
+    override val id: String = getSubmissionId(userId, recordId),
     val challengeId : String = "",
-    val userId : String? = "",
-    val upVote : Long? = 0,
+    val date: Date? = Date(),
+    var upVote : Int? = 0,
+    var votersUser : MutableList<String> = mutableListOf()
+
 ) : Model {
 
     companion object Controller {
@@ -71,6 +73,25 @@ data class ChallengeSubmissionModel (
         }
     }
 
+    fun upVote(userId: String) : Boolean {
+        if (!votersUser.contains(userId)) {
+            votersUser.add(userId)
+            upVote = upVote?.plus(1)
+            updateInDB()
+            return true
+        }
+        return false
+    }
+
+    fun downVote(userId: String) : Boolean {
+        if (votersUser.contains(userId)) {
+            votersUser.remove(userId)
+            upVote = upVote?.minus(1)?.let { maxOf(it, 0) }
+            updateInDB()
+            return true
+        }
+        return false
+    }
 
     override fun updateInDB(onResultListener: ResultListener) : Task<Void> {
         return Firebase.firestore
