@@ -15,7 +15,7 @@ enum class BadgeRanks{
     SILVER,
     BRONZE
 }
-data class BadgeModel(override var id: String? = "",
+data class BadgeModel(override var id: String = "",
                       var badgeName: String? = "",
                       var challengeID: String? = "",
                       var dateObtained: String? = "",
