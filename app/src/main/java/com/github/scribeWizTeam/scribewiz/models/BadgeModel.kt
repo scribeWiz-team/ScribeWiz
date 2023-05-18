@@ -79,7 +79,7 @@ data class BadgeModel(override var id: String? = "",
 
             val userDoc : DocumentReference =
                 Firebase.firestore
-                .collection("Users")
+                .collection(UserModel.COLLECTION)
                 .document(user.id!!)
 
             // Add badge in badge collection
