@@ -75,7 +75,7 @@ class BadgeDisplayActivity : ComponentActivity(){
         )
     // Displays the user's current badges in a grid
     @Composable
-    fun displayBadges(){
+    fun Badges(){
 
         val user = UserModel.currentUser(this)
         val badges = BadgeModel.getAllBadgesFromUser(user.getOrThrow())
