@@ -11,11 +11,11 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 
 data class ChallengeSubmissionModel (
-    override val id: String = "",
-    val date: Date? = Date(),
-    val recordId : String? = "",
+    val recordId : String = "",
+    val userId : String = "",
+    override val id: String = getSubmissionId(userId, recordId),
     val challengeId : String = "",
-    val userId : String? = "",
+    val date: Date? = Date(),
     var upVote : Int? = 0,
     var votersUser : MutableList<String> = mutableListOf()
 
@@ -73,8 +73,8 @@ data class ChallengeSubmissionModel (
         }
     }
 
-    fun upVote(userId: String?) : Boolean {
-        if (userId != null && !votersUser.contains(userId)) {
+    fun upVote(userId: String) : Boolean {
+        if (!votersUser.contains(userId)) {
             votersUser.add(userId)
             upVote = upVote?.plus(1)
             updateInDB()
@@ -83,8 +83,8 @@ data class ChallengeSubmissionModel (
         return false
     }
 
-    fun downVote(userId: String?) : Boolean {
-        if (userId != null && votersUser.contains(userId)) {
+    fun downVote(userId: String) : Boolean {
+        if (votersUser.contains(userId)) {
             votersUser.remove(userId)
             upVote = upVote?.plus(1)?.let { minOf(it, 0) }
             updateInDB()
