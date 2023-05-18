@@ -5,7 +5,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 
-data class UserModel (
+data class UserModel(
     override var id: String = "",
     var userName: String? = "null",
     var userNumRecordings: Int = 0,
@@ -24,7 +24,8 @@ data class UserModel (
         private const val NOTES_LIST = "musicNoteList"
         private const val FRIEND_REQUESTS = "friendRequests"
 
-        fun getCurrentUser(context: Context) : UserModel {
+
+        fun getCurrentUser(context: Context): UserModel {
             val reader = context.getSharedPreferences(
                 "LOGGED_USER", Context.MODE_PRIVATE
             )
@@ -48,7 +49,7 @@ data class UserModel (
             )
         }
 
-        fun getUser(userId: String) : UserModel {
+        fun getUser(userId: String): UserModel {
             val db = Firebase.firestore
 
             var user = UserModel(userId)

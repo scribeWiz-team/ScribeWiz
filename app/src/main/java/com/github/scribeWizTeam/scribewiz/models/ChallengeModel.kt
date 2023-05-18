@@ -16,6 +16,25 @@ data class ChallengeModel(
         const val COLLECTION = "Challenges"
         const val SUBMISSION_COLLECTION = "Submissions"
 
+
+        val challengeTest1: ChallengeModel =
+            ChallengeModel(
+                "1", "test1",
+                LocalDateTime.of(2023, 5, 15, 12, 0),
+                LocalDateTime.of(2023, 5, 15, 12, 0),
+                "This is a description",
+                "This is a badge"
+            )
+
+        val challengeTest2: ChallengeModel =
+            ChallengeModel(
+                "2", "test2",
+                LocalDateTime.of(2023, 5, 15, 12, 0),
+                LocalDateTime.of(2023, 5, 15, 12, 0),
+                "This is a description",
+                "This is a badge"
+            )
+
         fun challenge(challengeId: String): ChallengeModel {
             TODO("Not yet implemented")
         }
@@ -25,7 +44,7 @@ data class ChallengeModel(
         }
 
         fun challengesAvailable(): List<ChallengeModel> {
-            TODO("Not yet implemented")
+            return listOf(challengeTest1, challengeTest2)
         }
 
 
@@ -37,10 +56,11 @@ data class ChallengeModel(
             TODO("Not yet implemented")
         }
 
-        fun addSubmission() {
-            TODO("Not yet implemented")
-        }
 
+    }
+
+    fun addSubmission(recordId: String, userId: String) {
+        //do something
     }
 
     override fun getMapping(): HashMap<String, Any?> {
