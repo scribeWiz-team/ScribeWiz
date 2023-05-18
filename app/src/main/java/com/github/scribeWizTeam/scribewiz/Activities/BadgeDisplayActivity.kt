@@ -62,7 +62,7 @@ class BadgeDisplayActivity : ComponentActivity(){
                 Text("My badges", fontSize = 20.sp, textAlign = TextAlign.Center,
                 modifier = Modifier.padding(start = 100.dp).align(Alignment.CenterVertically))
             }
-            displayBadges()
+            Badges()
 
         }
     }
