@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Activities
 
 
 import android.annotation.SuppressLint
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
 

@@ -59,7 +59,8 @@ class NotesStorageManagerTest {
     @Test
     fun deleteNoteDeleteTheFile() {
         notesStorageManager.deleteNote("a")
-        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(), notesStorageManager.getNotesNames().toTypedArray())
+        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(),
+            notesStorageManager.getNotesNames().toTypedArray())
     }
 
     @Test
@@ -91,7 +92,8 @@ class NotesStorageManagerTest {
     fun getFileRetrieveCorrectFile() {
 
         for (name in expectedFiles) {
-            assertEquals("$name.$MUSIC_XML_EXTENSION", notesStorageManager.getNoteFile(name)?.name ?: "")
+            assertEquals("$name.$MUSIC_XML_EXTENSION",
+                notesStorageManager.getNoteFile(name)?.name ?: "")
         }
     }
 

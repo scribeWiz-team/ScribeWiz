@@ -21,7 +21,7 @@
             android:name=".Activities.NavigationActivity"
             android:exported="false" />
         <activity
-            android:name=".FirebaseUIActivity"
+            android:name=".Activities.FirebaseUIActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -44,6 +44,11 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+        </activity>
+
+        <activity
+            android:name=".Activities.BadgeDisplayActivity"
+            android:exported="false">
         </activity>
 
         <provider

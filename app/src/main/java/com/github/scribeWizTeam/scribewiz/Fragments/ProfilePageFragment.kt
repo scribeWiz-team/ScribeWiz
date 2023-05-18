@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,8 +28,10 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
-import com.github.scribeWizTeam.scribewiz.FirebaseUIActivity
+import com.github.scribeWizTeam.scribewiz.Activities.BadgeDisplayActivity
+import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
@@ -70,6 +71,11 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     @Composable
     fun ProfilePage(){
         val context = LocalContext.current
+        var userProfile : UserModel = remember{ UserModel() }
+        // Badge collection button/display
+        UserModel.currentUser(context).onSuccess{
+            userProfile = it
+        }
 
         // Check if user is logged in, set default values otherwise
         var userName = "Guest"
@@ -83,16 +89,16 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Pair("exampleFriendID6", "George"),
             Pair("exampleFriendID7", "Alice"),
             Pair("exampleFriendID8", "Bob"))
-        if(user != null) {
+        if(userProfile.id != "") {
             Log.w("READINGFRIENDSLIST", "USER EXISTS")
-             db.collection("Users").document(user.uid)
+             db.collection("Users").document(userProfile.id!!)
                  .get().addOnSuccessListener { data ->
                      numRecordings = data.get("userNumRecordings").toString()
                      // TODO: Currently bugging
                      //friendsList = data.get("friendsList") as HashMap<String, String>
                  }
 
-            userName = user.displayName!!
+            userName = userProfile.userName!!
         }
         friendsList.forEach{Log.w(it.key, it.value)}
         Column(
@@ -137,10 +143,14 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     if(user != null){
                         AuthUI.getInstance().signOut(context)
                     }
+                    UserModel.currentUser(context).onSuccess{
+                        it.unregisterAsCurrentUser(context)
+                    }
+
                     val goHome = Intent(context, FirebaseUIActivity::class.java)
                     context.startActivity(goHome)
                 },
-                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp, bottom = 10.dp)
+                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
             ) {
                 if(user == null) {
                     Text("Sign in")
@@ -149,13 +159,34 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 }
             }
 
-            Text(
-                text = "My total recordings : $numRecordings",
-                style = MaterialTheme.typography.h4,
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.Start)
-            )
-            Spacer(Modifier.height(20.dp))
+            Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                horizontalArrangement = Arrangement.SpaceBetween){
+                Text(
+                    text = "My recordings : $numRecordings",
+                    style = MaterialTheme.typography.h4,
+                    fontSize = 20.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+
+
+                if(userProfile.id != ""){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                            contentDescription = "My badges button",
+                            modifier = Modifier.clickable {
+
+                                BadgeModel.addBadgeToUser(userProfile, null)
+                                val openBadges = Intent(context, BadgeDisplayActivity::class.java)
+                                startActivity(openBadges)
+                            }
+                        )
+
+                        Text("My badges", modifier=Modifier.offset(y= (-20).dp))
+                    }
+                }
+            }
 
             if(user != null) {
                 val text = remember { mutableStateOf("") }
@@ -195,7 +226,6 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @Composable
     fun DrawFriendsGrid(friendsList : MutableMap<String, String>){
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
 import org.junit.Before
