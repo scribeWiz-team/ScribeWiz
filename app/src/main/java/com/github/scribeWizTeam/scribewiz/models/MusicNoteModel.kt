@@ -31,7 +31,7 @@ data class MusicNoteModel (
             }
 
             return if (musicNote == null) {
-                Result.failure(Exception("No user with id $id"))
+                Result.failure(Exception("No note with id $id"))
             } else {
                 Result.success(musicNote!!)
             }

@@ -1,25 +1,34 @@
 package com.github.scribeWizTeam.scribewiz.models
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 interface Model {
     val id: String
 
-    fun updateInDB() {
-        Firebase.firestore
+    fun updateInDB(onResultListener: ResultListener = object: ResultListener {
+        override fun onSuccess() {
+            Log.d("SETTINGUPDB", "data added")
+        }
+        override fun onError(error: Throwable) {
+            Log.w("SETTINGUPDB", "Error adding data", error)
+        }
+    }): Task<Void> {
+        return Firebase.firestore
             .collection(collectionName()).document(id).set(this)
             .addOnSuccessListener {
-                Log.d("SETTINGUPDB", "data added")
+                onResultListener.onSuccess()
             }
             .addOnFailureListener { e ->
-                Log.w("SETTINGUPDB", "Error adding data", e)
+                onResultListener.onError(e)
             }
+
     }
 
-    fun delete() {
-        Firebase.firestore.collection(collectionName()).document(id).delete()
+    fun delete() : Task<Void> {
+        return Firebase.firestore.collection(collectionName()).document(id).delete()
     }
 
     fun collectionName(): String

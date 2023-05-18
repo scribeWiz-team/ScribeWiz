@@ -1,5 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.models
 
+import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel.Controller.getSubmissionId
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -69,7 +71,7 @@ data class ChallengeModel(
             runBlocking {
                 val job = launch {
                     challenge = Firebase.firestore.collection(COLLECTION)
-                        .orderBy("date", Query.Direction.DESCENDING)
+                        .orderBy("startDate", Query.Direction.DESCENDING)
                         .get()
                         .await()
                         .documents
@@ -87,12 +89,12 @@ data class ChallengeModel(
         }
     }
 
-    fun addSubmission(recordId: String, userId: String) {
+    fun addSubmission(recordId: String, userId: String) : Task<Void> {
         val subId = Firebase.firestore
             .collection(COLLECTION)
             .document(id)
             .collection(SUBMISSION_COLLECTION)
-            .document()
+            .document(getSubmissionId(userId, recordId))
             .id
 
         return ChallengeSubmissionModel(subId, Date(), recordId, id, userId).updateInDB()
@@ -115,8 +117,9 @@ data class ChallengeModel(
         return COLLECTION
     }
 
-    override fun delete() {
-        Firebase.firestore.collection(collectionName())
+    override fun delete() : Task<Void> {
+        Firebase.firestore
+            .collection(collectionName())
             .document(id)
             .collection(SUBMISSION_COLLECTION)
             .get()
@@ -124,7 +127,7 @@ data class ChallengeModel(
                 for (sub in it) {
                     sub.reference.delete()
                 }
-        }
-        super.delete()
+            }
+        return super.delete()
     }
 }

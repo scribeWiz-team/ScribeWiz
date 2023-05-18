@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.models
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -13,7 +14,7 @@ data class ChallengeSubmissionModel (
     override val id: String = "",
     val date: Date? = Date(),
     val recordId : String? = "",
-    val challengeId : String? = "",
+    val challengeId : String = "",
     val userId : String? = "",
     var upVote : Int? = 0,
     var votersUser : MutableList<String> = mutableListOf()
@@ -26,46 +27,49 @@ data class ChallengeSubmissionModel (
 
             runBlocking {
                 val job = launch {
-                    Firebase.firestore
+                    for (submission in Firebase.firestore
                         .collection(ChallengeModel.COLLECTION)
                         .document(challengeId)
                         .collection(ChallengeModel.SUBMISSION_COLLECTION)
                         .get()
-                        .addOnSuccessListener {
-                            for (submission in it) {
-                                submissionsList.add(submission.toObject())
-                            }
-                        }
-                        .await()
+                        .await())
+                    {
+                        val model: ChallengeSubmissionModel = submission.toObject()
+                        submissionsList.add(model)
+                    }
                 }
                 job.join()
             }
 
             return submissionsList
         }
-    }
 
-    fun submission(challengeId: String, submissionId : String) : Result<ChallengeSubmissionModel> {
-        var submission : ChallengeSubmissionModel? = null
+        fun submission(challengeId: String, submissionId : String) : Result<ChallengeSubmissionModel> {
+            var submission : ChallengeSubmissionModel? = null
 
-        runBlocking {
-            val job = launch {
-                submission = Firebase.firestore
-                    .collection(ChallengeModel.COLLECTION)
-                    .document(challengeId)
-                    .collection(ChallengeModel.SUBMISSION_COLLECTION)
-                    .document(submissionId)
-                    .get()
-                    .await()
-                    .toObject()
+            runBlocking {
+                val job = launch {
+                    submission = Firebase.firestore
+                        .collection(ChallengeModel.COLLECTION)
+                        .document(challengeId)
+                        .collection(ChallengeModel.SUBMISSION_COLLECTION)
+                        .document(submissionId)
+                        .get()
+                        .await()
+                        .toObject()
+                }
+                job.join()
             }
-            job.join()
+
+            return if (submission == null) {
+                Result.failure(Exception("No challenge with id $challengeId"))
+            } else {
+                Result.success(submission!!)
+            }
         }
 
-        return if (submission == null) {
-            Result.failure(Exception("No challenge with id $challengeId"))
-        } else {
-            Result.success(submission!!)
+        fun getSubmissionId(userId: String, recordId: String) : String{
+            return "$userId-$recordId"
         }
     }
 
@@ -89,21 +93,21 @@ data class ChallengeSubmissionModel (
         return false
     }
 
-    override fun updateInDB() {
-        if (challengeId != null) {
-            Firebase.firestore
-                .collection(ChallengeModel.COLLECTION)
-                .document(challengeId)
-                .collection(collectionName())
-                .document(id)
-                .set(this)
-                .addOnSuccessListener {
-                    Log.d("SETTINGUPDB", "data added with id $id")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("SETTINGUPDB", "Error adding data", e)
-                }
-        }
+    override fun updateInDB(onResultListener: ResultListener) : Task<Void> {
+        return Firebase.firestore
+            .collection(ChallengeModel.COLLECTION)
+            .document(challengeId)
+            .collection(collectionName())
+            .document(id)
+            .set(this)
+            .addOnSuccessListener {
+                Log.d("SETTINGUPDB", "data added with id $id")
+                onResultListener.onSuccess()
+            }
+            .addOnFailureListener { e ->
+                Log.w("SETTINGUPDB", "Error adding data", e)
+                onResultListener.onError(e)
+            }
     }
 
     override fun collectionName(): String {

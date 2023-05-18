@@ -1,35 +1,70 @@
 package com.github.scribeWizTeam.scribewiz
 
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
+import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel
+import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel.Controller.getSubmissionId
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertTrue
+import kotlin.test.assertContains
 
 class ChallengeSubmissionModelTest {
+
+    private val challengeId = "test-id-challenge"
+    private val challenge = ChallengeModel(challengeId)
+
+    @Before
+    fun createChallenge() {
+        runBlocking {
+            challenge.updateInDB().await()
+        }
+    }
+
+    @After
+    fun deleteChallenge() {
+        runBlocking {
+            challenge.delete().await()
+        }
+    }
+
     @Test
     fun putAndRetrieveChallengeSubmissionInDBSucceed(){
-        val id = "test-id-challenge"
         val userId = "test-user-id"
         val recordId = "test-record-id"
-        val challenge = ChallengeModel(id)
-        challenge.updateInDB()
 
-        Thread.sleep(2000)
+        runBlocking {
+            challenge.addSubmission(recordId, userId).await()
+        }
 
-        challenge.addSubmission(recordId, userId)
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                assertEquals(userId, it.userId)
+                assertEquals(recordId, it.recordId)
+            }.onFailure {
+                throw Exception("no matching submission found in db")
+            }
+    }
 
-        Thread.sleep(2000)
+    @Test
+    fun retrieveAllChallengeSubmissionsInDBSucceed(){
+        val userId1 = "test-user-id1"
+        val recordId1 = "test-record-id1"
+        val userId2 = "test-user-id2"
+        val recordId2 = "test-record-id2"
+
+        runBlocking {
+            challenge.addSubmission(recordId1, userId1).await()
+            challenge.addSubmission(recordId2, userId2).await()
+        }
 
         val submissions = challenge.allSubmissions()
 
-        Thread.sleep(2000)
+        assertEquals(2, submissions.size)
 
-        println(submissions)
-
-        assertEquals(1, submissions.size)
-        assertEquals(userId, submissions.first().userId)
-        assertEquals(recordId, submissions.first().recordId)
-
-        challenge.delete()
+        assertContains(submissions.map { it.recordId }, recordId1, recordId2)
+        assertContains(submissions.map { it.userId }, userId1, userId2)
     }
 }
