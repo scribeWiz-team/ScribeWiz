@@ -86,7 +86,7 @@ data class ChallengeSubmissionModel (
     fun downVote(userId: String) : Boolean {
         if (votersUser.contains(userId)) {
             votersUser.remove(userId)
-            upVote = upVote?.plus(1)?.let { minOf(it, 0) }
+            upVote = upVote?.minus(1)?.let { maxOf(it, 0) }
             updateInDB()
             return true
         }
