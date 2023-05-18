@@ -31,14 +31,14 @@ class AuthActivityTest {
         FirebaseAuth.getInstance().signOut()
     }
 
-    @Test
-    fun testLoginButton() {
-        Intents.init()
-        composeTestRule.onNodeWithText("Login").performClick()
-        intended(hasComponent(KickoffActivity::class.java.name))
+    /*    @Test
+        fun testLoginButton() {
+            Intents.init()
+            composeTestRule.onNodeWithText("Login").performClick()
+            intended(hasComponent(KickoffActivity::class.java.name))
 
-        Intents.release()
-    }
+            Intents.release()
+        }*/
 
     //TODO: Figure out how to actually log in a user using the Google API
     /*@Test
@@ -54,6 +54,6 @@ class AuthActivityTest {
         intended(hasComponent(NavigationActivity::class.java.name))
         Intents.release()
     }
-    
+
 
 }

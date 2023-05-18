@@ -23,8 +23,10 @@ import com.github.scribeWizTeam.scribewiz.Fragments.ChallengesFragment
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 class ParticipateInChallengeActivity : AppCompatActivity() {
 
@@ -73,19 +75,21 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
         Button(
             onClick = {
-                try {
+                val currentUser = UserModel.currentUser(context = context)
+                if (currentUser.isSuccess) {
                     val musicFileId: String = addLocalMusicFileMetaDataToDB(musicName)
                     challenge.addSubmission(
                         recordId = musicFileId,
-                        UserModel.getCurrentUser(context = context).id
+                        userId = currentUser.getOrNull()!!.id,
                     )
-                } catch (e: Exception) {
+                } else {
                     Toast.makeText(
                         context,
-                        "You should be connected to participate",
-                        Toast.LENGTH_LONG
+                        "You must be logged in to participate in a challenge",
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
+
 
             },
 
@@ -98,8 +102,8 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
                     .weight(0.75f)
                     .fillMaxWidth()
             ) {
-                Text(text = challenge.name)
-                Text(text = niceDurationDateFormatting(challenge.dateBeginning, challenge.dateEnd))
+                Text(text = challenge.name ?: "No name specified")
+                Text(text = niceDurationDateFormatting(challenge.startDate, challenge.endDate))
             }
 
         }
@@ -130,8 +134,8 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
 
     private fun niceDurationDateFormatting(
-        startingDate: LocalDateTime?,
-        endDate: LocalDateTime?
+        startingDate: Date?,
+        endDate: Date?
     ): String {
 
         if (startingDate == null && endDate == null) {
@@ -147,9 +151,9 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         return "From ${dateFormatting(startingDate)} to ${dateFormatting(endDate)}"
     }
 
-    private fun dateFormatting(date: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, HH:mm\"")
-        return date.format(formatter) ?: throw Exception("There was a problem with your date")
+    private fun dateFormatting(date: Date): String {
+        val formatter = SimpleDateFormat("MMM dd, yyyy, HH:mm")
+        return formatter.format(date) ?: throw Exception("There was a problem with your date")
     }
 
     //It is needed here as long as I don't have the part from Stefan that upload local music files in a nice way

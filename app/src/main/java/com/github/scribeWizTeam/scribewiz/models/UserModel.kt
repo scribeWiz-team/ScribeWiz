@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
-data class UserModel (
+data class UserModel(
     override var id: String = Firebase.firestore.collection(COLLECTION).document().id,
     var userName: String? = "null",
     var userNumRecordings: Long? = 0,
@@ -24,7 +24,7 @@ data class UserModel (
 
         private const val USER_ID = "id"
 
-        fun currentUser(context: Context) : Result<UserModel> {
+        fun currentUser(context: Context): Result<UserModel> {
             val reader = context.getSharedPreferences(LOGGED_USER, Context.MODE_PRIVATE)
 
             val userId = reader.getString(USER_ID, "")
@@ -33,8 +33,8 @@ data class UserModel (
             return user(userId)
         }
 
-        fun user(userId: String) : Result<UserModel> {
-            var user : UserModel? = null
+        fun user(userId: String): Result<UserModel> {
+            var user: UserModel? = null
 
             runBlocking {
                 val job = launch {
@@ -60,11 +60,7 @@ data class UserModel (
         val editor = context.getSharedPreferences(
             LOGGED_USER, Context.MODE_PRIVATE
         ).edit()
-
         editor.putString(USER_ID, id)
-        editor.putString(USER_NAME, userName)
-        editor.putInt(USER_NUM_NOTES, userNumRecordings)
-        editor.putStringSet(NOTES_LIST, musicNoteList)
         editor.apply()
     }
 

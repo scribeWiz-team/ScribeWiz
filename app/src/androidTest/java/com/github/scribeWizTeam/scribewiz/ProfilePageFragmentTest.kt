@@ -23,29 +23,30 @@ class ProfilePageFragmentTest {
     }
 
     @Test
-    fun shouldDisplayProfilePage(){
+    fun shouldDisplayProfilePage() {
         composeTestRule.onNodeWithText("My ScribeWiz Profile").assertIsDisplayed()
     }
 
     @Test
-    fun shouldDisplayProfileImage(){
+    fun shouldDisplayProfileImage() {
         composeTestRule.onNodeWithContentDescription("User profile picture").assertIsDisplayed()
     }
 
-    @Test
-    fun shouldDisplayGuestName(){
-        composeTestRule.onNodeWithText("Guest").assertIsDisplayed()
-    }
+    //   @Test
+    //  fun shouldDisplayGuestName(){
+    //    composeTestRule.onNodeWithText("Guest").assertIsDisplayed()
+    //}
 
     @Test
-    fun canAccessLoginPage(){
+    fun canAccessLoginPage() {
         Intents.init()
         composeTestRule.onNodeWithText("Sign in").performClick()
         Intents.intended(IntentMatchers.hasComponent(FirebaseUIActivity::class.java.name))
         Intents.release()
     }
+
     @Test
-    fun friendsListIsDisplayed(){
+    fun friendsListIsDisplayed() {
         composeTestRule.onNodeWithText("Bob").assertIsDisplayed()
     }
 

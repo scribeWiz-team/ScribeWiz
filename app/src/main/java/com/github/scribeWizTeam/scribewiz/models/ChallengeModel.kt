@@ -15,8 +15,8 @@ import java.util.*
 data class ChallengeModel(
     override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
     val name: String? = "",
-    val startDate: LocalDateTime? = Date(),
-    val endDate: LocalDateTime? = Date(),
+    val startDate: Date? = Date(0),
+    val endDate: Date? = Date(0),
     val description: String? = "",
     val badge: String? = ""
 ) : Model {
@@ -29,8 +29,8 @@ data class ChallengeModel(
         val challengeTest1: ChallengeModel =
             ChallengeModel(
                 "1", "test1",
-                LocalDateTime.of(2023, 5, 15, 12, 0),
-                LocalDateTime.of(2023, 5, 15, 12, 0),
+                Date(0),
+                Date(0),
                 "This is a description",
                 "This is a badge"
             )
@@ -38,8 +38,8 @@ data class ChallengeModel(
         val challengeTest2: ChallengeModel =
             ChallengeModel(
                 "2", "test2",
-                LocalDateTime.of(2023, 5, 15, 12, 0),
-                LocalDateTime.of(2023, 5, 15, 12, 0),
+                Date(0),
+                Date(0),
                 "This is a description",
                 "This is a badge"
             )
@@ -48,8 +48,8 @@ data class ChallengeModel(
             return listOf(challengeTest1, challengeTest2)
         }
 
-        fun challenge(challengeId : String) : Result<ChallengeModel> {
-            var challenge : ChallengeModel? = null
+        fun challenge(challengeId: String): Result<ChallengeModel> {
+            var challenge: ChallengeModel? = null
 
             runBlocking {
                 val job = launch {
@@ -69,8 +69,8 @@ data class ChallengeModel(
             }
         }
 
-        fun challengesAvailable() : List<ChallengeModel> {
-            val challengesList : MutableList<ChallengeModel> = mutableListOf()
+        fun challengesAvailable(): List<ChallengeModel> {
+            val challengesList: MutableList<ChallengeModel> = mutableListOf()
 
             runBlocking {
                 val job = launch {
@@ -89,8 +89,8 @@ data class ChallengeModel(
             return challengesList
         }
 
-        fun latestChallenge() : Result<ChallengeModel> {
-            var challenge : ChallengeModel? = null
+        fun latestChallenge(): Result<ChallengeModel> {
+            var challenge: ChallengeModel? = null
 
             runBlocking {
                 val job = launch {
@@ -113,23 +113,24 @@ data class ChallengeModel(
         }
     }
 
-    fun addSubmission(recordId: String, userId: String) : Task<Void> {
+    fun addSubmission(recordId: String, userId: String): Task<Void> {
         return ChallengeSubmissionModel(
             recordId = recordId,
             userId = userId,
-            challengeId = id).updateInDB()
+            challengeId = id
+        ).updateInDB()
     }
 
-    fun allSubmissions() : List<ChallengeSubmissionModel> {
+    fun allSubmissions(): List<ChallengeSubmissionModel> {
         return ChallengeSubmissionModel.getAll(id)
     }
 
-    fun winningSubmission() : Result<ChallengeSubmissionModel> {
+    fun winningSubmission(): Result<ChallengeSubmissionModel> {
         val submissions = ChallengeSubmissionModel.getAll(id)
         return if (submissions.isEmpty()) {
             Result.failure(Exception("No submission yet"))
         } else {
-            Result.success(submissions.maxByOrNull { it.upVote?:0 }!!)
+            Result.success(submissions.maxByOrNull { it.upVote ?: 0 }!!)
         }
     }
 
@@ -137,7 +138,7 @@ data class ChallengeModel(
         return COLLECTION
     }
 
-    override fun delete() : Task<Void> {
+    override fun delete(): Task<Void> {
         Firebase.firestore
             .collection(collectionName())
             .document(id)

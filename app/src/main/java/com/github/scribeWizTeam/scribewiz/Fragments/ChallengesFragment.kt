@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -55,11 +57,20 @@ class ChallengesFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                val challenges =
-                    remember {
-                        ChallengeModel.challengesAvailable().toMutableStateList()
-                    }
-                ChallengeList(challenges = challenges)
+                if (!isTest) {
+                    val challenges =
+                        remember {
+                            ChallengeModel.challengesAvailable().toMutableStateList()
+                        }
+                    ChallengeList(challenges = challenges)
+                } else {
+                    val challenges =
+                        remember {
+                            ChallengeModel.challengesAvailableTest().toMutableStateList()
+                        }
+                    ChallengeList(challenges = challenges)
+                }
+
             }
         }
     }
@@ -105,8 +116,8 @@ class ChallengesFragment : Fragment() {
                     .weight(0.75f)
                     .fillMaxWidth()
             ) {
-                Text(text = challenge.name)
-                Text(text = niceDurationDateFormatting(challenge.dateBeginning, challenge.dateEnd))
+                Text(text = challenge.name ?: "No name specified")
+                Text(text = niceDurationDateFormatting(challenge.startDate, challenge.endDate))
             }
 
         }
@@ -126,8 +137,8 @@ class ChallengesFragment : Fragment() {
 
 
     private fun niceDurationDateFormatting(
-        startingDate: LocalDateTime?,
-        endDate: LocalDateTime?
+        startingDate: Date?,
+        endDate: Date?
     ): String {
 
         if (startingDate == null && endDate == null) {
@@ -143,8 +154,8 @@ class ChallengesFragment : Fragment() {
         return "From ${dateFormatting(startingDate)} to ${dateFormatting(endDate)}"
     }
 
-    private fun dateFormatting(date: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, HH:mm\"")
-        return date.format(formatter) ?: throw Exception("There was a problem with your date")
+    private fun dateFormatting(date: Date): String {
+        val formatter = SimpleDateFormat("MMM dd, yyyy, HH:mm")
+        return formatter.format(date) ?: throw Exception("There was a problem with your date")
     }
 }
