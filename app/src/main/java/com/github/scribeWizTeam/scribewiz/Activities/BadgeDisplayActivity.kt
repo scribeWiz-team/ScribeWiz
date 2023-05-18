@@ -33,7 +33,7 @@ class BadgeDisplayActivity : ComponentActivity(){
         super.onCreate(savedInstanceState)
 
         setContent{
-            badgeDisplayLayout()
+            BadgeDisplayLayout()
         }
     }
 
