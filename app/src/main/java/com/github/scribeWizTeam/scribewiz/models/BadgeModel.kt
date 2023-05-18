@@ -39,7 +39,7 @@ data class BadgeModel(override var id: String? = "",
             runBlocking {
                 val job = launch {
                     for (id in user.badges!!) {
-                        db.collection("Users")
+                        db.collection(UserModel.COLLECTION)
                             .document(user.id!!)
                             .collection(COLLECTION)
                             .document(id)
