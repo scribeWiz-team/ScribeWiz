@@ -267,7 +267,52 @@ class EditorTest {
     """.trimIndent()
         writeToFile(inputMusicXMLFile, inputXMLContent)
 
-        val noteLocation = Editor.convertTicksToNoteLocation(inputMusicXMLFile, 3)
+        val noteLocation = Editor.convertTicksToNoteLocation(inputMusicXMLFile, 481)
+
+        Assert.assertEquals(1, noteLocation)
+    }
+
+    @Test
+    fun testGetNoteCountWithinQuarterNotes() {
+        val inputXMLContent = """
+        <?xml version="1.0"?>
+        <score>
+            <divisions>2</divisions>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>A</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>B</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>C</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>D</step>
+                </pitch>
+            </note>
+            <note>
+                <duration>1</duration>
+                <pitch>
+                    <step>E</step>
+                </pitch>
+            </note>
+        </score>
+    """.trimIndent()
+        writeToFile(inputMusicXMLFile, inputXMLContent)
+
+        val noteLocation = Editor.getNoteCountWithinQuarterNotes(inputMusicXMLFile, 481)
 
         Assert.assertEquals(2, noteLocation)
     }

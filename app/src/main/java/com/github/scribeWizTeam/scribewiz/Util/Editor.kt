@@ -12,7 +12,12 @@ class Editor {
 
     companion object {
         // Function to edit a note at a specific location in a MusicXML file.
-        fun editNoteInMusicXML(outputFile: File, inputFile: File, noteLocation: Int, newNote: String) {
+        fun editNoteInMusicXML(
+            outputFile: File,
+            inputFile: File,
+            noteLocation: Int,
+            newNote: String
+        ) {
             // Initialize XmlPullParser for parsing the input MusicXML file.
             val parserFactory = XmlPullParserFactory.newInstance()
             val parser = parserFactory.newPullParser()
@@ -30,7 +35,14 @@ class Editor {
             var currentNoteLocation = 0
 
             // Loop through the input file's XML content until reaching the end of the document, and write the note at the desired location.
-            loopXMLDocument(eventType, parser, xmlSerializer, currentNoteLocation, noteLocation, newNote)
+            loopXMLDocument(
+                eventType,
+                parser,
+                xmlSerializer,
+                currentNoteLocation,
+                noteLocation,
+                newNote
+            )
 
             // End the document and close the input and output file streams.
             xmlSerializer.endDocument()
@@ -40,7 +52,14 @@ class Editor {
 
 
         // Helper Function to loop through the input file's XML content until reaching the end of the document and writes the note at the desired location.
-        private fun loopXMLDocument(eventType: Int, parser: XmlPullParser, xmlSerializer: XmlSerializer, currentNoteLocation: Int, noteLocation: Int, newNote: String) {
+        private fun loopXMLDocument(
+            eventType: Int,
+            parser: XmlPullParser,
+            xmlSerializer: XmlSerializer,
+            currentNoteLocation: Int,
+            noteLocation: Int,
+            newNote: String
+        ) {
             var eventType1 = eventType
             var currentNoteLocation1 = currentNoteLocation
             while (eventType1 != XmlPullParser.END_DOCUMENT) {
@@ -87,12 +106,13 @@ class Editor {
         private fun copyTagToSerializer(parser: XmlPullParser, xmlSerializer: XmlSerializer) {
             for (i in 0 until parser.attributeCount) {
                 xmlSerializer.attribute(
-                        null,
-                        parser.getAttributeName(i),
-                        parser.getAttributeValue(i)
+                    null,
+                    parser.getAttributeName(i),
+                    parser.getAttributeValue(i)
                 )
             }
         }
+
         /**
          * Function to help convert from Midi Ticks to MusicXML note location.
          *
@@ -112,10 +132,10 @@ class Editor {
 
             // Initialize variables
             var eventType = parser.eventType
-            var currentTicks = 0
+            var currentTicks = 1
             var noteLocation = 0
             var divisions = 0
-            var currentDivisionTicks = 0
+            var currentDivisionTicks = 480
 
             // Iterate through the XML file
             while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -138,7 +158,7 @@ class Editor {
                         else if (tagName == "duration") {
                             eventType = parser.next()
                             val duration = parser.text.toInt()
-                            currentDivisionTicks = duration * divisions
+
                         }
                     }
                     XmlPullParser.END_TAG -> {
@@ -157,11 +177,70 @@ class Editor {
             return noteLocation
         }
 
+        /**
+         * This function counts the number of notes (including rests, half notes, quarter notes)
+         * that are within the first quarter partitions in a MusicXML file.
+         *
+         * @param inputFile The input MusicXML file.
+         * @param quarterNotes The number of quarter notes to include in the count.
+         * @return The number of notes that start within the specified duration.
+         */
+        fun getNoteCountWithinQuarterNotes(inputFile: File, quarterNotes: Int): Int {
+            // Create a new instance of XmlPullParserFactory and XmlPullParser
+            val parserFactory = XmlPullParserFactory.newInstance()
+            val parser = parserFactory.newPullParser()
+
+            // Open the input file and set it as the input for the parser
+            val inputStream = FileInputStream(inputFile)
+            parser.setInput(inputStream, null)
+
+            // Initialize variables
+            var eventType = parser.eventType
+            var noteCount = 0
+            var divisions = 1 // Default divisions to 1 if not set in the file
+            var totalQuarterNotes = 0.0 // Cumulative total of quarter notes encountered so far
+            val ticksPerQuarterNote = 480 // Default ticks per quarter note
+
+            // Parse through the XML file
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    val tagName = parser.name
+
+                    // If the current tag is a "note", we need to find the "duration" child tag within it
+                    if (tagName == "note") {
+                        while (!(eventType == XmlPullParser.END_TAG && parser.name == "note")) {
+                            if (eventType == XmlPullParser.START_TAG && parser.name == "duration") {
+                                // Parse the duration value
+                                eventType = parser.next()
+                                // Calculate the quarter note equivalent of the duration
+                                val noteDuration = parser.text.toDouble() / divisions * 2.0
+
+                                // Check if adding this note would exceed the allowed duration
+                                if (totalQuarterNotes + noteDuration > quarterNotes / ticksPerQuarterNote) {
+                                    break
+                                }
+                                // Update the total duration and note count
+                                totalQuarterNotes += noteDuration
+                                noteCount++
+                            }
+                            eventType = parser.next()
+                        }
+                    }
+                    // If the current tag is "divisions", update the divisions value
+                    else if (tagName == "divisions") {
+                        eventType = parser.next()
+                        divisions = parser.text.toInt()
+                    }
+                }
+                eventType = parser.next()
+            }
+
+            // Close the input stream after parsing
+            inputStream.close()
+
+            // Return the total note count
+            return noteCount + 1
+        }
 
     }
-
-
-
-
-
 }

@@ -9,8 +9,9 @@ import alphaTab.importer.ScoreLoader
 import alphaTab.model.Score
 import alphaTab.synth.PlayerState
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
+import android.widget.*
 import java.io.ByteArrayOutputStream
 import kotlin.contracts.ExperimentalContracts
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +19,6 @@ import com.github.scribeWizTeam.scribewiz.Util.Editor
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.FileOutputStream
-
 
 //This activity displays dynamically the notes of a passed MusicXML file
 //To use this activity, you have to use an Intent with the Uri of the MusicXML file converted to string, passed as additional data to the intent with the key fileKey
@@ -31,6 +31,8 @@ class NotesDisplayedActivity : AppCompatActivity() {
     lateinit var _viewModel: ViewScoreViewModel
     val fileKey : String = "FILE"
     var exceptionCaught: Boolean = false //Used in the unit tests to make sure the exception was handled
+    private lateinit var noteSpinner: Spinner
+    private lateinit var replaceNoteButton: Button
 
     //TODO: Think about a better way to pass the file
 
@@ -79,6 +81,26 @@ class NotesDisplayedActivity : AppCompatActivity() {
         }
         playButton.setOnClickListener {
             _alphaTabView.api.playPause()
+        }
+
+        replaceNoteButton = findViewById(R.id.replace_note_button)
+        noteSpinner = findViewById(R.id.note_spinner)
+
+        // Initialize the Spinner with an ArrayAdapter using an array of note choices.
+        val notesArray = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B") // modify this array as needed
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, notesArray)
+        noteSpinner.adapter = spinnerAdapter
+
+        // Make the spinner visible from the start
+        noteSpinner.visibility = View.VISIBLE
+
+        // Handle replaceNoteButton clicks
+        replaceNoteButton.setOnClickListener {
+            //print the current tick position
+            val selectedNote = noteSpinner.selectedItem.toString()
+            if (filePassed != null) {
+                editNote(filePassed, selectedNote)
+            }
         }
     }
 
@@ -151,10 +173,12 @@ class NotesDisplayedActivity : AppCompatActivity() {
 
         // Get the current tick position and convert it to a note location in the input musicXML file
         val tickPosition = _viewModel.currentTickPosition.value
-        val noteLocation = Editor.convertTicksToNoteLocation(inputFile, tickPosition!!)
+        val noteLocation = Editor.getNoteCountWithinQuarterNotes(inputFile, tickPosition!!)
 
         // Edit the note in the input musicXML file and write the modified content to the output file
-        Editor.editNoteInMusicXML(outputFile, inputFile, noteLocation, newNote)
+        if (noteLocation != null) {
+            Editor.editNoteInMusicXML(outputFile, inputFile, noteLocation, newNote)
+        }
 
         // Delete the input file since it's no longer needed and uses up storage space
         inputFile.delete()
