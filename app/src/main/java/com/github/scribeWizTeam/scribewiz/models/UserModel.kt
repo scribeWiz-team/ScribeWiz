@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 data class UserModel (
-    override var id: String? = "",
+    override var id: String = "",
     var userName: String? = "null",
     var userNumRecordings: Long? = 0,
     var friends: MutableList<String>? = mutableListOf(),
