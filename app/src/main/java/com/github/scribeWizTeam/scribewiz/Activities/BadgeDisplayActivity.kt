@@ -38,7 +38,7 @@ class BadgeDisplayActivity : ComponentActivity(){
     }
 
     @Composable
-    fun badgeDisplayLayout(){
+    fun BadgeDisplayLayout(){
         val context = LocalContext.current
 
         Column(
