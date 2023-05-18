@@ -24,6 +24,9 @@ class NotesStorageManagerTest {
 
     private val invalidFileName = "NOT_A_VALID_FILE"
 
+    private val newNoteName = "new_note"
+    private val expectedNewNoteFileName = "$newNoteName.$MUSIC_XML_EXTENSION"
+
     private var notesStorageManager = NotesStorageManager(notesFolder)
 
     @Before
@@ -56,12 +59,22 @@ class NotesStorageManagerTest {
     @Test
     fun deleteNoteDeleteTheFile() {
         notesStorageManager.deleteNote("a")
-        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(), notesStorageManager.getNotesNames().toTypedArray())
+        assertArrayEquals(expectedFiles.filter { s -> s != "a" }.toTypedArray(),
+            notesStorageManager.getNotesNames().toTypedArray())
     }
 
     @Test
     fun onlyMusicXMLFiles() {
         assertFalse(notesStorageManager.getNotesNames().contains(invalidFileName))
+    }
+
+    @Test
+    fun writeNewNote() {
+        val content = "<dummy content>"
+        val expectedFile = notesFolder.resolve(expectedNewNoteFileName)
+        assertFalse(expectedFile.exists())
+        notesStorageManager.writeNoteFile(newNoteName, content)
+        assertTrue(expectedFile.exists())
     }
 
     @Test
@@ -79,7 +92,8 @@ class NotesStorageManagerTest {
     fun getFileRetrieveCorrectFile() {
 
         for (name in expectedFiles) {
-            assertEquals("$name.$MUSIC_XML_EXTENSION", notesStorageManager.getNoteFile(name)?.name ?: "")
+            assertEquals("$name.$MUSIC_XML_EXTENSION",
+                notesStorageManager.getNoteFile(name)?.name ?: "")
         }
     }
 

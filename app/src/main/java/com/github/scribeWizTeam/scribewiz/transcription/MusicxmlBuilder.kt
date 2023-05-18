@@ -51,6 +51,8 @@ class Leaf(val tag: Tag, val content: String?): Tree() {
     constructor(name: String, content: String): this(Tag(name), content)
     constructor(name: String): this(Tag(name), null)
 
+    constructor(tag: Tag): this(tag, null)
+
     override fun render(depth: Int): String {
         return tag.wrap_content(content, depth, oneline=true)
     }
@@ -121,7 +123,8 @@ data class StaffRest(override val duration: Int,
 
 
 data class Signature(val key: Int, val beats: Int, val beat_type: Int,
-                     val divisions: Int = 1, val tempo: Int = 120){
+                     val divisions: Int = 1, val tempo: Int = 120,
+                     val use_g_key_signature: Boolean = true){
     // key: the key to use for the music piece
     //      0 indicates C major
     //      a positive number indicates a number of sharps
@@ -177,8 +180,21 @@ data class Signature(val key: Int, val beats: Int, val beat_type: Int,
         return (time * tempo * divisions / 60.0).roundToInt()
     }
 
-    fun toNode(): Node {
-        return Node("attributes",
+    fun toNodes(): Array<Node> {
+        val key_sig: Node
+        if (use_g_key_signature){
+            key_sig = Node("clef",
+                        Leaf("sign", "G"),
+                        Leaf("line", "2")
+                    )
+        } else {
+            key_sig = Node("clef",
+                        Leaf("sign", "F"),
+                        Leaf("line", "4")
+                    )
+        }
+        return arrayOf(
+               Node("attributes",
                     Leaf("divisions", divisions.toString()),
                     Node("key",
                         Leaf("fifths", key.toString())
@@ -187,11 +203,18 @@ data class Signature(val key: Int, val beats: Int, val beat_type: Int,
                         Leaf("beats", beats.toString()),
                         Leaf("beat-type", beat_type.toString()),
                     ),
-                    Node("clef",
-                        Leaf("sign", "G"),
-                        Leaf("line", "2")
-                    )
-               )
+                    key_sig
+               ),
+               Node("direction".tagattr("placement" to "above"),
+                    Node("direction-type",
+                         Node("metronome".tagattr("parentheses" to "no"),
+                              Leaf("beat-unit", "quarter"),
+                              Leaf("per-minute", tempo.toString())
+                        )
+                   ),
+                   Leaf("sound".tagattr("tempo" to tempo.toString()))
+              )
+        )
     }
 }
 
@@ -271,7 +294,7 @@ class MusicxmlBuilder(val scoreName: String, val signature: Signature): MusicRen
         val notesNodes = measure.map({ it -> it.toNode() }).toTypedArray()
         if (measure_count == 1){
             staff += Node("measure".tagattr("number" to measure_count.toString()),
-                signature.toNode(),
+                *signature.toNodes(),
                 *notesNodes
             )
         } else {

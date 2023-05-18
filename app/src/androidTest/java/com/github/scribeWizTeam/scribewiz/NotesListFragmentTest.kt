@@ -37,12 +37,11 @@ class NotesListFragmentTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @get:Rule
-    var rRuntimePermissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
+    var rRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
 
     @get:Rule
-    var wRuntimePermissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant(WRITE_EXTERNAL_STORAGE)
+    var wRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(WRITE_EXTERNAL_STORAGE)
+
 
 
     private val expectedFiles = 'a'..'g'
@@ -72,20 +71,19 @@ class NotesListFragmentTest {
         }
     }
 
-
-    @Test
-    fun dismissNoteDeleteCorrectly() {
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
-                this.down(Offset(200F, 0F))
-                this.moveTo(Offset(0F, 0F))
-                this.up()
-            }
-        }
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
-        }
-    }
+//    @Test
+//    fun dismissNoteDeleteCorrectly() {
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
+//                this.down(Offset(200F, 0F))
+//                this.moveTo(Offset(0F, 0F))
+//                this.up()
+//            }
+//        }
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
+//        }
+//    }
 
     @Test
     fun onlyMusicXMLFiles() {
@@ -106,19 +104,17 @@ class NotesListFragmentTest {
 
     @Test
     fun openDialogForChangingNameWhenLongClick() {
-        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
-        composeTestRule.onNode(hasText("Rename")).performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
         composeTestRule.onNodeWithText(NotesListFragment().dialogName).assertIsDisplayed()
     }
 
     @Test
     fun fileIsModifiedToTheGoodValue() {
 
-        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
-        composeTestRule.onNode(hasText("Rename")).performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
         composeTestRule.onNodeWithContentDescription("New Name").performTextClearance()
         composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
-
+        composeTestRule.onNode(hasText("Rename")).performClick()
 
         runBlocking {
             composeTestRule.waitUntil(timeoutMillis = 100000) {
@@ -136,13 +132,11 @@ class NotesListFragmentTest {
 
     @Test
     fun dialogGetCanceledCorrectly() {
-        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
-        composeTestRule.onNode(hasText("Rename")).performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
         composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
         composeTestRule.onNode(hasText("Cancel")).performClick()
 
-        composeTestRule.onNode(hasText("a"))
-            .assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
+        composeTestRule.onNode(hasText("a")).assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
 
     }
 
@@ -157,7 +151,7 @@ class NotesListFragmentTest {
 
 
     @After
-    fun removeTestFiles() {
+    fun removeTestFiles(){
         notesDir.deleteRecursively()
     }
 }

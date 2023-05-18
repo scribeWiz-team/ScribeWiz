@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -8,12 +9,16 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import com.firebase.ui.auth.KickoffActivity
+import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+
+@RunWith(AndroidJUnit4::class)
 class AuthActivityTest {
 
     @get:Rule

@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.Activities
 
 
 import android.annotation.SuppressLint
@@ -16,11 +16,9 @@ import androidx.compose.ui.unit.sp
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 class FirebaseUIActivity : ComponentActivity()  {
@@ -38,9 +36,6 @@ class FirebaseUIActivity : ComponentActivity()  {
         }
     }
 
-    // The main firebase database
-    private val db = Firebase.firestore
-
     private val user = FirebaseAuth.getInstance().currentUser
 
     private val signInLauncher = registerForActivityResult(
@@ -54,10 +49,12 @@ class FirebaseUIActivity : ComponentActivity()  {
         // User needs to be refreshed for the code to detect the change
         val curUser = FirebaseAuth.getInstance().currentUser
         if(curUser != null) {
-            val userData = UserModel(
-                curUser.uid,
-                curUser.displayName
-            )
+             val userData = UserModel(
+                 curUser.uid,
+                 curUser.displayName ?: "new user",
+                 musicNotes = mutableListOf("A84wPlG1DaRuyJZJ7B2f"),
+                 friends = mutableListOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
+             )
 
             userData.registerAsCurrentUser(this)
 
@@ -104,6 +101,8 @@ class FirebaseUIActivity : ComponentActivity()  {
 
     private fun signOut() {
         // [START auth_fui_signout]
+        UserModel.currentUser(this).onSuccess { it.unregisterAsCurrentUser(this) }
+
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {

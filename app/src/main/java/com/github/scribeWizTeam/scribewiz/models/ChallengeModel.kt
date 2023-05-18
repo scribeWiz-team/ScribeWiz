@@ -2,12 +2,21 @@ package com.github.scribeWizTeam.scribewiz.models
 
 import java.time.LocalDateTime
 import java.util.Date
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
+import java.util.*
 
 data class ChallengeModel(
-    override val id: String = "",
-    val name: String = "",
-    val dateBeginning: LocalDateTime?,
-    val dateEnd: LocalDateTime?,
+    override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
+    val name: String? = "",
+    val startDate: LocalDateTime? = Date(),
+    val endDate: LocalDateTime? = Date(),
     val description: String? = "",
     val badge: String? = ""
 ) : Model {
@@ -39,40 +48,106 @@ data class ChallengeModel(
             return listOf(challengeTest1, challengeTest2)
         }
 
-        fun challenge(challengeId: String): ChallengeModel {
-            TODO("Not yet implemented")
+        fun challenge(challengeId : String) : Result<ChallengeModel> {
+            var challenge : ChallengeModel? = null
+
+            runBlocking {
+                val job = launch {
+                    challenge = Firebase.firestore.collection(COLLECTION)
+                        .document(challengeId)
+                        .get()
+                        .await()
+                        .toObject()
+                }
+                job.join()
+            }
+
+            return if (challenge == null) {
+                Result.failure(Exception("No challenge with id $challengeId"))
+            } else {
+                Result.success(challenge!!)
+            }
         }
 
-        fun latestChallenge(): ChallengeModel {
-            TODO("Not yet implemented")
+        fun challengesAvailable() : List<ChallengeModel> {
+            val challengesList : MutableList<ChallengeModel> = mutableListOf()
+
+            runBlocking {
+                val job = launch {
+                    Firebase.firestore
+                        .collection(COLLECTION)
+                        .whereGreaterThan("endDate", Date())
+                        .get()
+                        .await()
+                        .forEach {
+                            challengesList.add(it.toObject())
+                        }
+                }
+                job.join()
+            }
+
+            return challengesList
         }
 
-        fun challengesAvailable(): List<ChallengeModel> {
-            return listOf(challengeTest1, challengeTest2)
+        fun latestChallenge() : Result<ChallengeModel> {
+            var challenge : ChallengeModel? = null
+
+            runBlocking {
+                val job = launch {
+                    challenge = Firebase.firestore.collection(COLLECTION)
+                        .orderBy("startDate", Query.Direction.DESCENDING)
+                        .get()
+                        .await()
+                        .documents
+                        .first()
+                        .toObject()
+                }
+                job.join()
+            }
+
+            return if (challenge == null) {
+                Result.failure(Exception("No challenge found"))
+            } else {
+                Result.success(challenge!!)
+            }
         }
-
-
-        fun allSubmissions(): List<ChallengeSubmissionModel> {
-            TODO("Not yet implemented")
-        }
-
-        fun winningSubmission(): ChallengeSubmissionModel {
-            TODO("Not yet implemented")
-        }
-
-
     }
 
-    fun addSubmission(recordId: String, userId: String) {
-        //do something
+    fun addSubmission(recordId: String, userId: String) : Task<Void> {
+        return ChallengeSubmissionModel(
+            recordId = recordId,
+            userId = userId,
+            challengeId = id).updateInDB()
     }
 
-    override fun getMapping(): HashMap<String, Any?> {
-        TODO("Not yet implemented")
+    fun allSubmissions() : List<ChallengeSubmissionModel> {
+        return ChallengeSubmissionModel.getAll(id)
     }
 
-    override fun getCollectionName(): String {
+    fun winningSubmission() : Result<ChallengeSubmissionModel> {
+        val submissions = ChallengeSubmissionModel.getAll(id)
+        return if (submissions.isEmpty()) {
+            Result.failure(Exception("No submission yet"))
+        } else {
+            Result.success(submissions.maxByOrNull { it.upVote?:0 }!!)
+        }
+    }
+
+    override fun collectionName(): String {
         return COLLECTION
     }
 
+    override fun delete() : Task<Void> {
+        Firebase.firestore
+            .collection(collectionName())
+            .document(id)
+            .collection(SUBMISSION_COLLECTION)
+            .get()
+            .addOnSuccessListener {
+                for (sub in it) {
+                    sub.reference.delete()
+                }
+            }
+        return super.delete()
+    }
 }
