@@ -35,6 +35,10 @@ data class ChallengeModel(
                 "This is a badge"
             )
 
+        fun challengesAvailableTest(): List<ChallengeModel> {
+            return listOf(challengeTest1, challengeTest2)
+        }
+
         fun challenge(challengeId: String): ChallengeModel {
             TODO("Not yet implemented")
         }

@@ -27,18 +27,42 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class ParticipateInChallengeActivity : AppCompatActivity() {
+
+    companion object {
+        var isTest: Boolean = false //Test mode
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO : pass to this activity the name of the music/ the music ID
-        val extras = intent.extras
-            ?: throw Exception("Exception : No parameters passed to the activity by the intent")
-        val musicName: String = extras.getString("musicName")
-            ?: throw Exception("Exception : No musicName parameter passed to the activity")
+        var musicName: String = ""
+
+        if (!isTest) {
+            val extras = intent.extras
+                ?: throw Exception("Exception : No parameters passed to the activity by the intent")
+            musicName = extras.getString("musicName")
+                ?: throw Exception("Exception : No musicName parameter passed to the activity")
+        } else {
+            musicName = "Test"
+        }
 
         setContent {
             val challenges = remember { ChallengeModel.challengesAvailable().toMutableStateList() }
 
-            ChallengeListParticipateIn(challenges = challenges, this, musicName)
+            if (isTest) {
+                ChallengeListParticipateIn(
+                    challenges = ChallengeModel.challengesAvailableTest(),
+                    context = this,
+                    musicName = musicName
+                )
+            } else {
+                ChallengeListParticipateIn(
+                    challenges = challenges,
+                    context = this,
+                    musicName = musicName
+                )
+            }
+
+
         }
     }
 
@@ -84,6 +108,7 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
     @Composable
     fun ChallengeListParticipateIn(
         challenges: List<ChallengeModel>,
+        challengesTest: List<ChallengeModel>? = null,
         context: Context,
         musicName: String
     ) {
@@ -96,7 +121,6 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
             challenges.forEach { challenge ->
                 specificChallengeButton(challenge = challenge, context, musicName)
                 Spacer(modifier = Modifier.height(8.dp))

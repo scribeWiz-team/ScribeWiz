@@ -35,6 +35,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ChallengesFragment : Fragment() {
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -64,6 +65,8 @@ class ChallengesFragment : Fragment() {
     }
 
     companion object {
+        var isTest: Boolean = false //Test mode
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -81,6 +84,7 @@ class ChallengesFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+
     }
 
     @Composable

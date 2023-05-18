@@ -18,14 +18,16 @@ class AuthActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<FirebaseUIActivity>()
+
     @Before
     fun setUp() {
         // Initialize the ActivityScenario for FirebaseUIActivity
         ActivityScenario.launch(FirebaseUIActivity::class.java)
         FirebaseAuth.getInstance().signOut()
     }
+
     @Test
-    fun testLoginButton(){
+    fun testLoginButton() {
         Intents.init()
         composeTestRule.onNodeWithText("Login").performClick()
         intended(hasComponent(KickoffActivity::class.java.name))
@@ -41,12 +43,12 @@ class AuthActivityTest {
     }*/
 
     @Test
-    fun testHomeButton(){
+    fun testHomeButton() {
         Intents.init()
         composeTestRule.onNodeWithText("Home").performClick()
         intended(hasComponent(NavigationActivity::class.java.name))
         Intents.release()
     }
-
+    
 
 }
