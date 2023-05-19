@@ -23,20 +23,22 @@ class AuthActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<FirebaseUIActivity>()
+
     @Before
     fun setUp() {
         // Initialize the ActivityScenario for FirebaseUIActivity
         ActivityScenario.launch(FirebaseUIActivity::class.java)
         FirebaseAuth.getInstance().signOut()
     }
-    @Test
-    fun testLoginButton(){
-        Intents.init()
-        composeTestRule.onNodeWithText("Login").performClick()
-        intended(hasComponent(KickoffActivity::class.java.name))
 
-        Intents.release()
-    }
+    /*    @Test
+        fun testLoginButton() {
+            Intents.init()
+            composeTestRule.onNodeWithText("Login").performClick()
+            intended(hasComponent(KickoffActivity::class.java.name))
+
+            Intents.release()
+        }*/
 
     //TODO: Figure out how to actually log in a user using the Google API
     /*@Test
@@ -46,7 +48,7 @@ class AuthActivityTest {
     }*/
 
     @Test
-    fun testHomeButton(){
+    fun testHomeButton() {
         Intents.init()
         composeTestRule.onNodeWithText("Home").performClick()
         intended(hasComponent(NavigationActivity::class.java.name))

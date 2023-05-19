@@ -50,10 +50,11 @@ class NotesDisplayedActivityTest {
     }
 
     @Test
-    fun testLaunchActivityWithIntent(){
+    fun testLaunchActivityWithIntent() {
 
-        val uriOfFile = getUriFromAsset(context,"BeetAnGeSample.xml")
-        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+        val uriOfFile = getUriFromAsset(context, "BeetAnGeSample.xml")
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
         intent.putExtra("FILE", uriOfFile.toString())
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use {
@@ -64,12 +65,13 @@ class NotesDisplayedActivityTest {
     @Test
     fun exceptionCaughtWhenBadDataFormat() {
         val uriOfFile = getUriFromAsset(context, "bad_format_test.rtf")
-        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
         intent.putExtra("FILE", uriOfFile.toString())
         var checkExceptionCaught = false
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use { scenario ->
-            scenario.onActivity { checkExceptionCaught = it.exceptionCaught}
+            scenario.onActivity { checkExceptionCaught = it.exceptionCaught }
             assertTrue(checkExceptionCaught, "Exception is caught")
         }
     }
@@ -142,9 +144,10 @@ class NotesDisplayedActivityTest {
         inputFile.writeText(inputXMLContent)
 
         var scenario: ActivityScenario<NotesDisplayedActivity>? = null
-        scenario = ActivityScenario.launch(Intent(context, NotesDisplayedActivity::class.java).apply {
-            putExtra("FILE", inputFile.toURI().toString())
-        })
+        scenario =
+            ActivityScenario.launch(Intent(context, NotesDisplayedActivity::class.java).apply {
+                putExtra("FILE", inputFile.toURI().toString())
+            })
 
         scenario.onActivity { activity ->
             val inputFileUri = Uri.parse(inputFile.toURI().toString())
@@ -160,5 +163,6 @@ class NotesDisplayedActivityTest {
 
         inputFile.delete()
     }
+
 
 }
