@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.Activities.ParticipateInChallengeActivity
 import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
@@ -46,6 +49,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.lang.IllegalStateException
 import kotlin.contracts.ExperimentalContracts
+import kotlin.math.log
 
 
 class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
@@ -80,8 +84,8 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     val sharedNoteName = remember { mutableStateOf("") }
 
                     // Add this state variable to control the visibility of the rename dialog
-                    val showRenameDialog = remember { mutableStateOf(false) }
-                    val renamingNoteName = remember { mutableStateOf("") }
+                    var showRenameDialog = remember { mutableStateOf(false) }
+                    var renamingNoteName = remember { mutableStateOf("") }
 
                     // Function to handle renaming
                     fun handleRename(newName: String) {
@@ -109,7 +113,8 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             .padding(all = 8.dp)
                             .testTag("columnList"),
                             verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
                             items(notesNames, key={ note -> note }) { name ->
 
@@ -161,13 +166,15 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun SwipeToDismissNote(state: DismissState, name: String, showRenameDialog : MutableState<Boolean>,
-                            renamingNoteName: MutableState<String>, onDelete: (String) -> Unit
+    fun SwipeToDismissNote(
+        state: DismissState, name: String, showRenameDialog: MutableState<Boolean>,
+        renamingNoteName: MutableState<String>, onDelete: (String) -> Unit
     ) {
         SwipeToDismiss(
             state = state,
             background = {
-                Surface(color = Color.Red, modifier = Modifier.getTileModifier(Color.Red, Color.Red)
+                Surface(
+                    color = Color.Red, modifier = Modifier.getTileModifier(Color.Red, Color.Red)
                 ) {}
             },
             dismissContent = {
@@ -180,51 +187,84 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getTileModifier(color: Color = Color.White, borderColor: Color = Color.Black) : Modifier {
+    fun Modifier.getTileModifier(
+        color: Color = Color.White,
+        borderColor: Color = Color.Black
+    ): Modifier {
         return Modifier
             .padding(0.dp, 5.dp)
             .border(1.dp, borderColor, CircleShape)
             .background(color, CircleShape)
-            .width(280.dp)
+            .width(300.dp)
             .height(50.dp)
             .padding(10.dp, 5.dp)
     }
 
     @Composable
-    fun NoteTile(name: String, showRenameDialog : MutableState<Boolean>, renamingNoteName: MutableState<String>,
-                 onDelete: (String) -> Unit) {
+    fun NoteTile(
+        name: String,
+        showRenameDialog: MutableState<Boolean>,
+        renamingNoteName: MutableState<String>,
+        onDelete: (String) -> Unit
 
+    ) {
+        var showMenu = remember { mutableStateOf(false) }
         Surface(modifier = Modifier
-            .getTileModifier()
-//            .clickable {
-//                makeTheMusicBeDisplayed(name)
-//            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
-                        renamingNoteName.value = name
-                        showRenameDialog.value = true
+                        showMenu.value = true
                     },
                     onTap = {
                         makeTheMusicBeDisplayed(name)
                     })
             }
         ) {
+
             Row {
-                Image(painter = painterResource(R.drawable.music_note),
-                        modifier = Modifier
-                            .height(20.dp)
-                            .align(CenterVertically),
-                        contentDescription = "music_file")
-                Text(text = name, modifier = Modifier
-                    .padding(10.dp)
-                    .width(220.dp))
+                Image(
+                    painter = painterResource(R.drawable.music_note),
+                    modifier = Modifier
+                        .height(20.dp)
+                        .align(Alignment.CenterVertically),
+                    contentDescription = "music_file"
+                )
+                Text(
+                    text = name, modifier = Modifier
+                        .padding(10.dp)
+                        .width(220.dp)
+                )
+
+                DropdownMenu(
+                    expanded = showMenu.value,
+                    onDismissRequest = { showMenu.value = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        val noteToRename = name
+                        renamingNoteName.value = name
+                        showRenameDialog.value = true
+                    }) {
+                        Text("Rename")
+                    }
+                    DropdownMenuItem(onClick = {
+                        val intent = Intent(context, ParticipateInChallengeActivity::class.java)
+                        intent.putExtra("musicName", name)
+                        startActivity(intent)
+                    }) {
+                        Text("Challenges")
+                    }
+
+                    // Add more DropdownMenuItem here for more options
+                }
+
             }
         }
     }
+
     @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     fun makeTheMusicBeDisplayed(name: String) {
-        val newNotesDisplayedActivity = Intent(this.requireContext(), NotesDisplayedActivity::class.java)
+        val newNotesDisplayedActivity =
+            Intent(this.requireContext(), NotesDisplayedActivity::class.java)
         val file = notesStorageManager.getNoteFile(name)
         var stringUri = ""
 
@@ -324,7 +364,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         onRename: (String) -> Unit,
         onDismissRequest: () -> Unit
     ) {
-        val nameDisplayed = remember{mutableStateOf(renamingNoteName.value)}
+        var nameDisplayed = remember { mutableStateOf(renamingNoteName.value) }
         AlertDialog(
             onDismissRequest = onDismissRequest,
             title = { Text(dialogName) },
@@ -354,4 +394,5 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
         )
     }
+
 }

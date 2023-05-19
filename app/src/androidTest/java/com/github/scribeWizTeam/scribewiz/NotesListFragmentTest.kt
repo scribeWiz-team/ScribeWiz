@@ -2,16 +2,19 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -34,11 +37,12 @@ class NotesListFragmentTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @get:Rule
-    var rRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
+    var rRuntimePermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(READ_EXTERNAL_STORAGE)
 
     @get:Rule
-    var wRuntimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(WRITE_EXTERNAL_STORAGE)
-
+    var wRuntimePermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(WRITE_EXTERNAL_STORAGE)
 
 
     private val expectedFiles = 'a'..'g'
@@ -87,7 +91,7 @@ class NotesListFragmentTest {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
+    @OptIn(ExperimentalContracts::class)
     @Test
     fun displayNotesWhenClickOnPlay() {
         Intents.init()
@@ -101,17 +105,18 @@ class NotesListFragmentTest {
 
     @Test
     fun openDialogForChangingNameWhenLongClick() {
-        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNode(hasText("Rename")).performClick()
         composeTestRule.onNodeWithText(NotesListFragment().dialogName).assertIsDisplayed()
     }
 
     @Test
     fun fileIsModifiedToTheGoodValue() {
 
-        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNode(hasText("Rename")).performClick()
         composeTestRule.onNodeWithContentDescription("New Name").performTextClearance()
         composeTestRule.onNodeWithContentDescription("New Name").performTextInput("newNameTest")
-        composeTestRule.onNode(hasText("Rename")).performClick()
 
         runBlocking {
             composeTestRule.waitUntil(timeoutMillis = 100000) {
@@ -129,17 +134,29 @@ class NotesListFragmentTest {
 
     @Test
     fun dialogGetCanceledCorrectly() {
-        composeTestRule.onNode(hasText("a")).performTouchInput {longClick()}
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNode(hasText("Rename")).performClick()
         composeTestRule.onNodeWithContentDescription("New Name").performTextInput("anewNameTest")
         composeTestRule.onNode(hasText("Cancel")).performClick()
 
-        composeTestRule.onNode(hasText("a")).assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
+        composeTestRule.onNode(hasText("a"))
+            .assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
 
+    }
+
+    @Test
+    fun goToParticipateInChallenge() {
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNode(hasText("Rename")).performClick()
+        composeTestRule.onNode(hasText("Challenges")).assertExists()
+        composeTestRule.onNode(hasText("Challenges")).performClick()
+        //assert that I'm on the activity ParticipateInChallengeActivity
+        composeTestRule.onNode(hasText("Participate in a Challenge")).assertExists()
     }
 
 
     @After
-    fun removeTestFiles(){
+    fun removeTestFiles() {
         notesDir.deleteRecursively()
     }
 }

@@ -1,5 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.models
 
+import java.time.LocalDateTime
+import java.util.Date
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -13,8 +15,8 @@ import java.util.*
 data class ChallengeModel(
     override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
     val name: String? = "",
-    val startDate: Date? = Date(),
-    val endDate: Date? = Date(),
+    val startDate: Date? = Date(0),
+    val endDate: Date? = Date(0),
     val description: String? = "",
     val badge: String? = ""
 ) : Model {
@@ -23,8 +25,31 @@ data class ChallengeModel(
         const val COLLECTION = "Challenges"
         const val SUBMISSION_COLLECTION = "Submissions"
 
-        fun challenge(challengeId : String) : Result<ChallengeModel> {
-            var challenge : ChallengeModel? = null
+
+        val challengeTest1: ChallengeModel =
+            ChallengeModel(
+                "1", "test1",
+                Date(0),
+                Date(0),
+                "This is a description",
+                "This is a badge"
+            )
+
+        val challengeTest2: ChallengeModel =
+            ChallengeModel(
+                "2", "test2",
+                Date(0),
+                Date(0),
+                "This is a description",
+                "This is a badge"
+            )
+
+        fun challengesAvailableTest(): List<ChallengeModel> {
+            return listOf(challengeTest1, challengeTest2)
+        }
+
+        fun challenge(challengeId: String): Result<ChallengeModel> {
+            var challenge: ChallengeModel? = null
 
             runBlocking {
                 val job = launch {
@@ -44,8 +69,8 @@ data class ChallengeModel(
             }
         }
 
-        fun challengesAvailable() : List<ChallengeModel> {
-            val challengesList : MutableList<ChallengeModel> = mutableListOf()
+        fun challengesAvailable(): List<ChallengeModel> {
+            val challengesList: MutableList<ChallengeModel> = mutableListOf()
 
             runBlocking {
                 val job = launch {
@@ -64,8 +89,8 @@ data class ChallengeModel(
             return challengesList
         }
 
-        fun latestChallenge() : Result<ChallengeModel> {
-            var challenge : ChallengeModel? = null
+        fun latestChallenge(): Result<ChallengeModel> {
+            var challenge: ChallengeModel? = null
 
             runBlocking {
                 val job = launch {
@@ -88,23 +113,24 @@ data class ChallengeModel(
         }
     }
 
-    fun addSubmission(recordId: String, userId: String) : Task<Void> {
+    fun addSubmission(recordId: String, userId: String): Task<Void> {
         return ChallengeSubmissionModel(
             recordId = recordId,
             userId = userId,
-            challengeId = id).updateInDB()
+            challengeId = id
+        ).updateInDB()
     }
 
-    fun allSubmissions() : List<ChallengeSubmissionModel> {
+    fun allSubmissions(): List<ChallengeSubmissionModel> {
         return ChallengeSubmissionModel.getAll(id)
     }
 
-    fun winningSubmission() : Result<ChallengeSubmissionModel> {
+    fun winningSubmission(): Result<ChallengeSubmissionModel> {
         val submissions = ChallengeSubmissionModel.getAll(id)
         return if (submissions.isEmpty()) {
             Result.failure(Exception("No submission yet"))
         } else {
-            Result.success(submissions.maxByOrNull { it.upVote?:0 }!!)
+            Result.success(submissions.maxByOrNull { it.upVote ?: 0 }!!)
         }
     }
 
@@ -112,7 +138,7 @@ data class ChallengeModel(
         return COLLECTION
     }
 
-    override fun delete() : Task<Void> {
+    override fun delete(): Task<Void> {
         Firebase.firestore
             .collection(collectionName())
             .document(id)
