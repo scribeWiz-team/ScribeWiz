@@ -143,10 +143,15 @@ tasks.withType(Test) {
         testImplementation 'junit:junit:4.13.2'
         testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
+        //Espresso
+
+
         def espresso_version = "3.5.1"
         androidTestImplementation ("androidx.test.espresso:espresso-core:$espresso_version")
         androidTestImplementation ("androidx.test.espresso:espresso-intents:$espresso_version")
         testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1'
+        androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+
 
         // Compose
         debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"

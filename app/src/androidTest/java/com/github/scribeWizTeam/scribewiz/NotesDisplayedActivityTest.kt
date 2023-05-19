@@ -1,26 +1,27 @@
 package com.github.scribeWizTeam.scribewiz
 
-import android.app.Activity
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.ContactsContract.CommonDataKinds.Note
-import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity.Companion.createTempFileFromUri
-import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
+import androidx.test.rule.ActivityTestRule
+import org.hamcrest.CoreMatchers.anything
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -37,6 +38,7 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 class NotesDisplayedActivityTest {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
+
 
     @Before
     fun setUp() {
@@ -162,6 +164,38 @@ class NotesDisplayedActivityTest {
         scenario.close()
 
         inputFile.delete()
+    }
+
+    @Test
+    fun testSpinnerDisplay() {
+        // Prepare your intent as necessary
+        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+
+        ActivityScenario.launch<NotesDisplayedActivity>(intent).use { scenario ->
+            // Check the spinner is displayed and visible
+            onView(withId(R.id.note_spinner))
+                .check(matches(isDisplayed()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        }
+    }
+    @Test
+    fun testSpinnerSelectionAndButtonClick() {
+        // Prepare your intent as necessary
+        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+
+        ActivityScenario.launch<NotesDisplayedActivity>(intent).use { scenario ->
+            // Select an item from the spinner.
+            // This clicks the spinner, waits for it to open, and then clicks on the item at index 3.
+            onView(withId(R.id.note_spinner)).perform(click())
+            onData(anything()).atPosition(3).perform(click())
+
+            // Verify the spinner's selected item.
+            onView(withId(R.id.note_spinner)).check(matches(withSpinnerText(containsString("D#"))))
+
+            // Click the button
+            onView(withId(R.id.replace_note_button)).perform(click())
+
+        }
     }
 
 
