@@ -208,10 +208,6 @@ class RecFragment(contentLayoutId: Int,
         }
     }
 
-    fun getOutputFilePath(): String {
-        return requireContext().externalCacheDir?.absolutePath + "/recording.3gp"
-    }
-
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
     private fun startRecording() {
         // Initialize the AudioRecord

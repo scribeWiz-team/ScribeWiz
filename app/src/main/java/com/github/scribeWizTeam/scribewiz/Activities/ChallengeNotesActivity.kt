@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel
 
 class ChallengeNotesActivity : AppCompatActivity() {
@@ -23,6 +24,7 @@ class ChallengeNotesActivity : AppCompatActivity() {
         // Extract the challenge ID and user ID from the Intent that started this activity
         challengeId = intent.getStringExtra("challengeId")!!
         userId = intent.getStringExtra("userId")!!
+        var notesStorageManager = NotesStorageManager()
 
         setContent {
             // Define a state variable for holding the list of submissions.
@@ -41,19 +43,22 @@ class ChallengeNotesActivity : AppCompatActivity() {
                     Text(text = "Submission by ${submission.userId}")
                     // A button for playing the submission
                     Button(onClick = {
-                        //TODO play submission
+                        notesStorageManager.downloadFileFromDatabase(submission.id)
                     }) {
-                        Text("Play")
+                        Text("Download to my library")
                     }
                     // A button for upvoting the submission
                     Button(onClick = {
-                        //TODO upvote submission
+                        // Call the upVote method of the submission on upVote click
+                        submission.upVote(userId)
                     }) {
                         Text("Upvote")
+
                     }
                     // A button for downvoting the submission
                     Button(onClick = {
-                        //TODO downvote submission
+                        // Call the downVote method of the submission on downVote click
+                        submission.downVote(userId)
                     }) {
                         Text("Downvote")
                     }

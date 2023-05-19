@@ -71,6 +71,7 @@ data class ChallengeSubmissionModel (
         fun getSubmissionId(userId: String, recordId: String) : String{
             return "$userId-$recordId"
         }
+
     }
 
     fun upVote(userId: String) : Boolean {
