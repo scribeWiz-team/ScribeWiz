@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.Activities
 
+import HomeFragment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem

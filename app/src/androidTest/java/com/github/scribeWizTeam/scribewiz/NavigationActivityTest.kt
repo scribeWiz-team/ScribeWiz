@@ -1,6 +1,8 @@
 package com.github.scribeWizTeam.scribewiz
 
+import HomeFragment
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.test.core.app.ActivityScenario
@@ -19,6 +21,10 @@ import com.google.android.material.navigation.NavigationView
 import org.hamcrest.Matcher
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import com.github.scribeWizTeam.scribewiz.Fragments.HelpFragment
+import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
+import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
+import junit.framework.TestCase.assertTrue
 
 class NavigationActivityTest {
 
@@ -98,7 +104,6 @@ class NavigationActivityTest {
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
     }
-
 
     @Test
     fun testOnBackPressed() {

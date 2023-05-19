@@ -1,12 +1,10 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
-
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
@@ -16,7 +14,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.Activities.ChallengeNotesActivity
 
 class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
@@ -41,6 +39,18 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         style = MaterialTheme.typography.h4,
                         fontSize = 50.sp
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    /**
+                    Button(onClick = {
+                        val intent = Intent(context, ChallengeNotesActivity::class.java)
+                        intent.putExtra("challengeId", "YourChallengeId")
+                        intent.putExtra("userId", "YourUserId")
+                        startActivity(intent)
+                    }) {
+                        Text(text = "Go to Challenge")
+                    }
+                    */
                 }
             }
         }
