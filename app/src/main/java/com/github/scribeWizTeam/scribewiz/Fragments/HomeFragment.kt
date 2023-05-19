@@ -41,7 +41,7 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
+                    /**
                     Button(onClick = {
                         val intent = Intent(context, ChallengeNotesActivity::class.java)
                         intent.putExtra("challengeId", "YourChallengeId")
@@ -50,6 +50,7 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     }) {
                         Text(text = "Go to Challenge")
                     }
+                    */
                 }
             }
         }
