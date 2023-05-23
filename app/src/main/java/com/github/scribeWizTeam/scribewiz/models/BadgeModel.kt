@@ -10,19 +10,20 @@ import kotlinx.coroutines.tasks.await
 import java.text.DateFormat
 import java.util.*
 
-enum class BadgeRanks{
+enum class BadgeRanks {
     GOLD,
     SILVER,
     BRONZE
 }
-data class BadgeModel(override var id: String = "",
-                      var badgeName: String? = "",
-                      var challengeID: String? = "",
-                      var dateObtained: String? = "",
-                      var photoID: String? = "",
-                      var rank: Int? = 0
-                      )
-: Model{
+
+data class BadgeModel(
+    override var id: String = "",
+    var badgeName: String? = "",
+    var challengeID: String? = "",
+    var dateObtained: String? = "",
+    var photoID: String? = "",
+    var rank: Int? = 0
+) : Model {
 
     companion object Controller {
         const val COLLECTION = "Badges"
@@ -31,16 +32,16 @@ data class BadgeModel(override var id: String = "",
          * Returns a set containing the badges belonging to the user.
          * To get the user, LocalContext.current can be used
          */
-        fun getAllBadgesFromUser(user: UserModel) : MutableSet<BadgeModel> {
+        fun getAllBadgesFromUser(user: UserModel): MutableSet<BadgeModel> {
             val db = Firebase.firestore
 
-            val badges : MutableSet<BadgeModel> = mutableSetOf()
+            val badges: MutableSet<BadgeModel> = mutableSetOf()
 
             runBlocking {
                 val job = launch {
                     for (id in user.badges!!) {
                         db.collection(UserModel.COLLECTION)
-                            .document(user.id!!)
+                            .document(user.id)
                             .collection(COLLECTION)
                             .document(id)
                             .get()
@@ -60,7 +61,7 @@ data class BadgeModel(override var id: String = "",
          * If no badge is provided, a default test badge will be added
          * To get the user, LocalContext.current can be used
          */
-        fun addBadgeToUser(user: UserModel, badge: BadgeModel?){
+        fun addBadgeToUser(user: UserModel, badge: BadgeModel?) {
             val time = Calendar.getInstance().time
             val formatter = DateFormat.getDateInstance()
 
@@ -72,24 +73,24 @@ data class BadgeModel(override var id: String = "",
                 "",
                 BadgeRanks.GOLD.ordinal
             )
-            if(badge != null){
+            if (badge != null) {
                 badgeData = badge
                 badgeData.dateObtained = formatter.format(time)
             }
 
-            val userDoc : DocumentReference =
+            val userDoc: DocumentReference =
                 Firebase.firestore
-                .collection(UserModel.COLLECTION)
-                .document(user.id!!)
+                    .collection(UserModel.COLLECTION)
+                    .document(user.id)
 
             // Add badge in badge collection
             userDoc.collection(COLLECTION)
-                .document(badgeData.id!!)
+                .document(badgeData.id)
                 .set(badgeData)
 
             // Add badge in badge list
-            if(!user.badges!!.contains(badgeData.id.toString())){
-                user.badges!!.add(badgeData.id.toString())
+            if (!user.badges!!.contains(badgeData.id)) {
+                user.badges!!.add(badgeData.id)
             }
 
 
@@ -100,10 +101,7 @@ data class BadgeModel(override var id: String = "",
         }
     }
 
-
     override fun collectionName(): String {
         return COLLECTION
     }
-
-
 }

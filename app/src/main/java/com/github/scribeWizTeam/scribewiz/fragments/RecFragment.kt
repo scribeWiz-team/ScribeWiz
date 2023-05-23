@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
+package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -8,13 +8,14 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
@@ -25,26 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.Util.RecordingParameters
-import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
+import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.ByteBuffer
-
-import kotlin.math.*
-
+import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 import com.github.scribeWizTeam.scribewiz.transcription.*
 
 class RecFragment(contentLayoutId: Int,
-                  val recording_parameters: RecordingParameters) : Fragment(contentLayoutId) {
+                  private val recording_parameters: RecordingParameters) : Fragment(contentLayoutId) {
 
     companion object {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
@@ -178,7 +171,7 @@ class RecFragment(contentLayoutId: Int,
         if (!isRecording) {
             // Set the timer
             recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
-                counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / Companion.COUNT_DOWN_INTERVAL).toString()
+                counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
             }
 
             processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL){
@@ -188,7 +181,7 @@ class RecFragment(contentLayoutId: Int,
                 for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE){
                     samples[i] = raw_samples[i].toFloat() * (1.0f / 32768.0f)
                 }
-                transcriber.process_samples(samples)
+                transcriber.processSamples(samples)
             }
             //start recording
             recordButtonText.value = "Stop recording"
@@ -215,17 +208,19 @@ class RecFragment(contentLayoutId: Int,
             Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
 
         // Initialize the Transcriber
-        val pitch_detector = PitchDetector(Companion.SAMPLE_RATE_IN_HZ.toDouble(),
-                                           Companion.THRESHOLD)
-        val note_guesser = NoteGuesser(Companion.NOTE_SAMPLE_INTERVAL / 1000.0)
+        val pitchDetector = PitchDetector(
+            SAMPLE_RATE_IN_HZ.toDouble(),
+            THRESHOLD
+        )
+        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0)
         val signature = Signature(recording_parameters.fifths,
                                   recording_parameters.beats,
-                                  recording_parameters.beat_type,
+                                  recording_parameters.beatType,
                                   divisions=2,
                                   tempo=recording_parameters.tempo,
-                                  use_g_key_signature=recording_parameters.use_g_key_signature)
+                                  use_g_key_signature=recording_parameters.useGKeySignature)
         val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
-        transcriber = Transcriber(pitch_detector, note_guesser, renderer)
+        transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
         // Start recording
         audioRecorder.startRecording()
@@ -242,7 +237,7 @@ class RecFragment(contentLayoutId: Int,
         // Set recording not in progress
         isRecording = false
         // end the transcription
-        transcriber.end_transcription()
+        transcriber.endTranscription()
         val data = transcriber.get_transcription()
         notesStorageManager .writeNoteFile(recording_parameters.scoreName, data)
     }

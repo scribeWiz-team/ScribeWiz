@@ -1,55 +1,33 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
+package com.github.scribeWizTeam.scribewiz.fragments
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaPlayer
-import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.Util.RecordingParameters
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
-import com.github.scribeWizTeam.scribewiz.PermissionsManager
-import com.github.scribeWizTeam.scribewiz.NotesStorageManager
-import com.github.scribeWizTeam.scribewiz.R
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.ByteBuffer
-
-import kotlin.math.*
+import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 
 
-class RecParameterFragment(contentLayoutId: Int,
-                           val navActivity: NavigationActivity) : Fragment(contentLayoutId) {
+class RecParameterFragment(
+    contentLayoutId: Int,
+    private val navActivity: NavigationActivity
+) : Fragment(contentLayoutId) {
 
     companion object {
         private val TONALITIES_NAMES = listOf(
@@ -73,7 +51,7 @@ class RecParameterFragment(contentLayoutId: Int,
 
     }
 
-    private var recording_parameters = RecordingParameters()
+    private var recordingParameters = RecordingParameters()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,9 +62,9 @@ class RecParameterFragment(contentLayoutId: Int,
         return ComposeView(requireContext()).apply {
             setContent {
 
-                val scoreName = remember { mutableStateOf(recording_parameters.scoreName) }
-                val beats = remember { mutableStateOf(recording_parameters.beats.toString()) }
-                val tempo = remember { mutableStateOf(recording_parameters.tempo.toString()) }
+                val scoreName = remember { mutableStateOf(recordingParameters.scoreName) }
+                val beats = remember { mutableStateOf(recordingParameters.beats.toString()) }
+                val tempo = remember { mutableStateOf(recordingParameters.tempo.toString()) }
 
                 Box(
                     modifier = Modifier
@@ -104,53 +82,63 @@ class RecParameterFragment(contentLayoutId: Int,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                             label = { Text(text = "Score name") })
                         // tonality
-                        Row(verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly){
-                            Text(text = "Tonality: ",
-                                 modifier = Modifier.padding(5.dp),
+                        Row(
+                            verticalAlignment = CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Text(
+                                text = "Tonality: ",
+                                modifier = Modifier.padding(5.dp),
                             )
                             Spinner(
                                 modifier = Modifier.wrapContentSize(),
                                 displayItems = TONALITIES_NAMES,
                                 dataItems = TONALITIES_FIFTHS,
-                                onItemSelected = {recording_parameters.fifths = it},
+                                onItemSelected = { recordingParameters.fifths = it },
                                 startIndex = 2 // start at C major
                             )
                         }
                         // key
-                        Row(verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly){
-                            Text(text = "Staff key: ",
-                                 modifier = Modifier.padding(5.dp),
+                        Row(
+                            verticalAlignment = CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Text(
+                                text = "Staff key: ",
+                                modifier = Modifier.padding(5.dp),
                             )
                             Spinner(
                                 modifier = Modifier.wrapContentSize(),
                                 displayItems = KEY_NAMES,
                                 dataItems = KEY_VALUES,
-                                onItemSelected = {recording_parameters.use_g_key_signature = it},
+                                onItemSelected = { recordingParameters.useGKeySignature = it },
                                 startIndex = 1 // start with F key
                             )
                         }
                         // time signature
-                        Row(verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly){
+                        Row(
+                            verticalAlignment = CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
                             Text(text = "Time signature: ")
-                            TextField(beats.value,
+                            TextField(
+                                beats.value,
                                 { beats.value = it },
                                 modifier = Modifier
                                     .height(50.dp)
                                     .width(60.dp),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             )
-                            Text(text = "/",
-                                 modifier = Modifier.padding(5.dp),
-                                 style = TextStyle(fontSize = 30.sp)
+                            Text(
+                                text = "/",
+                                modifier = Modifier.padding(5.dp),
+                                style = TextStyle(fontSize = 30.sp)
                             )
                             Spinner(
                                 modifier = Modifier.wrapContentSize(),
-                                displayItems = BEAT_TYPES.map({it.toString()}),
+                                displayItems = BEAT_TYPES.map { it.toString() },
                                 dataItems = BEAT_TYPES,
-                                onItemSelected = { recording_parameters.beat_type = it },
+                                onItemSelected = { recordingParameters.beatType = it },
                                 startIndex = 2 // start on 4 beats
                             )
                         }
@@ -168,10 +156,14 @@ class RecParameterFragment(contentLayoutId: Int,
                                 .height(50.dp)
                                 .width(190.dp)
                                 .padding(5.dp),
-                            onClick = { launch_recording_fragment(scoreName.value,
-                                                                  beats.value,
-                                                                  tempo.value) }
-                        ){
+                            onClick = {
+                                launchRecordingFragment(
+                                    scoreName.value,
+                                    beats.value,
+                                    tempo.value
+                                )
+                            }
+                        ) {
                             Text(text = "Next")
                         }
                     }
@@ -180,23 +172,28 @@ class RecParameterFragment(contentLayoutId: Int,
         }
     }
 
-    private fun launch_recording_fragment(rawScoreName: String, rawBeats: String, rawTempo: String){
+    private fun launchRecordingFragment(
+        rawScoreName: String,
+        rawBeats: String,
+        rawTempo: String
+    ) {
         val tempo = try {
-           rawTempo.toInt()
+            rawTempo.toInt()
         } catch (_: java.lang.NumberFormatException) {
             RecordingParameters.DEFAULT_TEMPO
         }
         val beats = try {
-           rawBeats.toInt()
+            rawBeats.toInt()
         } catch (_: java.lang.NumberFormatException) {
             RecordingParameters.DEFAULT_BEATS
         }
-        val scoreName = if (rawScoreName == "") RecordingParameters.FALLBACK_SCORE_NAME else rawScoreName
-        recording_parameters.scoreName = scoreName
-        recording_parameters.beats = beats
-        recording_parameters.tempo = tempo
+        val scoreName =
+            if (rawScoreName == "") RecordingParameters.FALLBACK_SCORE_NAME else rawScoreName
+        recordingParameters.scoreName = scoreName
+        recordingParameters.beats = beats
+        recordingParameters.tempo = tempo
         // launch recording fragment with recording_parameters
-        navActivity.showFragment(RecFragment(0, recording_parameters))
+        navActivity.showFragment(RecFragment(0, recordingParameters))
     }
 
     @Composable
@@ -218,7 +215,7 @@ class RecParameterFragment(contentLayoutId: Int,
         Box(modifier = modifier.wrapContentSize(Alignment.TopStart)) {
             Button(
                 onClick = { expanded = !expanded }
-            ){
+            ) {
                 Text(currentText)
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
@@ -233,12 +230,12 @@ class RecParameterFragment(contentLayoutId: Int,
             ) {
                 displayItems.zip(dataItems).forEach { (label, data) ->
                     DropdownMenuItem(onClick = {
-                        Log.i("RecParam", "Selected: $label ${data}")
+                        Log.i("RecParam", "Selected: $label $data")
                         onItemSelected(data)
                         expanded = false
                         currentText = label
                     }) {
-                        Text(text=label)
+                        Text(text = label)
                     }
                 }
             }

@@ -1,7 +1,5 @@
 package com.github.scribeWizTeam.scribewiz.transcription
 
-import kotlin.math.*
-
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,7 +10,7 @@ class TranscriberTest {
     class MockPitchDetector: PitchDetectorInterface {
         override val samplingFreq = 1.0
 
-        override fun detect_pitch(signal: Signal): Frequency {
+        override fun detectPitch(signal: Signal): Frequency {
             return 2.0
         }
     }
@@ -21,12 +19,12 @@ class TranscriberTest {
         override val sampleDelay = 1.0
         override var notes: List<MidiNote> = listOf()
 
-        override fun add_sample(pitchFreq: Double?): Int{
+        override fun addSample(pitchFreq: Double?): Int{
             notes += MidiNote(2, 0.0, 1.0)
             return 0
         }
 
-        override fun end_guessing(){
+        override fun endGuessing(){
             notes += MidiNote(SILENT_PITCH, 0.0, 1.0)
         }
     }
@@ -34,8 +32,8 @@ class TranscriberTest {
     class MockMusicRenderer: MusicRenderer {
         private var result: List<String> = listOf()
 
-        override fun add_note(midinote: MidiNote){
-            result += midinote.pitch.toString()
+        override fun addNote(midiNote: MidiNote){
+            result += midiNote.pitch.toString()
         }
 
         override fun build(): String {
@@ -60,11 +58,11 @@ class TranscriberTest {
     @Test
     fun transcriber_calls_processing_blocks_as_expected(){
         val dummy_signal = Signal(2, { 3.0f })
-        transcriber.process_samples(dummy_signal)
+        transcriber.processSamples(dummy_signal)
         assertEquals("2", transcriber.get_transcription())
-        transcriber.process_samples(dummy_signal)
+        transcriber.processSamples(dummy_signal)
         assertEquals("2|2", transcriber.get_transcription())
-        transcriber.end_transcription()
+        transcriber.endTranscription()
         assertEquals("2|2|-1", transcriber.get_transcription())
     }
 }

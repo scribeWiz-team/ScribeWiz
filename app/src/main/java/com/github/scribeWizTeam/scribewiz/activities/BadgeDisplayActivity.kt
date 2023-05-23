@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Activities
+package com.github.scribeWizTeam.scribewiz.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,41 +26,50 @@ import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.BadgeRanks
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 
-class BadgeDisplayActivity : ComponentActivity(){
+class BadgeDisplayActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent{
+        setContent {
             BadgeDisplayLayout()
         }
     }
 
     @Composable
-    fun BadgeDisplayLayout(){
+    fun BadgeDisplayLayout() {
         val context = LocalContext.current
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             // Title text
             Row(
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 Button(
                     onClick = {
                         val backToProfile = Intent(context, NavigationActivity::class.java)
                         context.startActivity(backToProfile)
                     },
-                    modifier = Modifier.height(50.dp).width(50.dp).align(Alignment.CenterVertically),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(50.dp)
+                        .align(Alignment.CenterVertically),
 
-                ) {
+                    ) {
                     Text("<-")
                 }
-                Text("My badges", fontSize = 20.sp, textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 100.dp).align(Alignment.CenterVertically))
+                Text(
+                    "My badges", fontSize = 20.sp, textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(start = 100.dp)
+                        .align(Alignment.CenterVertically)
+                )
             }
             Badges()
 
@@ -69,13 +78,14 @@ class BadgeDisplayActivity : ComponentActivity(){
 
 
     private val cardColors = mapOf<Int, Color>(
-        Pair(BadgeRanks.GOLD.ordinal, Color(215,183,64)),
+        Pair(BadgeRanks.GOLD.ordinal, Color(215, 183, 64)),
         Pair(BadgeRanks.SILVER.ordinal, Color(224, 224, 224)),
         Pair(BadgeRanks.BRONZE.ordinal, Color(184, 115, 51))
-        )
+    )
+
     // Displays the user's current badges in a grid
     @Composable
-    fun Badges(){
+    fun Badges() {
 
         val user = UserModel.currentUser(this)
         val badges = BadgeModel.getAllBadgesFromUser(user.getOrThrow())
@@ -83,20 +93,22 @@ class BadgeDisplayActivity : ComponentActivity(){
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
-        ){
+        ) {
             Log.w("DISPLAYINGBADGE", badges.size.toString())
-            items(badges.size) {i ->
+            items(badges.size) { i ->
 
                 Card(
                     modifier = Modifier.padding(4.dp),
                     backgroundColor = cardColors[badges.elementAt(i).rank!!]!!
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally){
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                         Image(
                             painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "BadgeImage",
-                            modifier = Modifier.size(60.dp).padding(bottom = 0.dp)
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(bottom = 0.dp)
                         )
 
                         Text(

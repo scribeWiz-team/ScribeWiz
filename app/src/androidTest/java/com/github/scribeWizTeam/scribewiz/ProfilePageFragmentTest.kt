@@ -1,13 +1,16 @@
 package com.github.scribeWizTeam.scribewiz
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
+import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.fragments.ProfilePageFragment
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

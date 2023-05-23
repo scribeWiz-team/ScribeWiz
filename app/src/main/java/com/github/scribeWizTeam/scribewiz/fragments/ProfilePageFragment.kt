@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
+package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +13,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
-import com.github.scribeWizTeam.scribewiz.Activities.BadgeDisplayActivity
-import com.github.scribeWizTeam.scribewiz.Activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.activities.BadgeDisplayActivity
+import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.android.gms.tasks.Tasks.await
@@ -91,7 +93,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Pair("exampleFriendID8", "Bob"))
         if(userProfile.id != "") {
             Log.w("READINGFRIENDSLIST", "USER EXISTS")
-             db.collection("Users").document(userProfile.id!!)
+             db.collection("Users").document(userProfile.id)
                  .get().addOnSuccessListener { data ->
                      numRecordings = data.get("userNumRecordings").toString()
                      // TODO: Currently bugging
@@ -297,7 +299,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         }
 
                         UserModel.user(doc.get("id") as String).onSuccess { toUser ->
-                            localUser.id?.let { toUser.friendRequests?.add(it) }
+                            toUser.friendRequests?.add(localUser.id)
                             toUser.updateInDB()
                         }
                     }

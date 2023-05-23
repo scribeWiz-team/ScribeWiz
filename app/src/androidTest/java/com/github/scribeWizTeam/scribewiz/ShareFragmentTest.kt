@@ -2,10 +2,10 @@ package com.github.scribeWizTeam.scribewiz
 
 import androidx.core.content.FileProvider
 import androidx.test.core.app.launchActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.*
+import com.github.scribeWizTeam.scribewiz.fragments.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.ShareFragment
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.fragments.ShareFragment
 import junit.framework.TestCase.*
 import org.junit.Test
 import org.junit.runner.RunWith

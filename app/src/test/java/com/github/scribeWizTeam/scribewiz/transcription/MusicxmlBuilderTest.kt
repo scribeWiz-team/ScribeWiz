@@ -25,7 +25,7 @@ class MusicxmlBuilderTest {
         )
 
         for (input in inputs) {
-            builder.add_note(input)
+            builder.addNote(input)
         }
         for ((expected, res) in expected_notes zip builder.measure){
             assertEquals(expected, res)
@@ -80,7 +80,7 @@ class MusicxmlBuilderTest {
 </score-partwise>"""
         val signature = Signature(0, 4, 4, tempo=60)
         val builder = MusicxmlBuilder("Test music", signature)
-        builder.add_note(MidiNote(60, 0.0, 4.0))
+        builder.addNote(MidiNote(60, 0.0, 4.0))
 
         assertEquals(expected, builder.build())
     }
@@ -344,7 +344,7 @@ class MusicxmlBuilderTest {
                 MidiNote(58, 0.0, 3.0),
         )
         for (note in notes){
-            builder.add_note(note)
+            builder.addNote(note)
         }
 
         assertEquals(expected, builder.build())

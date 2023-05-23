@@ -17,7 +17,12 @@ class PermissionsManager {
      * @param permission the permission to check
      * @param callback the code to execute if the permission is granted and
      */
-    fun checkPermissionThenExecute(caller: ActivityResultCaller, context: Context, permission: String, callback: ()->Unit) {
+    fun checkPermissionThenExecute(
+        caller: ActivityResultCaller,
+        context: Context,
+        permission: String,
+        callback: () -> Unit
+    ) {
 
         when (PackageManager.PERMISSION_GRANTED) {
             // check directly for permission

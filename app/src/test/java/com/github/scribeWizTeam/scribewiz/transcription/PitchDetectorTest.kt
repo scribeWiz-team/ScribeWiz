@@ -28,20 +28,20 @@ class PitchDetectorTest {
 
     @Test
     fun no_signal_gives_no_pitch() {
-        assertNull(detector.detect_pitch(Signal(0)))
+        assertNull(detector.detectPitch(Signal(0)))
     }
 
     @Test
     fun silent_signal_gives_no_pitch() {
         val signal = Signal(2000, { 0.0f })
-        assertNull(detector.detect_pitch(signal))
+        assertNull(detector.detectPitch(signal))
     }
 
     @Test
     fun correctly_detects_the_pitch_of_a_pure_sine_wave() {
         val signal_freq = 440.0
         val signal = Signal(2000, { (1000*sin(2*PI*signal_freq*it/sampleFreq)).toFloat() })
-        assertEquals(signal_freq, detector.detect_pitch(signal))
+        assertEquals(signal_freq, detector.detectPitch(signal))
     }
 
     @Test
@@ -52,7 +52,7 @@ class PitchDetectorTest {
                                  +0.6*sin(2*PI*2*signal_freq*it/sampleFreq+1.3)
                                  +0.3*sin(2*PI*3*signal_freq*it/sampleFreq+2))).toFloat()
                                 })
-        assertEquals(signal_freq, detector.detect_pitch(signal))
+        assertEquals(signal_freq, detector.detectPitch(signal))
     }
 }
 
