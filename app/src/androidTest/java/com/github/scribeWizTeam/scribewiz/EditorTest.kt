@@ -194,6 +194,7 @@ class EditorTest {
 
         Assert.assertEquals(expectedNotes, actualNotes)
     }
+
     @Test
     fun testEditNoteInMusicXML_CopyAttributes() {
         val inputXMLContent = """

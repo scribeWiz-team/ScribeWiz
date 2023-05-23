@@ -24,7 +24,7 @@ class ViewScoreViewModel : ViewModel() {
         }
     }
 
-    fun updateLayout(screenWidthDp:Float) {
+    fun updateLayout(screenWidthDp: Float) {
         if (screenWidthDp >= 600f) {
             settings.value!!.display.layoutMode = LayoutMode.Page
         } else {

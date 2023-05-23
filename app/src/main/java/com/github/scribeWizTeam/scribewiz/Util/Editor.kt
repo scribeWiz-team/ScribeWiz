@@ -161,6 +161,7 @@ class Editor {
 
                         }
                     }
+
                     XmlPullParser.END_TAG -> {
                         // If the current tag is "note", update the current ticks
                         val tagName = parser.name

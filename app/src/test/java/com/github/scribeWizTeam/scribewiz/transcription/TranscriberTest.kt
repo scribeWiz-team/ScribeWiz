@@ -9,7 +9,7 @@ import org.junit.Before
 
 
 class TranscriberTest {
-    class MockPitchDetector: PitchDetectorInterface {
+    class MockPitchDetector : PitchDetectorInterface {
         override val samplingFreq = 1.0
 
         override fun detect_pitch(signal: Signal): Frequency {
@@ -17,32 +17,32 @@ class TranscriberTest {
         }
     }
 
-    class MockNoteGuesser: NoteGuesserInterface {
+    class MockNoteGuesser : NoteGuesserInterface {
         override val sampleDelay = 1.0
         override var notes: List<MidiNote> = listOf()
 
-        override fun add_sample(pitchFreq: Double?): Int{
+        override fun add_sample(pitchFreq: Double?): Int {
             notes += MidiNote(2, 0.0, 1.0)
             return 0
         }
 
-        override fun end_guessing(){
+        override fun end_guessing() {
             notes += MidiNote(SILENT_PITCH, 0.0, 1.0)
         }
     }
 
-    class MockMusicRenderer: MusicRenderer {
+    class MockMusicRenderer : MusicRenderer {
         private var result: List<String> = listOf()
 
-        override fun add_note(midinote: MidiNote){
+        override fun add_note(midinote: MidiNote) {
             result += midinote.pitch.toString()
         }
 
         override fun build(): String {
-            return result.joinToString(separator="|")
+            return result.joinToString(separator = "|")
         }
 
-        override fun reset(){
+        override fun reset() {
             result = listOf()
         }
     }
@@ -50,7 +50,7 @@ class TranscriberTest {
     private lateinit var transcriber: Transcriber
 
     @Before
-    fun init_transcriber(){
+    fun init_transcriber() {
         val pitch_detector = MockPitchDetector()
         val note_guesser = MockNoteGuesser()
         val renderer = MockMusicRenderer()
@@ -58,7 +58,7 @@ class TranscriberTest {
     }
 
     @Test
-    fun transcriber_calls_processing_blocks_as_expected(){
+    fun transcriber_calls_processing_blocks_as_expected() {
         val dummy_signal = Signal(2, { 3.0f })
         transcriber.process_samples(dummy_signal)
         assertEquals("2", transcriber.get_transcription())

@@ -169,7 +169,8 @@ class NotesDisplayedActivityTest {
     @Test
     fun testSpinnerDisplay() {
         // Prepare your intent as necessary
-        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use { scenario ->
             // Check the spinner is displayed and visible
@@ -178,10 +179,12 @@ class NotesDisplayedActivityTest {
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
+
     @Test
     fun testSpinnerSelectionAndButtonClick() {
         // Prepare your intent as necessary
-        val intent = Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), NotesDisplayedActivity::class.java)
 
         ActivityScenario.launch<NotesDisplayedActivity>(intent).use { scenario ->
             // Select an item from the spinner.

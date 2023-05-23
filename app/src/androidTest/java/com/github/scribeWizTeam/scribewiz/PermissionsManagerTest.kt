@@ -13,7 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -33,7 +32,7 @@ class PermissionsManagerTest {
     fun callbackIsCalledWhenPermissionGranted() {
         val pm = PermissionsManager()
         var check = false
-        val callback : () -> Unit = { check = true}
+        val callback: () -> Unit = { check = true }
 
         pm.checkPermissionThenExecute(
             composeTestRule.activity,

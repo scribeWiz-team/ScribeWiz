@@ -31,7 +31,9 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
             setContent {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -43,14 +45,14 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     Spacer(modifier = Modifier.height(16.dp))
                     /**
                     Button(onClick = {
-                        val intent = Intent(context, ChallengeNotesActivity::class.java)
-                        intent.putExtra("challengeId", "YourChallengeId")
-                        intent.putExtra("userId", "YourUserId")
-                        startActivity(intent)
+                    val intent = Intent(context, ChallengeNotesActivity::class.java)
+                    intent.putExtra("challengeId", "YourChallengeId")
+                    intent.putExtra("userId", "YourUserId")
+                    startActivity(intent)
                     }) {
-                        Text(text = "Go to Challenge")
+                    Text(text = "Go to Challenge")
                     }
-                    */
+                     */
                 }
             }
         }

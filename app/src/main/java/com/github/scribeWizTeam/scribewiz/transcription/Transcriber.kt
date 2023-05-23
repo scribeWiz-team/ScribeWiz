@@ -9,9 +9,11 @@ package com.github.scribeWizTeam.scribewiz.transcription
  * @param note_guesser see {@link com.github.scribeWizTeam.scribewiz.transcription.NoteGuesser NoteGuesser}
  * @param renderer see {@link com.github.scribeWizTeam.scribewiz.transcription.MusicxmlBuilder MusicxmlBuilder}
  */
-class Transcriber(val pitch_detector: PitchDetectorInterface,
-                  val note_guesser: NoteGuesserInterface,
-                  val renderer: MusicRenderer) {
+class Transcriber(
+    val pitch_detector: PitchDetectorInterface,
+    val note_guesser: NoteGuesserInterface,
+    val renderer: MusicRenderer
+) {
 
     /**
      * call this method with raw audio samples from the microphone
@@ -28,7 +30,7 @@ class Transcriber(val pitch_detector: PitchDetectorInterface,
     /**
      * call this method when the recording is finished
      */
-    fun end_transcription(){
+    fun end_transcription() {
         note_guesser.end_guessing()
     }
 
@@ -37,7 +39,7 @@ class Transcriber(val pitch_detector: PitchDetectorInterface,
      */
     fun get_transcription(): String {
         renderer.reset()
-        for (note in note_guesser.notes){
+        for (note in note_guesser.notes) {
             renderer.add_note(note)
         }
         return renderer.build()

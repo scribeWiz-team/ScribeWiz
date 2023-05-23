@@ -22,6 +22,7 @@ class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         return inflater.inflate(R.layout.fragment_share, container, false)
 
     }
+
     /*
     * This function is called when the share button is clicked,
     * it takes the path of the midi file and the context of the activity,

@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
-data class MusicNoteModel (
+data class MusicNoteModel(
     override var id: String = Firebase.firestore.collection(COLLECTION).document().id,
     var name: String = "new note",
 ) : Model {
@@ -15,8 +15,8 @@ data class MusicNoteModel (
     companion object Controller {
         const val COLLECTION = "MusicNotes"
 
-        fun musicNote(id: String) : Result<MusicNoteModel> {
-            var musicNote : MusicNoteModel? = null
+        fun musicNote(id: String): Result<MusicNoteModel> {
+            var musicNote: MusicNoteModel? = null
 
             runBlocking {
                 val job = launch {
@@ -37,10 +37,10 @@ data class MusicNoteModel (
             }
         }
 
-        fun getAllNotesFromUser(user: UserModel) : Set<MusicNoteModel> {
+        fun getAllNotesFromUser(user: UserModel): Set<MusicNoteModel> {
             val db = Firebase.firestore
 
-            val notes : MutableSet<MusicNoteModel> = mutableSetOf()
+            val notes: MutableSet<MusicNoteModel> = mutableSetOf()
 
             runBlocking {
                 val job = launch {

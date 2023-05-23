@@ -21,17 +21,17 @@ import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
 
 
-class FirebaseUIActivity : ComponentActivity()  {
+class FirebaseUIActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Check if the user is already signed in
-        if(user != null){
+        if (user != null) {
             val goHome = Intent(this@FirebaseUIActivity, NavigationActivity::class.java)
             startActivity(goHome)
         }
-        setContent{
+        setContent {
             LoginPage()
         }
     }
@@ -45,22 +45,23 @@ class FirebaseUIActivity : ComponentActivity()  {
     }
 
 
-    private fun addCurrentUserToDB(){
+    private fun addCurrentUserToDB() {
         // User needs to be refreshed for the code to detect the change
         val curUser = FirebaseAuth.getInstance().currentUser
-        if(curUser != null) {
-             val userData = UserModel(
-                 curUser.uid,
-                 curUser.displayName ?: "new user",
-                 musicNotes = mutableListOf("A84wPlG1DaRuyJZJ7B2f"),
-                 friends = mutableListOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
-             )
+        if (curUser != null) {
+            val userData = UserModel(
+                curUser.uid,
+                curUser.displayName ?: "new user",
+                musicNotes = mutableListOf("A84wPlG1DaRuyJZJ7B2f"),
+                friends = mutableListOf("kqXqKL7LYLTMgsueJgtfzKt3Cpz2")
+            )
 
             userData.registerAsCurrentUser(this)
 
             userData.updateInDB()
         }
     }
+
     private fun createSignInIntent() {
         // [START auth_fui_create_intent]
         val providers = arrayListOf(
@@ -121,15 +122,15 @@ class FirebaseUIActivity : ComponentActivity()  {
         // [END auth_fui_delete]
     }
 
-    private fun loginMessage(): String{
-        return if(user != null){
+    private fun loginMessage(): String {
+        return if (user != null) {
             "Hello, " + user.displayName + "!"
-        }else{
+        } else {
             "Not signed in"
         }
     }
 
-    private fun reloadPage(){
+    private fun reloadPage() {
         this@FirebaseUIActivity.recreate()
     }
 
@@ -156,7 +157,7 @@ class FirebaseUIActivity : ComponentActivity()  {
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            if(user == null) {
+            if (user == null) {
                 Button(
                     onClick = {
                         createSignInIntent()
@@ -167,7 +168,7 @@ class FirebaseUIActivity : ComponentActivity()  {
                 }
             }
 
-            if(user != null) {
+            if (user != null) {
                 Button(
                     onClick = {
                         signOut()

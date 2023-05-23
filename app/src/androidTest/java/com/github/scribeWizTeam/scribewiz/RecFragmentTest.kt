@@ -22,7 +22,8 @@ class RecFragmentTest {
     // Note: These tests work locally.
 
     @get:Rule
-    var recordPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.RECORD_AUDIO)
+    var recordPermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(Manifest.permission.RECORD_AUDIO)
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()

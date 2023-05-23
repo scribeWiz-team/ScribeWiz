@@ -35,7 +35,8 @@ class BadgeDisplayTest {
         testUserModel.registerAsCurrentUser(InstrumentationRegistry.getInstrumentation().targetContext)
 
         testUserModel.updateInDB()
-        BadgeModel.addBadgeToUser(testUserModel,
+        BadgeModel.addBadgeToUser(
+            testUserModel,
             BadgeModel(
                 "testBadgeID",
                 "testBadge",
@@ -50,7 +51,7 @@ class BadgeDisplayTest {
 
 
     @Test
-    fun testMyBadgesButton(){
+    fun testMyBadgesButton() {
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
         Intents.intended(IntentMatchers.hasComponent(BadgeDisplayActivity::class.java.name))
@@ -58,7 +59,7 @@ class BadgeDisplayTest {
     }
 
     @Test
-    fun testMyBadgesPage(){
+    fun testMyBadgesPage() {
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
         composeTestRule.onNodeWithText("My badges").assertIsDisplayed()
@@ -67,7 +68,7 @@ class BadgeDisplayTest {
     }
 
     @Test
-    fun testBackButton(){
+    fun testBackButton() {
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
         composeTestRule.onNodeWithText("<-").performClick()

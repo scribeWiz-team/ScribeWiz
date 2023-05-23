@@ -31,7 +31,7 @@ class ChallengeSubmissionModelTest {
     }
 
     @Test
-    fun putAndRetrieveChallengeSubmissionInDBSucceed(){
+    fun putAndRetrieveChallengeSubmissionInDBSucceed() {
         val userId = "test-user-id"
         val recordId = "test-record-id"
 
@@ -49,7 +49,7 @@ class ChallengeSubmissionModelTest {
     }
 
     @Test
-    fun retrieveAllChallengeSubmissionsInDBSucceed(){
+    fun retrieveAllChallengeSubmissionsInDBSucceed() {
         val userId1 = "test-user-id1"
         val recordId1 = "test-record-id1"
         val userId2 = "test-user-id2"
@@ -74,10 +74,11 @@ class ChallengeSubmissionModelTest {
         val recordId = "test-record-id"
         challenge.addSubmission(recordId, userId)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
-            it.upVote(userId)
-            assertEquals(1, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                it.upVote(userId)
+                assertEquals(1, it.upVote)
+            }.onFailure {
             throw it
         }
     }
@@ -88,12 +89,13 @@ class ChallengeSubmissionModelTest {
         val recordId = "test-record-id"
         challenge.addSubmission(recordId, userId)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
-            it.upVote(userId)
-            assertEquals(1, it.upVote)
-            it.upVote(userId)
-            assertEquals(1, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                it.upVote(userId)
+                assertEquals(1, it.upVote)
+                it.upVote(userId)
+                assertEquals(1, it.upVote)
+            }.onFailure {
             throw it
         }
     }
@@ -106,12 +108,13 @@ class ChallengeSubmissionModelTest {
 
         challenge.addSubmission(recordId1, userId1)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId1, recordId1)).onSuccess {
-            it.upVote(userId1)
-            assertEquals(1, it.upVote)
-            it.upVote(userId2)
-            assertEquals(2, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId1, recordId1))
+            .onSuccess {
+                it.upVote(userId1)
+                assertEquals(1, it.upVote)
+                it.upVote(userId2)
+                assertEquals(2, it.upVote)
+            }.onFailure {
             throw it
         }
     }
@@ -122,11 +125,12 @@ class ChallengeSubmissionModelTest {
         val recordId = "test-record-id"
         challenge.addSubmission(recordId, userId)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
-            it.votersUser.add(userId)
-            it.downVote(userId)
-            assertEquals(0, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                it.votersUser.add(userId)
+                it.downVote(userId)
+                assertEquals(0, it.upVote)
+            }.onFailure {
             throw it
         }
     }
@@ -137,11 +141,12 @@ class ChallengeSubmissionModelTest {
         val recordId = "test-record-id"
         challenge.addSubmission(recordId, userId)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
-            it.upVote(userId)
-            it.downVote(userId)
-            assertEquals(0, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                it.upVote(userId)
+                it.downVote(userId)
+                assertEquals(0, it.upVote)
+            }.onFailure {
             throw it
         }
     }
@@ -152,13 +157,14 @@ class ChallengeSubmissionModelTest {
         val recordId = "test-record-id"
         challenge.addSubmission(recordId, userId)
 
-        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId)).onSuccess {
-            it.upVote = 1
-            it.upVote(userId)
-            it.downVote(userId)
-            it.downVote(userId)
-            assertEquals(1, it.upVote)
-        }.onFailure {
+        ChallengeSubmissionModel.submission(challengeId, getSubmissionId(userId, recordId))
+            .onSuccess {
+                it.upVote = 1
+                it.upVote(userId)
+                it.downVote(userId)
+                it.downVote(userId)
+                assertEquals(1, it.upVote)
+            }.onFailure {
             throw it
         }
     }

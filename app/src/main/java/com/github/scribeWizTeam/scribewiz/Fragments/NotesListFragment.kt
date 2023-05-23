@@ -63,7 +63,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
 
-
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +75,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 ScribeWizTheme {
                     // A surface container using the 'background' color from the theme
 
-                    val notesNames  = remember {
+                    val notesNames = remember {
                         notesStorageManager.getNotesNames().toMutableStateList()
                     }
 
@@ -89,34 +88,46 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
                     // Function to handle renaming
                     fun handleRename(newName: String) {
-                        val hasSucceeded = notesStorageManager.renameFile(renamingNoteName.value, newName)
+                        val hasSucceeded =
+                            notesStorageManager.renameFile(renamingNoteName.value, newName)
 
-                        if(hasSucceeded) {
+                        if (hasSucceeded) {
                             val index = notesNames.indexOf(renamingNoteName.value)
                             notesNames[index] = newName
-                            Log.i("tag","The name was correctly changed")
+                            Log.i("tag", "The name was correctly changed")
 
-                        }
-
-                        else Toast.makeText(this.context, "Couldn't rename the file", Toast.LENGTH_LONG).show()
+                        } else Toast.makeText(
+                            this.context,
+                            "Couldn't rename the file",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
 
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        if(showShareMenu.value) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (showShareMenu.value) {
                             ShareMenu(sharedNoteName.value, showShareMenu)
                         }
 
-                        Text("All notes:",  fontSize = 20.sp, textAlign = TextAlign.Center, modifier = Modifier
-                            .padding(15.dp)
-                            .height(25.dp))
-                        LazyColumn (modifier = Modifier
-                            .padding(all = 8.dp)
-                            .testTag("columnList"),
+                        Text(
+                            "All notes:",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .height(25.dp)
+                        )
+                        LazyColumn(
+                            modifier = Modifier
+                                .padding(all = 8.dp)
+                                .testTag("columnList"),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            items(notesNames, key={ note -> note }) { name ->
+                            items(notesNames, key = { note -> note }) { name ->
 
                                 val state = rememberDismissState(
                                     confirmStateChange = {
@@ -128,15 +139,17 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                     }
                                 )
                                 Row(verticalAlignment = CenterVertically) {
-                                    Button(onClick = {
-                                        showShareMenu.value = true
-                                        sharedNoteName.value = name
-                                    },
+                                    Button(
+                                        onClick = {
+                                            showShareMenu.value = true
+                                            sharedNoteName.value = name
+                                        },
                                         modifier = Modifier
                                             .width(85.dp)
                                             .height(45.dp)
                                             .background(Color.White, CircleShape)
-                                            .padding(5.dp)) {
+                                            .padding(5.dp)
+                                    ) {
                                         Text(text = "share")
                                     }
                                     SwipeToDismissNote(
@@ -280,7 +293,7 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     }
 
     @Composable
-    private fun ShareMenu(noteName: String,  showShareMenu: MutableState<Boolean>) {
+    private fun ShareMenu(noteName: String, showShareMenu: MutableState<Boolean>) {
         Popup(
             alignment = Alignment.Center,
             onDismissRequest = { showShareMenu.value = false },

@@ -8,14 +8,17 @@ import com.google.firebase.ktx.Firebase
 interface Model {
     val id: String
 
-    fun updateInDB(onResultListener: ResultListener = object: ResultListener {
-        override fun onSuccess() {
-            Log.d("SETTINGUPDB", "data added")
+    fun updateInDB(
+        onResultListener: ResultListener = object : ResultListener {
+            override fun onSuccess() {
+                Log.d("SETTINGUPDB", "data added")
+            }
+
+            override fun onError(error: Throwable) {
+                Log.w("SETTINGUPDB", "Error adding data", error)
+            }
         }
-        override fun onError(error: Throwable) {
-            Log.w("SETTINGUPDB", "Error adding data", error)
-        }
-    }): Task<Void> {
+    ): Task<Void> {
         return Firebase.firestore
             .collection(collectionName()).document(id).set(this)
             .addOnSuccessListener {
@@ -27,7 +30,7 @@ interface Model {
 
     }
 
-    fun delete() : Task<Void> {
+    fun delete(): Task<Void> {
         return Firebase.firestore.collection(collectionName()).document(id).delete()
     }
 

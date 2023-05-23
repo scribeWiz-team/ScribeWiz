@@ -5,7 +5,7 @@ import kotlin.math.*
 
 const val SILENT_PITCH = -1
 
-data class MidiNote(val pitch: Int, val startTime: Double, val endTime: Double){
+data class MidiNote(val pitch: Int, val startTime: Double, val endTime: Double) {
     val duration = endTime - startTime
 }
 
@@ -32,11 +32,12 @@ interface NoteGuesserInterface {
  * - when there is no more samples to process, call {@link #end_guessing()}
  * - you can retrieve the guessed notes at any time in the {@link #notes} attribute
  */
-class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
+class NoteGuesser(override val sampleDelay: Double) : NoteGuesserInterface {
     companion object {
         private const val MOVING_WINDOW_NEIGHBORS = 1
+
         // the window size is always odd, so that it’s symmetric
-        private const val MOVING_WINDOW_SIZE = 2*MOVING_WINDOW_NEIGHBORS + 1
+        private const val MOVING_WINDOW_SIZE = 2 * MOVING_WINDOW_NEIGHBORS + 1
     }
 
     override var notes: List<MidiNote> = listOf()
@@ -45,7 +46,7 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
     private var windowIndex: Int = 0
     private var enoughData: Boolean = false
 
-    private var time: Double = -sampleDelay*MOVING_WINDOW_NEIGHBORS
+    private var time: Double = -sampleDelay * MOVING_WINDOW_NEIGHBORS
     private var currentNote: MidiNote = MidiNote(SILENT_PITCH, 0.0, 0.0)
 
     override fun add_sample(pitchFreq: Double?): Int {
@@ -54,16 +55,16 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
         movingWindow[windowIndex] = midiPitch
         // get the most frequent pitch in window
         val bestPitch = get_most_frequent_pitch_in_window()
-        if (bestPitch != currentNote.pitch){
-            if (enoughData){
+        if (bestPitch != currentNote.pitch) {
+            if (enoughData) {
                 push_current_note()
             }
-            currentNote = MidiNote(bestPitch, time, time+sampleDelay)
+            currentNote = MidiNote(bestPitch, time, time + sampleDelay)
         } else {
-            currentNote = MidiNote(currentNote.pitch, currentNote.startTime, time+sampleDelay)
+            currentNote = MidiNote(currentNote.pitch, currentNote.startTime, time + sampleDelay)
         }
         time += sampleDelay
-        if (windowIndex >= MOVING_WINDOW_NEIGHBORS){
+        if (windowIndex >= MOVING_WINDOW_NEIGHBORS) {
             enoughData = true
         }
         windowIndex = (windowIndex + 1) % MOVING_WINDOW_SIZE
@@ -71,22 +72,22 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
     }
 
     private fun get_most_frequent_pitch_in_window(): Int {
-        val best = movingWindow.groupBy({it})
-                               .mapValues({ (_, l) -> l.size})
-                               .maxBy({ it.value })
-        if (best.value == MOVING_WINDOW_NEIGHBORS){
+        val best = movingWindow.groupBy({ it })
+            .mapValues({ (_, l) -> l.size })
+            .maxBy({ it.value })
+        if (best.value == MOVING_WINDOW_NEIGHBORS) {
             // not enough samples to be representative
             return SILENT_PITCH
         }
         return best.key
     }
 
-    override fun end_guessing(){
+    override fun end_guessing() {
         push_current_note()
     }
-    
-    private fun push_current_note(){
-        if (currentNote.duration != 0.0){
+
+    private fun push_current_note() {
+        if (currentNote.duration != 0.0) {
             notes += currentNote
             currentNote = MidiNote(SILENT_PITCH, time, time)
         }
@@ -95,9 +96,9 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
     private fun compute_midi_pitch(pitchFreq: Double?): Int {
         // This formula comes from this website
         //  https://newt.phys.unsw.edu.au/jw/notes.html
-        if (pitchFreq == null){
+        if (pitchFreq == null) {
             return SILENT_PITCH
         }
-        return (12*log2(pitchFreq/440.0)+69).roundToInt()
+        return (12 * log2(pitchFreq / 440.0) + 69).roundToInt()
     }
 }

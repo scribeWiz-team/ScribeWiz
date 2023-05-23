@@ -29,7 +29,6 @@ class ChallengeModelTest {
         }
     }
 
-
     @Test
     fun latestChallengeRetrieveTheGoodOne() {
 

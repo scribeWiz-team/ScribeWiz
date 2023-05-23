@@ -13,7 +13,7 @@ import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 
-class ShareFragmentTest  {
+class ShareFragmentTest {
 
     private val midiFilePath = "path/to/midi/file"
 
@@ -58,6 +58,7 @@ class ShareFragmentTest  {
             assertTrue(result)
         }
     }
+
     //check if the file URI is correct
     @Test
     fun shareMidiFile_fileUriIsCorrect() {
@@ -76,10 +77,17 @@ class ShareFragmentTest  {
             midiFile.renameTo(staticTempFile)
 
             // Act
-            val uri = FileProvider.getUriForFile(activity, activity.applicationContext.packageName + ".fileprovider", staticTempFile)
+            val uri = FileProvider.getUriForFile(
+                activity,
+                activity.applicationContext.packageName + ".fileprovider",
+                staticTempFile
+            )
 
             // Assert
-            assertEquals("content://${activity.packageName}.fileprovider/cache/test_midi.midi", uri.toString())
+            assertEquals(
+                "content://${activity.packageName}.fileprovider/cache/test_midi.midi",
+                uri.toString()
+            )
         }
     }
 

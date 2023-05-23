@@ -25,8 +25,10 @@ interface PitchDetectorInterface {
  *                     a typical value is 44000.0 Hz
  * @param corrThreshold minimal proportion of the initial correlation to consider a frequency to be relevant
  */
-class PitchDetector(override val samplingFreq: Frequency,
-                    val corrThreshold: Double=1.0): PitchDetectorInterface {
+class PitchDetector(
+    override val samplingFreq: Frequency,
+    val corrThreshold: Double = 1.0
+) : PitchDetectorInterface {
     companion object {
         private const val MIN_FREQ = 50.0 // lowest detectable frequency
         private const val MAX_FREQ = 2000.0 // highest detectable frequency
@@ -34,35 +36,35 @@ class PitchDetector(override val samplingFreq: Frequency,
     }
 
     init {
-        if (samplingFreq <= 0){
+        if (samplingFreq <= 0) {
             throw IllegalArgumentException(
                 "sampling frequency of PitchDetector should be positive"
             )
         }
     }
 
-    private fun autocorrelation(signal: Signal, lag: Int): Energy{
+    private fun autocorrelation(signal: Signal, lag: Int): Energy {
         var energy = 0.0
-        for (i in 0 until signal.size - lag){
-            energy += signal[i]*signal[i+lag]
+        for (i in 0 until signal.size - lag) {
+            energy += signal[i] * signal[i + lag]
         }
         return energy.toDouble()
     }
 
-    private fun square_sum(signal: Signal, lag: Int): Energy{
+    private fun square_sum(signal: Signal, lag: Int): Energy {
         var energy = 0.0
-        for (i in 0 until signal.size - lag){
-            val i_square = signal[i]*signal[i]
-            val i_lag_square = signal[i+lag]*signal[i+lag]
+        for (i in 0 until signal.size - lag) {
+            val i_square = signal[i] * signal[i]
+            val i_lag_square = signal[i + lag] * signal[i + lag]
             energy += i_square + i_lag_square
         }
         return energy.toDouble()
     }
 
-    private fun normal_square_diff(signal: Signal, lag: Int): Energy{
+    private fun normal_square_diff(signal: Signal, lag: Int): Energy {
         val r = autocorrelation(signal, lag)
         val m = square_sum(signal, lag)
-        val n = 2*r/m
+        val n = 2 * r / m
         return max(-1.0, min(1.0, n))
     }
 
@@ -78,29 +80,29 @@ class PitchDetector(override val samplingFreq: Frequency,
         val highLag = freq_to_lag(MIN_FREQ)
         val lowLag = freq_to_lag(MAX_FREQ)
         var bestCorr = -1.0
-        var bestLag : Int? = null
-        var candidateMax : List<Pair<Int, Energy>> = emptyList()
-        for (lag in lowLag .. highLag){
+        var bestLag: Int? = null
+        var candidateMax: List<Pair<Int, Energy>> = emptyList()
+        for (lag in lowLag..highLag) {
             val currentCorr = normal_square_diff(signal, lag)
-            if (currentCorr > 0){
-                if (currentCorr > bestCorr){
+            if (currentCorr > 0) {
+                if (currentCorr > bestCorr) {
                     bestCorr = currentCorr
                     bestLag = lag
                 }
             } else {
-                if (bestLag != null){
+                if (bestLag != null) {
                     candidateMax += Pair(bestLag, bestCorr)
                     bestLag = null
                     bestCorr = -1.0
                 }
             }
         }
-        if (candidateMax.size == 0){
+        if (candidateMax.size == 0) {
             return null
         }
         val (lagOfMax, maxCorr) = candidateMax.maxBy { it.second }
         val fundamental = candidateMax.find { it.second >= corrThreshold }
-        if (fundamental == null){
+        if (fundamental == null) {
             return null
         }
         val (fundamentalLag, fundamentalCorr) = fundamental
@@ -108,7 +110,7 @@ class PitchDetector(override val samplingFreq: Frequency,
         val power = sqrt(autocorrelation(signal, 0))
         val clarity = autocorrelation(signal, fundamentalLag)
         val translucency = power * clarity
-        if (translucency < TRANSLUCENCY_TH){
+        if (translucency < TRANSLUCENCY_TH) {
             return null
         }
         return fundFreq

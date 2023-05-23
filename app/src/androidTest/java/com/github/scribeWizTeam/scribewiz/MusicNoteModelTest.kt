@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 class MusicNoteModelTest {
 
     @Test
-    fun putAndRetrieveMusicNoteInDBSucceed(){
+    fun putAndRetrieveMusicNoteInDBSucceed() {
         val id = "test-music-note-id"
         val musicNote = MusicNoteModel(id)
 
@@ -28,7 +28,7 @@ class MusicNoteModelTest {
     }
 
     @Test
-    fun getAllNotesFromUserReturnsAllNoteModels(){
+    fun getAllNotesFromUserReturnsAllNoteModels() {
         val noteId1 = "test-music-note-id1"
         val noteId2 = "test-music-note-id2"
         val musicNote1 = MusicNoteModel(noteId1)
@@ -56,7 +56,7 @@ class MusicNoteModelTest {
     }
 
     @Test
-    fun tryToRetrieveInvalidMusicNoteFromDBFails(){
+    fun tryToRetrieveInvalidMusicNoteFromDBFails() {
         val id = "INVALID-test-id"
 
         val ret = MusicNoteModel.musicNote(id)

@@ -19,7 +19,7 @@ class MainActivityTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun testLoginPageAppears(){
+    fun testLoginPageAppears() {
         composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
     }
 

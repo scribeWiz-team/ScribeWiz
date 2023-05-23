@@ -15,7 +15,9 @@ import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
 import com.github.scribeWizTeam.scribewiz.R
 import com.google.android.material.navigation.NavigationView
 
-
+/**
+ * An activity that handles navigation and displays various fragments.
+ */
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawer: DrawerLayout
@@ -26,6 +28,9 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         goHomePage()
     }
 
+    /**
+     * Sets up the home page with the navigation drawer.
+     */
     fun goHomePage() {
         //set the layout
         setContentView(R.layout.activity_navigation)
@@ -52,8 +57,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         toggle.syncState()
         //set the default fragment
-        //supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment(0))
-        //.commit()
+        //supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment(0)).commit()
         //set the default item selected
         navigationView.setCheckedItem(R.id.nav_home)
     }
@@ -88,10 +92,13 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         return true
     }
 
-    //auxiliary function to show a fragment
+    /**
+     * Displays the specified fragment.
+     *
+     * @param fragment The fragment to be displayed.
+     */
     fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment).commit()
     }
-
 }

@@ -68,19 +68,21 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     constructor() : this(0) {
         // Default constructor
     }
+
     @Composable
-    fun ProfilePage(){
+    fun ProfilePage() {
         val context = LocalContext.current
-        var userProfile : UserModel = remember{ UserModel() }
+        var userProfile: UserModel = remember { UserModel() }
         // Badge collection button/display
-        UserModel.currentUser(context).onSuccess{
+        UserModel.currentUser(context).onSuccess {
             userProfile = it
         }
 
         // Check if user is logged in, set default values otherwise
         var userName = "Guest"
         var numRecordings = "0"
-        val friendsList = hashMapOf(Pair("exampleFriendID0", "Chris"),
+        val friendsList = hashMapOf(
+            Pair("exampleFriendID0", "Chris"),
             Pair("exampleFriendID1", "Louis"),
             Pair("exampleFriendID2", "Baptiste"),
             Pair("exampleFriendID3", "Noe"),
@@ -88,21 +90,24 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             Pair("exampleFriendID5", "Zach"),
             Pair("exampleFriendID6", "George"),
             Pair("exampleFriendID7", "Alice"),
-            Pair("exampleFriendID8", "Bob"))
-        if(userProfile.id != "") {
+            Pair("exampleFriendID8", "Bob")
+        )
+        if (userProfile.id != "") {
             Log.w("READINGFRIENDSLIST", "USER EXISTS")
-             db.collection("Users").document(userProfile.id!!)
-                 .get().addOnSuccessListener { data ->
-                     numRecordings = data.get("userNumRecordings").toString()
-                     // TODO: Currently bugging
-                     //friendsList = data.get("friendsList") as HashMap<String, String>
-                 }
+            db.collection("Users").document(userProfile.id!!)
+                .get().addOnSuccessListener { data ->
+                    numRecordings = data.get("userNumRecordings").toString()
+                    // TODO: Currently bugging
+                    //friendsList = data.get("friendsList") as HashMap<String, String>
+                }
 
             userName = userProfile.userName!!
         }
-        friendsList.forEach{Log.w(it.key, it.value)}
+        friendsList.forEach { Log.w(it.key, it.value) }
         Column(
-            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -112,7 +117,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             )
             Spacer(Modifier.height(20.dp))
 
-            if(user != null){
+            if (user != null) {
                 // Use user profile picture
                 AsyncImage(
                     model = user.photoUrl,
@@ -121,7 +126,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         .size(60.dp)
                         .clip(CircleShape)
                 )
-            }else {
+            } else {
                 // Default profile picture
                 Image(
                     painter = painterResource(id = R.mipmap.ic_launcher_foreground),
@@ -140,27 +145,34 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             // LOGIN/LOG-OUT BUTTON
             Button(
                 onClick = {
-                    if(user != null){
+                    if (user != null) {
                         AuthUI.getInstance().signOut(context)
                     }
-                    UserModel.currentUser(context).onSuccess{
+                    UserModel.currentUser(context).onSuccess {
                         it.unregisterAsCurrentUser(context)
                     }
 
                     val goHome = Intent(context, FirebaseUIActivity::class.java)
                     context.startActivity(goHome)
                 },
-                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(100.dp)
+                    .padding(top = 10.dp)
             ) {
-                if(user == null) {
+                if (user == null) {
                     Text("Sign in")
-                }else{
+                } else {
                     Text("Sign out")
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
-                horizontalArrangement = Arrangement.SpaceBetween){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = "My recordings : $numRecordings",
                     style = MaterialTheme.typography.h4,
@@ -169,10 +181,10 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 )
 
 
-                if(userProfile.id != ""){
+                if (userProfile.id != "") {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ){
+                    ) {
                         Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "My badges button",
                             modifier = Modifier.clickable {
@@ -183,26 +195,29 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             }
                         )
 
-                        Text("My badges", modifier=Modifier.offset(y= (-20).dp))
+                        Text("My badges", modifier = Modifier.offset(y = (-20).dp))
                     }
                 }
             }
 
-            if(user != null) {
+            if (user != null) {
                 val text = remember { mutableStateOf("") }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
                         value = text.value,
                         onValueChange = { text.value = it },
                         label = { Text("Search for user") },
-                        modifier = Modifier.height(50.dp).width(250.dp)
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(250.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
                             sendFriendRequest(text.value)
                         },
-                        modifier = Modifier.height(50.dp)
+                        modifier = Modifier
+                            .height(50.dp)
                             .width(100.dp)
                     )
                     {
@@ -212,25 +227,25 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             }
             // TODO: Add user null check once bug is fixed
             //if(user != null){
-                Text(
-                    text = "My friends",
-                    style = MaterialTheme.typography.h4,
-                    fontSize = 22.sp,
-                    modifier = Modifier.padding(top = 10.dp)
-                )
-                DrawFriendsGrid(friendsList)
+            Text(
+                text = "My friends",
+                style = MaterialTheme.typography.h4,
+                fontSize = 22.sp,
+                modifier = Modifier.padding(top = 10.dp)
+            )
+            DrawFriendsGrid(friendsList)
 
 
         }
     }
 
     @Composable
-    fun DrawFriendsGrid(friendsList : MutableMap<String, String>){
+    fun DrawFriendsGrid(friendsList: MutableMap<String, String>) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(friendsList.size) {item ->
+            items(friendsList.size) { item ->
                 Card(
                     modifier = Modifier.padding(4.dp),
                     backgroundColor = Color(
@@ -239,12 +254,14 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         blue = Random.nextInt(0, 255)
                     )
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally){
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                         Image(
                             painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "FriendPP",
-                            modifier = Modifier.size(60.dp).padding(bottom = 0.dp)
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(bottom = 0.dp)
                         )
 
                         Text(
@@ -253,7 +270,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp),
 
-                        )
+                            )
                     }
                     // Default profile picture
 
@@ -262,7 +279,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
-    private fun sendFriendRequest(friendName: String){
+    private fun sendFriendRequest(friendName: String) {
 
         val ret = UserModel.currentUser(requireContext())
         if (ret.isFailure) {
@@ -271,9 +288,9 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
         val localUser = ret.getOrThrow()
 
-        if(user != null) {
+        if (user != null) {
             // Cannot add oneself as friend
-            if(friendName == user.displayName){
+            if (friendName == user.displayName) {
                 return
             }
             thread {
@@ -282,7 +299,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                 val snapshot = await(db.collection(UserModel.COLLECTION).get())
 
                 // Check if no users exist in the database
-                if(snapshot.isEmpty) {
+                if (snapshot.isEmpty) {
                     Log.w("ADDINGFRIEND", "EMPTYDB")
                 }
 
@@ -292,7 +309,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     // Checking for a match in the database
                     if (doc.get("userName") == friendName) {
                         // Check that the user is not already in the local friend list
-                        if(localUser.friends?.contains(doc.id) == true){
+                        if (localUser.friends?.contains(doc.id) == true) {
                             return@thread
                         }
 

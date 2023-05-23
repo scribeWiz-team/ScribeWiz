@@ -1,4 +1,5 @@
 package com.github.scribeWizTeam.scribewiz.Activities
+
 import android.content.Intent
 
 import android.os.Bundle

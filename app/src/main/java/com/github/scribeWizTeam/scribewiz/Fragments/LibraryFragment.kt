@@ -33,7 +33,9 @@ class LibraryFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
             setContent {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(

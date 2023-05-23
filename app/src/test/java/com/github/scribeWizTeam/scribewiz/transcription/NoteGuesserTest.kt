@@ -17,7 +17,7 @@ class NoteGuesserTest {
         )
 
         val guesser = NoteGuesser(0.2)
-        for (sample in samples){
+        for (sample in samples) {
             guesser.add_sample(sample)
         }
         guesser.end_guessing()
@@ -59,19 +59,19 @@ class NoteGuesserTest {
         )
 
         val guesser = NoteGuesser(0.5)
-        for (sample in samples){
+        for (sample in samples) {
             guesser.add_sample(sample)
         }
         guesser.end_guessing()
 
         assertEquals(expected.size, guesser.notes.size)
-        for ((i, exp) in expected.withIndex()){
+        for ((i, exp) in expected.withIndex()) {
             val (midiPitch, duration) = exp
             val note = guesser.notes.get(i)
             assertEquals(midiPitch, note.pitch)
             assertEquals(duration, note.duration, 0.001)
         }
-            
+
     }
 
     @Test
@@ -106,18 +106,18 @@ class NoteGuesserTest {
         )
 
         val guesser = NoteGuesser(0.5)
-        for (sample in samples){
+        for (sample in samples) {
             guesser.add_sample(sample)
         }
         guesser.end_guessing()
 
         assertEquals(expected.size, guesser.notes.size)
-        for ((i, exp) in expected.withIndex()){
+        for ((i, exp) in expected.withIndex()) {
             val (midiPitch, duration) = exp
             val note = guesser.notes.get(i)
             assertEquals(midiPitch, note.pitch)
             assertEquals(duration, note.duration, 0.001)
         }
-            
+
     }
 }
