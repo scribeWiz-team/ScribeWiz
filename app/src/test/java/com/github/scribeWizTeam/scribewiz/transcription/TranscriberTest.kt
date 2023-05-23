@@ -58,11 +58,11 @@ class TranscriberTest {
     fun transcriber_calls_processing_blocks_as_expected(){
         val dummySignal = Signal(2) { 3.0f }
         transcriber.processSamples(dummySignal)
-        assertEquals("2", transcriber.get_transcription())
+        assertEquals("2", transcriber.getTranscription())
         transcriber.processSamples(dummySignal)
-        assertEquals("2|2", transcriber.get_transcription())
+        assertEquals("2|2", transcriber.getTranscription())
         transcriber.endTranscription()
-        assertEquals("2|2|-1", transcriber.get_transcription())
+        assertEquals("2|2|-1", transcriber.getTranscription())
     }
 }
 

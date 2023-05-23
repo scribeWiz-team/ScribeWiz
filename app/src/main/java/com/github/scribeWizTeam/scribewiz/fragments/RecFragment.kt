@@ -250,7 +250,7 @@ class RecFragment(
             recording_parameters.beatType,
             divisions = 2,
             tempo = recording_parameters.tempo,
-            use_g_key_signature = recording_parameters.useGKeySignature
+            useGKeySignature = recording_parameters.useGKeySignature
         )
         val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
@@ -271,7 +271,7 @@ class RecFragment(
         isRecording = false
         // end the transcription
         transcriber.endTranscription()
-        val data = transcriber.get_transcription()
+        val data = transcriber.getTranscription()
         notesStorageManager.writeNoteFile(recording_parameters.scoreName, data)
     }
 
