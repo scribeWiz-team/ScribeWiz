@@ -1,14 +1,12 @@
 package com.github.scribeWizTeam.scribewiz
 
-
-import org.junit.Rule
-
-import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -19,9 +17,7 @@ class MainActivityTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun testLoginPageAppears(){
+    fun testLoginPageAppears() {
         composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
     }
-
-
 }

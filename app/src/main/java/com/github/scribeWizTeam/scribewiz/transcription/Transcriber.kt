@@ -2,16 +2,17 @@ package com.github.scribeWizTeam.scribewiz.transcription
 
 
 /**
- * Transcribe an audio signal into a human-frendly representation
+ * Transcribe an audio signal into a human-friendly representation
  *
  * See the documentation of each component to see how to initialize them
- * @param pitch_detector see {@link com.github.scribeWizTeam.scribewiz.transcription.PitchDetector PitchDetector}
- * @param note_guesser see {@link com.github.scribeWizTeam.scribewiz.transcription.NoteGuesser NoteGuesser}
+ * @param pitchDetector see {@link com.github.scribeWizTeam.scribewiz.transcription.PitchDetector PitchDetector}
+ * @param noteGuesser see {@link com.github.scribeWizTeam.scribewiz.transcription.NoteGuesser NoteGuesser}
  * @param renderer see {@link com.github.scribeWizTeam.scribewiz.transcription.MusicxmlBuilder MusicxmlBuilder}
  */
-class Transcriber(val pitch_detector: PitchDetectorInterface,
-                  val note_guesser: NoteGuesserInterface,
-                  val renderer: MusicRenderer) {
+class Transcriber(
+    private val pitchDetector: PitchDetectorInterface,
+    private val noteGuesser: NoteGuesserInterface,
+    private val renderer: MusicRenderer) {
 
     /**
      * call this method with raw audio samples from the microphone
@@ -19,28 +20,30 @@ class Transcriber(val pitch_detector: PitchDetectorInterface,
      *
      * @param samples the audio signal to process
      */
-    fun process_samples(samples: Signal): Int {
-        val pitch = pitch_detector.detect_pitch(samples)
-        val note = note_guesser.add_sample(pitch)
-        return note
+    fun processSamples(samples: Signal): Int {
+        // call this method with raw audio samples from the microphone
+        // every `noteSamplingDelay` seconds
+        val pitch = pitchDetector.detectPitch(samples)
+        return noteGuesser.addSample(pitch)
     }
 
     /**
      * call this method when the recording is finished
      */
-    fun end_transcription(){
-        note_guesser.end_guessing()
+    fun endTranscription(){
+        // call this method when the recording is finished
+        noteGuesser.endGuessing()
     }
 
     /**
      * call this method at any time to get a transcription of the music
      */
-    fun get_transcription(): String {
+    fun getTranscription(): String {
         renderer.reset()
-        for (note in note_guesser.notes){
-            renderer.add_note(note)
+        for (note in noteGuesser.notes){
+            renderer.addNote(note)
         }
         return renderer.build()
     }
-
 }
+

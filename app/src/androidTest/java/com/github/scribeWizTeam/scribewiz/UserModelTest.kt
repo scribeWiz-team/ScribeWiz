@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class UserModelTest {
 
     @Test
-    fun putAndRetrieveUserInDBSucceed(){
+    fun putAndRetrieveUserInDBSucceed() {
         val id = "test-id"
         val user = UserModel(id)
 
@@ -28,7 +28,7 @@ class UserModelTest {
     }
 
     @Test
-    fun tryToRetrieveInvalidUserFromDBFails(){
+    fun tryToRetrieveInvalidUserFromDBFails() {
         val id = "INVALID-test-id"
 
         val ret = UserModel.user(id)

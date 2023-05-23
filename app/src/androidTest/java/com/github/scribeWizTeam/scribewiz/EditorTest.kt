@@ -6,7 +6,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import com.github.scribeWizTeam.scribewiz.Util.Editor
+import com.github.scribeWizTeam.scribewiz.util.Editor
 import org.junit.Assert
 import java.io.PrintWriter
 

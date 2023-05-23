@@ -1,8 +1,6 @@
 package com.github.scribeWizTeam.scribewiz
 
-import HomeFragment
 import android.view.View
-import android.widget.FrameLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.test.core.app.ActivityScenario
@@ -11,20 +9,17 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
-import org.junit.Before
-import org.junit.Test
-import androidx.test.espresso.matcher.ViewMatchers.*
-import com.google.android.material.navigation.NavigationView
-import org.hamcrest.Matcher
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import com.github.scribeWizTeam.scribewiz.Fragments.HelpFragment
-import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
-import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
-import junit.framework.TestCase.assertTrue
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
+import com.google.android.material.navigation.NavigationView
+import org.hamcrest.Matcher
+import org.junit.Before
+import org.junit.Test
 
 class NavigationActivityTest {
 
@@ -57,15 +52,15 @@ class NavigationActivityTest {
     @Test
     fun testToolbarIsDisplayed() {
         // Check if the toolbar is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.toolbar))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(withId(R.id.toolbar))
+            .check(ViewAssertions.matches(isDisplayed()))
     }
 
     @Test
     fun testNavigationDrawerIsDisplayed() {
         // Check if the navigation drawer is displayed
-        Espresso.onView(ViewMatchers.withId(R.id.drawer_layout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(withId(R.id.drawer_layout))
+            .check(ViewAssertions.matches(isDisplayed()))
     }
 
     @Test
@@ -75,8 +70,8 @@ class NavigationActivityTest {
             .perform(ViewActions.swipeRight())
 
         val itemsToTest = arrayOf(
-            R.id.nav_home, R.id.nav_library, R.id.nav_profile,
-            R.id.nav_help, R.id.nav_rec, R.id.nav_settings
+            R.id.nav_library, R.id.nav_profile,
+            R.id.nav_help, R.id.nav_rec
         )
 
         itemsToTest.forEach { menuItemId ->
@@ -101,7 +96,7 @@ class NavigationActivityTest {
 
             // Check if the corresponding fragment is displayed
             Espresso.onView(withId(R.id.fragment_container))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                .check(ViewAssertions.matches(isDisplayed()))
         }
     }
 

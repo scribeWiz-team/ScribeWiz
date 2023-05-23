@@ -8,13 +8,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.NotesListFragment
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
+import com.github.scribeWizTeam.scribewiz.models.UserModel
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -142,6 +141,12 @@ class NotesListFragmentTest {
         composeTestRule.onNode(hasText("a"))
             .assertIsDisplayed() //Since only one "a" file was loaded, make sure that it was not modified
 
+    }
+
+    @Test
+    fun openDialogForShareWhenLongClick() {
+        UserModel().registerAsCurrentUser(context = composeTestRule.activity)
+        composeTestRule.onAllNodesWithText("share")[0].performClick()
     }
 
     @Test

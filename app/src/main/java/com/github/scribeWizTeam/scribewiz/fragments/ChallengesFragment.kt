@@ -1,29 +1,22 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
+package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import com.github.scribeWizTeam.scribewiz.R
+import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -99,11 +92,9 @@ class ChallengesFragment : Fragment() {
     }
 
     @Composable
-    fun specificChallengeButton(challenge: ChallengeModel) {
+    fun SpecificChallengeButton(challenge: ChallengeModel) {
 
-        fun challengeOnClick(): Unit {
-
-        }
+        fun challengeOnClick() {}
 
         Button(
             onClick = ::challengeOnClick,
@@ -129,7 +120,7 @@ class ChallengesFragment : Fragment() {
         Column {
             Spacer(modifier = Modifier.height(8.dp))
             challenges.forEach { challenge ->
-                specificChallengeButton(challenge = challenge)
+                SpecificChallengeButton(challenge = challenge)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }

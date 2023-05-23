@@ -5,7 +5,7 @@ import com.github.scribeWizTeam.scribewiz.models.ChallengeModel.Controller.chall
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import org.junit.Test
-import java.util.*
+import java.util.Date
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

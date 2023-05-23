@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Activities
+package com.github.scribeWizTeam.scribewiz.activities
 
 
 import android.annotation.SuppressLint

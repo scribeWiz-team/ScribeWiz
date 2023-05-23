@@ -1,10 +1,9 @@
 package com.github.scribeWizTeam.scribewiz
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.fragment.app.testing.launchFragmentInContainer
-import com.github.scribeWizTeam.scribewiz.Fragments.ChallengesFragment
+import com.github.scribeWizTeam.scribewiz.fragments.ChallengesFragment
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

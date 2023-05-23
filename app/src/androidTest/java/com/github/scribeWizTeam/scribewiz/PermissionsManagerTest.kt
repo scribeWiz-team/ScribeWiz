@@ -6,7 +6,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test

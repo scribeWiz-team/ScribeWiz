@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Util
+package com.github.scribeWizTeam.scribewiz.util
 
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
@@ -31,8 +31,8 @@ class Editor {
             xmlSerializer.startDocument(null, true)
 
             // Variable to keep track of the current note location in the input MusicXML file.
-            var eventType = parser.eventType
-            var currentNoteLocation = 0
+            val eventType = parser.eventType
+            val currentNoteLocation = 0
 
             // Loop through the input file's XML content until reaching the end of the document, and write the note at the desired location.
             loopXMLDocument(
@@ -135,7 +135,7 @@ class Editor {
             var currentTicks = 1
             var noteLocation = 0
             var divisions = 0
-            var currentDivisionTicks = 480
+            val currentDivisionTicks = 480
 
             // Iterate through the XML file
             while (eventType != XmlPullParser.END_DOCUMENT) {
