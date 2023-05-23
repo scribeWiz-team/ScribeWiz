@@ -9,7 +9,10 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
@@ -67,8 +70,8 @@ class NavigationActivityTest {
             .perform(ViewActions.swipeRight())
 
         val itemsToTest = arrayOf(
-            R.id.nav_home, R.id.nav_library, R.id.nav_profile,
-            R.id.nav_help, R.id.nav_rec, R.id.nav_settings
+            R.id.nav_library, R.id.nav_profile,
+            R.id.nav_help, R.id.nav_rec
         )
 
         itemsToTest.forEach { menuItemId ->

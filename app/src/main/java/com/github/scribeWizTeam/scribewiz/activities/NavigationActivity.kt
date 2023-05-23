@@ -8,8 +8,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.fragments.*
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.fragments.*
 import com.google.android.material.navigation.NavigationView
 
 
@@ -23,7 +23,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         goHomePage()
     }
 
-    fun goHomePage() {
+    private fun goHomePage() {
         //set the layout
         setContentView(R.layout.activity_navigation)
 
@@ -52,7 +52,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         //supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment(0))
         //.commit()
         //set the default item selected
-        navigationView.setCheckedItem(R.id.nav_home)
+        navigationView.setCheckedItem(R.id.nav_profile)
     }
 
     @Deprecated("Deprecated in Java")
@@ -71,7 +71,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.nav_library -> showFragment(NotesListFragment(0))
             R.id.nav_profile -> showFragment(ProfilePageFragment(0))
             R.id.nav_help -> showFragment(HelpFragment())
-            R.id.nav_rec -> showFragment(RecParameterFragment(0, this))
+            R.id.nav_rec -> showFragment(RecParameterFragment(0))
             R.id.nav_share -> ShareFragment(0).shareMidiFile(
                 "/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp",
                 this

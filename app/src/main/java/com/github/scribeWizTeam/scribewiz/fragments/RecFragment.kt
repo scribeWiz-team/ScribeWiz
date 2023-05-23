@@ -11,7 +11,14 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -33,19 +40,29 @@ import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
 import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.transcription.MusicxmlBuilder
+import com.github.scribeWizTeam.scribewiz.transcription.NoteGuesser
+import com.github.scribeWizTeam.scribewiz.transcription.PitchDetector
+import com.github.scribeWizTeam.scribewiz.transcription.Signal
+import com.github.scribeWizTeam.scribewiz.transcription.Signature
+import com.github.scribeWizTeam.scribewiz.transcription.Transcriber
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
-import com.github.scribeWizTeam.scribewiz.transcription.*
 
-class RecFragment(contentLayoutId: Int,
-                  private val recording_parameters: RecordingParameters) : Fragment(contentLayoutId) {
+class RecFragment(
+    contentLayoutId: Int,
+    private val recording_parameters: RecordingParameters
+) : Fragment(contentLayoutId) {
 
     companion object {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
         private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
-        private const val NOTE_SAMPLE_INTERVAL = 80L //number of milliseconds between two note guesses
+        private const val NOTE_SAMPLE_INTERVAL =
+            80L //number of milliseconds between two note guesses
+
         //number of a samples used for each note guess
-        private const val NOTE_SAMPLE_WINDOW_SIZE = (SAMPLE_RATE_IN_HZ*NOTE_SAMPLE_INTERVAL/1000).toInt()
+        private const val NOTE_SAMPLE_WINDOW_SIZE =
+            (SAMPLE_RATE_IN_HZ * NOTE_SAMPLE_INTERVAL / 1000).toInt()
         private const val THRESHOLD = 0.9 // threshold to detect notes
 
     }
@@ -53,7 +70,8 @@ class RecFragment(contentLayoutId: Int,
     private val audioSource = MediaRecorder.AudioSource.MIC
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-    private val bufferSize = 2*AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
+    private val bufferSize =
+        2 * AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, channelConfig, audioFormat)
 
     private lateinit var audioRecorder: AudioRecord //media recorder to record audio
     private lateinit var mediaPlayer: MediaPlayer//media player to play sound
@@ -80,7 +98,11 @@ class RecFragment(contentLayoutId: Int,
         savedInstanceState: Bundle?
     ): View {
         //check if the app has permission to record audio
-        PermissionsManager().checkPermissionThenExecute(this, requireContext(), Manifest.permission.RECORD_AUDIO) {}
+        PermissionsManager().checkPermissionThenExecute(
+            this,
+            requireContext(),
+            Manifest.permission.RECORD_AUDIO
+        ) {}
 
         mediaPlayer = MediaPlayer.create(context, R.raw.tick)
         notesStorageManager = NotesStorageManager(this.requireContext())
@@ -114,13 +136,14 @@ class RecFragment(contentLayoutId: Int,
     }
 
     @Composable
-    private fun PlayButton(text: MutableState<String>,  onClick : () -> Unit) {
+    private fun PlayButton(text: MutableState<String>, onClick: () -> Unit) {
         Button(
             modifier = Modifier
                 .height(50.dp)
                 .width(190.dp)
                 .padding(5.dp),
-            onClick = onClick) {
+            onClick = onClick
+        ) {
             Icon(
                 Icons.Filled.PlayArrow,
                 contentDescription = "play",
@@ -131,7 +154,7 @@ class RecFragment(contentLayoutId: Int,
         }
     }
 
-    private fun onTickTimer(interval: Long, onTick: (Long) -> Unit) : CountDownTimer {
+    private fun onTickTimer(interval: Long, onTick: (Long) -> Unit): CountDownTimer {
         return object : CountDownTimer(MILLIS_IN_FUTURE, interval) {
             override fun onTick(millisUntilFinished: Long) {
                 onTick(millisUntilFinished)
@@ -143,7 +166,10 @@ class RecFragment(contentLayoutId: Int,
         }
     }
 
-    private fun switchMetronomeState(metronomeButtonText: MutableState<String>, tempoValue: MutableState<String>) {
+    private fun switchMetronomeState(
+        metronomeButtonText: MutableState<String>,
+        tempoValue: MutableState<String>
+    ) {
         if (metronomeIsPlaying) {
             metronomeButtonText.value = "Start metronome"
             metronomeIsPlaying = false
@@ -166,20 +192,23 @@ class RecFragment(contentLayoutId: Int,
         }
     }
 
-    private fun switchRecordState(counterText : MutableState<String>,
-                                  recordButtonText : MutableState<String>) {
+    private fun switchRecordState(
+        counterText: MutableState<String>,
+        recordButtonText: MutableState<String>
+    ) {
         if (!isRecording) {
             // Set the timer
             recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
-                counterText.value = ((MILLIS_IN_FUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+                counterText.value =
+                    ((MILLIS_IN_FUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
             }
 
-            processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL){
-                val raw_samples = ShortArray(NOTE_SAMPLE_WINDOW_SIZE)
-                audioRecorder.read(raw_samples, 0, NOTE_SAMPLE_WINDOW_SIZE)
+            processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL) {
+                val rawSamples = ShortArray(NOTE_SAMPLE_WINDOW_SIZE)
+                audioRecorder.read(rawSamples, 0, NOTE_SAMPLE_WINDOW_SIZE)
                 val samples = Signal(NOTE_SAMPLE_WINDOW_SIZE)
-                for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE){
-                    samples[i] = raw_samples[i].toFloat() * (1.0f / 32768.0f)
+                for (i in 0 until NOTE_SAMPLE_WINDOW_SIZE) {
+                    samples[i] = rawSamples[i].toFloat() * (1.0f / 32768.0f)
                 }
                 transcriber.processSamples(samples)
             }
@@ -204,8 +233,10 @@ class RecFragment(contentLayoutId: Int,
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
     private fun startRecording() {
         // Initialize the AudioRecord
-        audioRecorder = AudioRecord(audioSource,
-            Companion.SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize)
+        audioRecorder = AudioRecord(
+            audioSource,
+            SAMPLE_RATE_IN_HZ, channelConfig, audioFormat, bufferSize
+        )
 
         // Initialize the Transcriber
         val pitchDetector = PitchDetector(
@@ -213,12 +244,14 @@ class RecFragment(contentLayoutId: Int,
             THRESHOLD
         )
         val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0)
-        val signature = Signature(recording_parameters.fifths,
-                                  recording_parameters.beats,
-                                  recording_parameters.beatType,
-                                  divisions=2,
-                                  tempo=recording_parameters.tempo,
-                                  use_g_key_signature=recording_parameters.useGKeySignature)
+        val signature = Signature(
+            recording_parameters.fifths,
+            recording_parameters.beats,
+            recording_parameters.beatType,
+            divisions = 2,
+            tempo = recording_parameters.tempo,
+            use_g_key_signature = recording_parameters.useGKeySignature
+        )
         val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
@@ -239,7 +272,7 @@ class RecFragment(contentLayoutId: Int,
         // end the transcription
         transcriber.endTranscription()
         val data = transcriber.get_transcription()
-        notesStorageManager .writeNoteFile(recording_parameters.scoreName, data)
+        notesStorageManager.writeNoteFile(recording_parameters.scoreName, data)
     }
 
     override fun onStop() {
