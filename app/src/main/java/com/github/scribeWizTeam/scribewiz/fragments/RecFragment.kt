@@ -92,6 +92,14 @@ class RecFragment(
         // Default constructor
     }
 
+    /**
+     * Creates the view for the recording fragment.
+     *
+     * @param inflater           The layout inflater.
+     * @param container          The container view.
+     * @param savedInstanceState The saved instance state.
+     * @return The created view.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

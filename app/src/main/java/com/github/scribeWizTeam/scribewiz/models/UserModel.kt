@@ -24,6 +24,12 @@ data class UserModel(
 
         private const val USER_ID = "id"
 
+        /**
+         * Retrieves the current user from the shared preferences.
+         *
+         * @param context The context.
+         * @return The current user.
+         */
         fun currentUser(context: Context): Result<UserModel> {
             val reader = context.getSharedPreferences(LOGGED_USER, Context.MODE_PRIVATE)
 
@@ -33,6 +39,12 @@ data class UserModel(
             return user(userId)
         }
 
+        /**
+         * Retrieves a user with the specified user ID from Firestore.
+         *
+         * @param userId The ID of the user.
+         * @return The user with the specified ID.
+         */
         fun user(userId: String): Result<UserModel> {
             var user: UserModel? = null
 
@@ -56,6 +68,11 @@ data class UserModel(
         }
     }
 
+    /**
+     * Registers the current user in the shared preferences of the specified context.
+     *
+     * @param context The context in which to register the current user.
+     */
     fun registerAsCurrentUser(context: Context) {
         val editor = context.getSharedPreferences(
             LOGGED_USER, Context.MODE_PRIVATE
@@ -64,6 +81,11 @@ data class UserModel(
         editor.apply()
     }
 
+    /**
+     * Unregisters the current user from the shared preferences of the specified context.
+     *
+     * @param context The context from which to unregister the current user.
+     */
     fun unregisterAsCurrentUser(context: Context) {
         val editor = context.getSharedPreferences(
             LOGGED_USER, Context.MODE_PRIVATE
@@ -72,6 +94,11 @@ data class UserModel(
         editor.apply()
     }
 
+    /**
+     * Returns the name of the collection in the Firebase Firestore database.
+     *
+     * @return The name of the collection.
+     */
     override fun collectionName(): String {
         return COLLECTION
     }

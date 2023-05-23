@@ -12,7 +12,9 @@ import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.fragments.*
 import com.google.android.material.navigation.NavigationView
 
-
+/**
+ * An activity that handles navigation and displays various fragments.
+ */
 class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawer: DrawerLayout
@@ -23,6 +25,9 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         goHomePage()
     }
 
+    /**
+     * Sets up the home page with the navigation drawer.
+     */
     private fun goHomePage() {
         //set the layout
         setContentView(R.layout.activity_navigation)
@@ -55,9 +60,11 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         navigationView.setCheckedItem(R.id.nav_profile)
     }
 
+    /**
+     * Handles the back button press event.
+     */
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        // Code to handle the back button press event
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
@@ -65,6 +72,12 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
     }
 
+    /**
+     * Handles the navigation view item click event.
+     *
+     * @param item The selected menu item.
+     * @return True if the event was handled, false otherwise.
+     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {
@@ -84,7 +97,11 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         return true
     }
 
-    //auxiliary function to show a fragment
+    /**
+     * Displays the specified fragment.
+     *
+     * @param fragment The fragment to be displayed.
+     */
     fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment).commit()
