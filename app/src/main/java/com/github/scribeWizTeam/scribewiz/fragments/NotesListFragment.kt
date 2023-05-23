@@ -266,6 +266,11 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         }
     }
 
+    /**
+     * Displays the sheet music by starting the NotesDisplayedActivity.
+     *
+     * @param name The name of the music.
+     */
     @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     fun makeTheMusicBeDisplayed(name: String) {
         val newNotesDisplayedActivity =

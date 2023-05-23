@@ -23,9 +23,11 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlin.contracts.ExperimentalContracts
 
-//This activity displays dynamically the notes of a passed MusicXML file
-//To use this activity, you have to use an Intent with the Uri of the MusicXML file converted to string, passed as additional data to the intent with the key fileKey
-//For a concrete use case, don't hesitate to check the NotesDisplayedActivityTest.kt file
+/**
+ * This activity displays dynamically the notes of a passed MusicXML file.
+ * To use this activity, you have to use an Intent with the Uri of the MusicXML file converted to string, passed as additional data to the intent with the key fileKey.
+ * For a concrete use case, don't hesitate to check the NotesDisplayedActivityTest.kt file.
+ */
 @ExperimentalContracts
 @ExperimentalUnsignedTypes
 class NotesDisplayedActivity : AppCompatActivity() {
@@ -37,14 +39,11 @@ class NotesDisplayedActivity : AppCompatActivity() {
     private lateinit var noteSpinner: Spinner
     private lateinit var replaceNoteButton: Button
 
-    //TODO: Think about a better way to pass the file
-
-
-    fun isPlaying() : Boolean{
-        //here value is 0 when the player is paused and 1 when it is running
-       return _alphaTabView.api.playerState.value == 1
-    }
-    //The URI of the file has to be passed as a String with Key fileKey
+    /**
+     * Initializes the activity and sets up the view.
+     *
+     * @param savedInstanceState The saved instance state.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.notes_displayed_activity)
@@ -164,9 +163,13 @@ class NotesDisplayedActivity : AppCompatActivity() {
         }
     }
 
-    // This function is used to edit the note at the current tick position.
-    // It takes in the filePassed parameter which is a URI string pointing to the input musicXML file
-    // and the newNote parameter which is the note to replace the existing note with.
+    /**
+     * Edits the note at the current tick position in the input MusicXML file.
+     *
+     * @param filePassed The URI string pointing to the input MusicXML file.
+     * @param newNote    The note to replace the existing note with.
+     * @return The output file with the modified note.
+     */
     private fun editNote(filePassed: String, newNote: String): File {
 
         // Convert the filePassed URI string to a file and create a temporary file to store the modified musicXML
@@ -192,7 +195,13 @@ class NotesDisplayedActivity : AppCompatActivity() {
     }
 
     companion object {
-        // A helper function that creates a temporary file from a content URI
+        /**
+         * Creates a temporary file from a content URI.
+         *
+         * @param notesDisplayedActivity The activity.
+         * @param uri The content URI.
+         * @return The temporary file.
+         */
         fun createTempFileFromUri(notesDisplayedActivity: NotesDisplayedActivity, uri: Uri): File {
             // Create a temporary file with a prefix "temp_musicxml" and a suffix ".xml" in the cache directory of the activity
             val tempFile = File.createTempFile("temp_musicxml", ".xml", notesDisplayedActivity.cacheDir)

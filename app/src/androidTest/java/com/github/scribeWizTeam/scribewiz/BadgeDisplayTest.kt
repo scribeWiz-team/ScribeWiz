@@ -56,6 +56,8 @@ class BadgeDisplayTest {
     fun testMyBadgesButton(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         Intents.intended(IntentMatchers.hasComponent(BadgeDisplayActivity::class.java.name))
         Intents.release()
     }
@@ -64,6 +66,8 @@ class BadgeDisplayTest {
     fun testMyBadgesPage(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         composeTestRule.onNodeWithText("My badges").assertIsDisplayed()
         composeTestRule.onNodeWithText("testBadge").assertIsDisplayed()
         Intents.release()
@@ -73,7 +77,11 @@ class BadgeDisplayTest {
     fun testBackButton(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         composeTestRule.onNodeWithText("<-").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         Intents.intended(IntentMatchers.hasComponent(NavigationActivity::class.java.name))
         Intents.release()
     }

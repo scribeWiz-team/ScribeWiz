@@ -70,6 +70,10 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     constructor() : this(0) {
         // Default constructor
     }
+
+    /**
+     * Composable function to display the profile page.
+     */
     @Composable
     fun ProfilePage(){
         val context = LocalContext.current

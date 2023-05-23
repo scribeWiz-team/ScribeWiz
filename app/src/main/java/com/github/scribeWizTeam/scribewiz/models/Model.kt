@@ -8,6 +8,12 @@ import com.google.firebase.ktx.Firebase
 interface Model {
     val id: String
 
+    /**
+     * Updates the challenge submission in the database.
+     *
+     * @param onResultListener The listener to handle the result of the update operation.
+     * @return A Task that can be used to track the completion of the update operation.
+     */
     fun updateInDB(
         onResultListener: ResultListener = object : ResultListener {
             override fun onSuccess() {
@@ -30,6 +36,11 @@ interface Model {
 
     }
 
+    /**
+     * Deletes the challenge submission from the database.
+     *
+     * @return A Task that can be used to track the completion of the delete operation.
+     */
     fun delete(): Task<Void> {
         return Firebase.firestore.collection(collectionName()).document(id).delete()
     }

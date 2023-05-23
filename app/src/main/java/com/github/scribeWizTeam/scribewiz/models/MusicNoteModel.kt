@@ -15,6 +15,12 @@ data class MusicNoteModel (
     companion object Controller {
         const val COLLECTION = "MusicNotes"
 
+        /**
+         * Retrieves a music note from the database.
+         *
+         * @param id The ID of the music note to retrieve.
+         * @return A Result object containing the retrieved music note on success, or an exception on failure.
+         */
         fun musicNote(id: String) : Result<MusicNoteModel> {
             var musicNote : MusicNoteModel? = null
 
@@ -37,6 +43,12 @@ data class MusicNoteModel (
             }
         }
 
+        /**
+         * Retrieves all music notes belonging to a user.
+         *
+         * @param user The user whose music notes to retrieve.
+         * @return A set of MusicNoteModel objects representing the user's music notes.
+         */
         fun getAllNotesFromUser(user: UserModel) : Set<MusicNoteModel> {
             val db = Firebase.firestore
 
@@ -60,6 +72,11 @@ data class MusicNoteModel (
         }
     }
 
+    /**
+     * Returns the collection name for music notes.
+     *
+     * @return The collection name.
+     */
     override fun collectionName(): String {
         return COLLECTION
     }
