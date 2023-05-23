@@ -68,7 +68,13 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Composable function to create a specific challenge button.
+     *
+     * @param challenge  The challenge model.
+     * @param context    The context.
+     * @param musicName  The name of the music.
+     */
     @Composable
     fun specificChallengeButton(challenge: ChallengeModel, context: Context, musicName: String) {
 
@@ -109,6 +115,14 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Composable function to create a list of challenges for participation.
+     *
+     * @param challenges      The list of challenges.
+     * @param challengesTest  The optional list of challenges for testing.
+     * @param context         The context.
+     * @param musicName       The name of the music.
+     */
     @Composable
     fun ChallengeListParticipateIn(
         challenges: List<ChallengeModel>,

@@ -32,14 +32,6 @@ class PermissionsManager {
                 callback()
             }
 
-            // shouldShowRequestPermissionRationale(null, null) -> {
-            // In an educational UI, explain to the user why your app requires this
-            // permission for a specific feature to behave as expected, and what
-            // features are disabled if it's declined. In this UI, include a
-            // "cancel" or "no thanks" button that lets the user continue
-            // using your app without granting the permission.
-            //showInContextUI(...)
-            // }
             else -> {
                 val requestPermissionLauncher = caller.registerForActivityResult(
                     ActivityResultContracts.RequestPermission()
@@ -48,11 +40,7 @@ class PermissionsManager {
                         Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
                         callback()
                     } else {
-                        // Explain to the user that the feature is unavailable because the
-                        // feature requires a permission that the user has denied. At the
-                        // same time, respect the user's decision. Don't link to system
-                        // settings in an effort to convince the user to change their
-                        // decision.
+
                         Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
                     }
                 }

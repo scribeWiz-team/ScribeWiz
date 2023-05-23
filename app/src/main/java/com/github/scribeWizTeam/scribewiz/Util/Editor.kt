@@ -11,7 +11,16 @@ import java.io.FileOutputStream
 class Editor {
 
     companion object {
-        // Function to edit a note at a specific location in a MusicXML file.
+        /**
+         * Function to edit a note at a specific location in a MusicXML file.
+         *
+         * @param outputFile   The output file to store the modified MusicXML.
+         * @param inputFile    The input file containing the original MusicXML.
+         * @param noteLocation The location of the note to be edited.
+         * @param newNote      The new note to replace the original note.
+         * @throws IOException              If an I/O error occurs.
+         * @throws XmlPullParserException   If an error occurs during XML parsing.
+         */
         fun editNoteInMusicXML(
             outputFile: File,
             inputFile: File,

@@ -62,8 +62,11 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         navigationView.setCheckedItem(R.id.nav_home)
     }
 
+    /**
+     * Handles the back button press event.
+     */
     override fun onBackPressed() {
-        // Code to handle the back button press event
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
@@ -71,6 +74,12 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
     }
 
+    /**
+     * Handles the navigation view item click event.
+     *
+     * @param item The selected menu item.
+     * @return True if the event was handled, false otherwise.
+     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {

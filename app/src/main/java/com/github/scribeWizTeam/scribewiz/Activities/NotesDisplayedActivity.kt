@@ -181,7 +181,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
      * @param newNote    The note to replace the existing note with.
      * @return The output file with the modified note.
      */
-    public fun editNote(filePassed: String, newNote: String): File {
+    fun editNote(filePassed: String, newNote: String): File {
 
         // Convert the filePassed URI string to a file and create a temporary file to store the modified musicXML
         val inputFileUri = Uri.parse(filePassed)

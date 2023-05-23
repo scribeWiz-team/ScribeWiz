@@ -44,10 +44,21 @@ data class ChallengeModel(
                 "This is a badge"
             )
 
+        /**
+         * Returns a list of available challenges.
+         *
+         * @return The list of available challenges.
+         */
         fun challengesAvailableTest(): List<ChallengeModel> {
             return listOf(challengeTest1, challengeTest2)
         }
 
+        /**
+         * Retrieves a challenge by its ID.
+         *
+         * @param challengeId The ID of the challenge.
+         * @return The result containing the challenge if it exists, or a failure with an exception.
+         */
         fun challenge(challengeId: String): Result<ChallengeModel> {
             var challenge: ChallengeModel? = null
 
@@ -69,6 +80,11 @@ data class ChallengeModel(
             }
         }
 
+        /**
+         * Retrieves a list of available challenges.
+         *
+         * @return The list of available challenges.
+         */
         fun challengesAvailable(): List<ChallengeModel> {
             val challengesList: MutableList<ChallengeModel> = mutableListOf()
 
@@ -89,6 +105,11 @@ data class ChallengeModel(
             return challengesList
         }
 
+        /**
+         * Retrieves the latest challenge.
+         *
+         * @return The result containing the latest challenge if it exists, or a failure with an exception.
+         */
         fun latestChallenge(): Result<ChallengeModel> {
             var challenge: ChallengeModel? = null
 
@@ -113,6 +134,13 @@ data class ChallengeModel(
         }
     }
 
+    /**
+     * Adds a submission to the challenge.
+     *
+     * @param recordId  The ID of the record.
+     * @param userId    The ID of the user.
+     * @return The task representing the submission update in the database.
+     */
     fun addSubmission(recordId: String, userId: String): Task<Void> {
         return ChallengeSubmissionModel(
             recordId = recordId,
@@ -121,10 +149,20 @@ data class ChallengeModel(
         ).updateInDB()
     }
 
+    /**
+     * Retrieves all submissions for the challenge.
+     *
+     * @return The list of challenge submissions.
+     */
     fun allSubmissions(): List<ChallengeSubmissionModel> {
         return ChallengeSubmissionModel.getAll(id)
     }
 
+    /**
+     * Retrieves the winning submission for the challenge.
+     *
+     * @return The result containing the winning submission if it exists, or a failure with an exception.
+     */
     fun winningSubmission(): Result<ChallengeSubmissionModel> {
         val submissions = ChallengeSubmissionModel.getAll(id)
         return if (submissions.isEmpty()) {
@@ -134,10 +172,20 @@ data class ChallengeModel(
         }
     }
 
+    /**
+     * Returns the name of the collection.
+     *
+     * @return The name of the collection.
+     */
     override fun collectionName(): String {
         return COLLECTION
     }
 
+    /**
+     * Deletes the challenge and its associated submissions.
+     *
+     * @return The task representing the deletion.
+     */
     override fun delete(): Task<Void> {
         Firebase.firestore
             .collection(collectionName())
