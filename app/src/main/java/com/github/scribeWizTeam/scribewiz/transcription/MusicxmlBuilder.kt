@@ -122,23 +122,28 @@ data class StaffRest(override val duration: Int,
 }
 
 
+/** 
+ * The signature of a music piece
+ *
+ * @param key the key to use for the music piece
+ *      0 indicates C major
+ *      a positive number indicates a number of sharps
+ *      a negative number indicates a number of flats
+ *
+ * @param beats the upper number of the time signature for the piece
+ * @param beat_type the lower number of the time signature for the piece
+ *      e.g. use beats = 3 and beat_type = 4 for a 3/4 piece
+ *
+ * @param divisions controls the smallest representable note will be, possible values are
+ *      divisions = 1 (quarter note) [default]
+ *      divisions = 2 (eighth note)
+ *      divisions = 4 (16th note)
+ *
+ * @param tempo the tempo of the piece, given in bpm, with one quarter note per beat
+ */
 data class Signature(val key: Int, val beats: Int, val beat_type: Int,
                      val divisions: Int = 1, val tempo: Int = 120,
                      val use_g_key_signature: Boolean = true){
-    // key: the key to use for the music piece
-    //      0 indicates C major
-    //      a positive number indicates a number of sharps
-    //      a negative number indicates a number of flats
-    //
-    // beats and beat_type: the time signature for the piece
-    //                      e.g. use beats = 3 and beat_type = 4 for a 3/4 piece
-    //
-    // divisions: controls the smallest representable note will be, possible values are
-    //            divisions = 1 (quarter note) [default]
-    //            divisions = 2 (eighth note)
-    //            divisions = 4 (16th note)
-    //
-    // tempo: the tempo of the piece, given in bpm, with one quarter note per beat
     val durationNames = listOf(
         "16th",
         "eighth",
@@ -228,9 +233,13 @@ interface MusicRenderer {
 }
 
 
+/**
+ * Build a musicxml document from a sequence of notes
+ *
+ * @param scoreName the name of this musical score
+ * @param signature the signature of this music score, see {@link com.github.scribeWizTeam.scribewiz.transcription.MusicxmlBuilder.Signature Signature}
+ */
 class MusicxmlBuilder(val scoreName: String, val signature: Signature): MusicRenderer {
-    // scoreName: the name of this musical score
-    // signature: the signature of this music score, see MusicxmlBuilder.Signature
     
     private val steps: List<String>
     private val alterations: List<Int>

@@ -19,16 +19,20 @@ interface NoteGuesserInterface {
     fun end_guessing()
 }
 
+/**
+ * Guess midi notes from a sequence of pitch frequencies
+ *
+ * @param sampleDelay the delay between two notes samples
+ *              this corresponds to the delay between two calls to {@link #add_sample()}
+ *              a typical value is 0.05 s
+ *
+ * Usage:
+ * - initialize the NoteGuesser with a sampleDelay
+ * - call {@link #add_sample()} every sampleDelay seconds with a sampled frequency
+ * - when there is no more samples to process, call {@link #end_guessing()}
+ * - you can retrieve the guessed notes at any time in the {@link #notes} attribute
+ */
 class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
-    // sampleDelay: the delay between two notes samples
-    //              this corresponds to the delay between two calls to `process_samples`
-    //              a typical value is 0.05 s
-    //
-    // Usage:
-    // - initialize the NoteGuesser with a sampleDelay
-    // - call `add_sample` every sampleDelay seconds with a sampled frequency
-    // - when there is no more samples to process, call `end_guessing`
-    // - you can retrieve the guessed notes at any time in the `notes` attribute
     companion object {
         private const val MOVING_WINDOW_NEIGHBORS = 1
         // the window size is always odd, so that it’s symmetric

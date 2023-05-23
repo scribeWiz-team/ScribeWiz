@@ -2,8 +2,10 @@ package com.github.scribeWizTeam.scribewiz.transcription
 
 import kotlin.math.*
 
-// for pitch detection:
-// https://en.wikipedia.org/wiki/Pitch_detection_algorithm
+/**
+ * For the pitch detection algorithm:
+ * @see <a href="https://en.wikipedia.org/wiki/Pitch_detection_algorithm">Pitch detection</a>
+ */
 
 typealias Signal = FloatArray
 typealias Frequency = Double
@@ -16,10 +18,15 @@ interface PitchDetectorInterface {
     fun detect_pitch(signal: Signal): Frequency?
 }
 
+/**
+ * Detect a pitch frequency from an audio signal
+ *
+ * @param samplingFreq the sampling frequency of the microphone
+ *                     a typical value is 44000.0 Hz
+ * @param corrThreshold minimal proportion of the initial correlation to consider a frequency to be relevant
+ */
 class PitchDetector(override val samplingFreq: Frequency,
                     val corrThreshold: Double=1.0): PitchDetectorInterface {
-    // samplingFreq: the sampling frequency of the microphone
-    //               a typical value is 44000.0 Hz
     companion object {
         private const val MIN_FREQ = 50.0 // lowest detectable frequency
         private const val MAX_FREQ = 2000.0 // highest detectable frequency
