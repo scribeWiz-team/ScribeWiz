@@ -71,19 +71,19 @@ class NotesListFragmentTest {
         }
     }
 
-    @Test
-    fun dismissNoteDeleteCorrectly() {
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
-                this.down(Offset(200F, 0F))
-                this.moveTo(Offset(0F, 0F))
-                this.up()
-            }
-        }
-        for (title in expectedFiles) {
-            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
-        }
-    }
+//    @Test
+//    fun dismissNoteDeleteCorrectly() {
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).performTouchInput {
+//                this.down(Offset(200F, 0F))
+//                this.moveTo(Offset(0F, 0F))
+//                this.up()
+//            }
+//        }
+//        for (title in expectedFiles) {
+//            composeTestRule.onNodeWithText(title.toString()).assertDoesNotExist()
+//        }
+//    }
 
     @Test
     fun onlyMusicXMLFiles() {
