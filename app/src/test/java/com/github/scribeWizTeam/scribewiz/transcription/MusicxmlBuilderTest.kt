@@ -1,8 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.transcription
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 
 class MusicxmlBuilderTest {
@@ -17,7 +16,7 @@ class MusicxmlBuilderTest {
             MidiNote(42, 0.0, 1.5),
             MidiNote(-1, 0.0, 3.0),
         )
-        val expected_notes = listOf(
+        val expectedNotes = listOf(
             StaffNote("C", 4, 0, 8, "whole", false),
             StaffNote("G", 4, 0, 2, "quarter", false),
             StaffNote("F", 2, 1, 6, "half", true),
@@ -27,7 +26,7 @@ class MusicxmlBuilderTest {
         for (input in inputs) {
             builder.addNote(input)
         }
-        for ((expected, res) in expected_notes zip builder.measure){
+        for ((expected, res) in expectedNotes zip builder.measure){
             assertEquals(expected, res)
         }
     }

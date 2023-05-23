@@ -1,9 +1,8 @@
 package com.github.scribeWizTeam.scribewiz.transcription
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Test
 
 
 class TranscriberTest {
@@ -17,7 +16,7 @@ class TranscriberTest {
 
     class MockNoteGuesser: NoteGuesserInterface {
         override val sampleDelay = 1.0
-        override var notes: List<MidiNote> = listOf()
+        override var notes: MutableList<MidiNote> = mutableListOf()
 
         override fun addSample(pitchFreq: Double?): Int{
             notes += MidiNote(2, 0.0, 1.0)
@@ -30,7 +29,7 @@ class TranscriberTest {
     }
 
     class MockMusicRenderer: MusicRenderer {
-        private var result: List<String> = listOf()
+        private var result: MutableList<String> = mutableListOf()
 
         override fun addNote(midiNote: MidiNote){
             result += midiNote.pitch.toString()
@@ -41,7 +40,7 @@ class TranscriberTest {
         }
 
         override fun reset(){
-            result = listOf()
+            result = mutableListOf()
         }
     }
 
@@ -49,18 +48,18 @@ class TranscriberTest {
 
     @Before
     fun init_transcriber(){
-        val pitch_detector = MockPitchDetector()
-        val note_guesser = MockNoteGuesser()
+        val pitchDetector = MockPitchDetector()
+        val noteGuesser = MockNoteGuesser()
         val renderer = MockMusicRenderer()
-        transcriber = Transcriber(pitch_detector, note_guesser, renderer)
+        transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
     }
 
     @Test
     fun transcriber_calls_processing_blocks_as_expected(){
-        val dummy_signal = Signal(2, { 3.0f })
-        transcriber.processSamples(dummy_signal)
+        val dummySignal = Signal(2) { 3.0f }
+        transcriber.processSamples(dummySignal)
         assertEquals("2", transcriber.get_transcription())
-        transcriber.processSamples(dummy_signal)
+        transcriber.processSamples(dummySignal)
         assertEquals("2|2", transcriber.get_transcription())
         transcriber.endTranscription()
         assertEquals("2|2|-1", transcriber.get_transcription())

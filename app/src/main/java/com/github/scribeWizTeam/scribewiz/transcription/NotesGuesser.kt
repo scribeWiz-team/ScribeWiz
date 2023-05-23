@@ -48,7 +48,7 @@ class NoteGuesser(override val sampleDelay: Double) : NoteGuesserInterface {
 
     override fun addSample(pitchFreq: Double?): Int {
         // add the sample to the sliding window
-        val midiPitch = compute_midi_pitch(pitchFreq)
+        val midiPitch = computeMidiPitch(pitchFreq)
         movingWindow[windowIndex] = midiPitch
         // get the most frequent pitch in window
         val bestPitch = getMostFrequentPitchInWindow()
@@ -90,7 +90,7 @@ class NoteGuesser(override val sampleDelay: Double) : NoteGuesserInterface {
         }
     }
 
-    private fun compute_midi_pitch(pitchFreq: Double?): Int {
+    private fun computeMidiPitch(pitchFreq: Double?): Int {
         // This formula comes from this website
         //  https://newt.phys.unsw.edu.au/jw/notes.html
         if (pitchFreq == null) {

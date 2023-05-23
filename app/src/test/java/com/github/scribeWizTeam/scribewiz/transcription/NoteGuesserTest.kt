@@ -1,8 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.transcription
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 
 class NoteGuesserTest {
@@ -23,7 +22,7 @@ class NoteGuesserTest {
         guesser.endGuessing()
 
         assertEquals(1, guesser.notes.size)
-        val silence = guesser.notes.get(0)
+        val silence = guesser.notes[0]
         assertEquals(SILENT_PITCH, silence.pitch)
         assertEquals(0.8, silence.duration, 0.001)
     }
@@ -67,7 +66,7 @@ class NoteGuesserTest {
         assertEquals(expected.size, guesser.notes.size)
         for ((i, exp) in expected.withIndex()){
             val (midiPitch, duration) = exp
-            val note = guesser.notes.get(i)
+            val note = guesser.notes[i]
             assertEquals(midiPitch, note.pitch)
             assertEquals(duration, note.duration, 0.001)
         }
@@ -114,7 +113,7 @@ class NoteGuesserTest {
         assertEquals(expected.size, guesser.notes.size)
         for ((i, exp) in expected.withIndex()){
             val (midiPitch, duration) = exp
-            val note = guesser.notes.get(i)
+            val note = guesser.notes[i]
             assertEquals(midiPitch, note.pitch)
             assertEquals(duration, note.duration, 0.001)
         }
