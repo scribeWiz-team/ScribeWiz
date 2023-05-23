@@ -2,7 +2,8 @@ package com.github.scribeWizTeam.scribewiz.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val PrimaryGreen = Color(0xFF4CAF50)
+val PrimaryVariantRed = Color(0xFFF44336)
+val SecondaryWhite = Color(0xFFFFFFFF)
+val BackgroundBlack = Color(0xFF000000)
+val SurfaceDarkGray = Color(0xFF424242)
