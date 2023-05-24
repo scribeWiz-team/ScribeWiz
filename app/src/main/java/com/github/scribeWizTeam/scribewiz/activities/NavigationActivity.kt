@@ -33,8 +33,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         setContentView(R.layout.activity_navigation)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        //set the action bar
-        //setSupportActionBar(toolbar)
+
         //set the navigation drawer
         drawer = findViewById(R.id.drawer_layout)
         //set the navigation view
@@ -54,8 +53,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         toggle.syncState()
         //set the default fragment
-        //supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment(0))
-        //.commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, RecParameterFragment(0)).commit()
         //set the default item selected
         navigationView.setCheckedItem(R.id.nav_profile)
     }
@@ -85,11 +83,6 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.nav_profile -> showFragment(ProfilePageFragment(0))
             R.id.nav_help -> showFragment(HelpFragment())
             R.id.nav_rec -> showFragment(RecParameterFragment(0))
-            R.id.nav_share -> ShareFragment(0).shareMidiFile(
-                "/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp",
-                this
-            )
-
             R.id.nav_challenges -> showFragment(ChallengesFragment())
         }
         //close the navigation drawer

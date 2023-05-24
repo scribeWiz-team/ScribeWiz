@@ -17,9 +17,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RecFragmentTest {
 
-    //the tests don't work on Cirrus CI, I suspect because of a permission issue, so I commented the tests out to merge to main branch.
-    // Note: These tests work locally.
-
     @get:Rule
     var recordPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.RECORD_AUDIO)
 

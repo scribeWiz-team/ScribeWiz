@@ -22,18 +22,9 @@
             android:title="Record" />
         <item
             android:id="@+id/nav_challenges"
+            android:icon="@drawable/ic_challenges"
             android:title="Challenges" />
-
-
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_share"
-                android:title="Share" />
-        </menu>
-    </item>
 
 </menu>
