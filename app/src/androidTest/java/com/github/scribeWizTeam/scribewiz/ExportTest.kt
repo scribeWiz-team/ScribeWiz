@@ -3,11 +3,11 @@ package com.github.scribeWizTeam.scribewiz
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.test.core.app.launchActivity
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
 import junit.framework.TestCase.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
