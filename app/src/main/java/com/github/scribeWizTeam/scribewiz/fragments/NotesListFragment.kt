@@ -217,7 +217,6 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         renamingNoteName: MutableState<String>
     ) {
         val showMenu = remember { mutableStateOf(false) }
-        var showMenu = remember { mutableStateOf(false) }
         var buttonName by remember { mutableStateOf("Export") }
         Surface(modifier = Modifier
             .pointerInput(Unit) {
@@ -285,10 +284,10 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
         val success = noteFile?.let { Export.exportMusicXMLFile(it, requireContext()) }
         return if (success == true) {
             Toast.makeText(context, "Exported $name", Toast.LENGTH_SHORT).show()
-            true;
+            true
         } else {
             Toast.makeText(context, "Failed to export $name", Toast.LENGTH_SHORT).show()
-            false;
+            false
         }
     }
 
