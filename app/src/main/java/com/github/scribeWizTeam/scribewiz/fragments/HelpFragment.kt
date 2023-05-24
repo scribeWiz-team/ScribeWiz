@@ -27,20 +27,15 @@ import androidx.compose.runtime.*
 
 class HelpFragment : Fragment() {
 
-    private val faqs = listOf(
-        "How to log in with Google?",
-        "Can I use the app offline?",
-        "What are musicxml files?",
-        //TODO: add more FAQS here and adjust
-    )
+    private val faqs = mapOf(
+        "How to log in with Google?" to "Answer for how to log in with Google.",
+        "Can I use the app offline?" to "Answer for can I use the app offline.",
+        "What are musicxml files?" to "Answer for what are musicxml files.",
+        "How do I record?" to "Answer for how do I record.",
+        "How do I share my masterpieces with friends on the app?" to "Answer for how do I share my masterpieces with friends on the app.",
+        "How do I delete a transcription?" to "Answer for how do I delete a transcription.",
+        //TODO: add more FAQS here and edit existing ones.
 
-    private val helpTopics = listOf(
-        "Getting Started",
-        "Recording",
-        "Transcriptions",
-        "Library",
-        "Weekly Challenges",
-        //TODO: add more help topics here and adjust
     )
 
     override fun onCreateView(
@@ -76,27 +71,10 @@ class HelpFragment : Fragment() {
                     )
 
                     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                        items(faqs) { faq ->
+                        items(faqs.toList()) { (faq, answer) ->
                             ExpandableCard(
                                 title = faq,
-                                answer = faq //TODO: replace this with the actual answer
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Help Topics",
-                        style = MaterialTheme.typography.h5,
-                        fontSize = 30.sp
-                    )
-
-                    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                        items(helpTopics) { topic ->
-                            ExpandableCard(
-                                title = topic,
-                                answer = topic //TODO: replace this with the actual answer
+                                answer = answer
                             )
                         }
                     }
@@ -105,42 +83,41 @@ class HelpFragment : Fragment() {
         }
     }
 
+}
 
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    fun ExpandableCard(title: String, answer: String) {
-        var expanded by remember { mutableStateOf(false) }
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun ExpandableCard(title: String, answer: String) {
+    var expanded by remember { mutableStateOf(false) }
 
-        Card(
-            modifier = Modifier
-                .padding(vertical = 4.dp, horizontal = 8.dp)
-                .fillMaxWidth()
-                .clickable { expanded = !expanded },
-            elevation = 4.dp
+    Card(
+        modifier = Modifier
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .fillMaxWidth()
+            .clickable { expanded = !expanded },
+        elevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.h6
+            )
+
+            // Use AnimatedVisibility for the expand/shrink animation
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(animationSpec = tween(300)),
+                exit = shrinkVertically(animationSpec = tween(300))
             ) {
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.h6
+                    text = answer,
+                    style = MaterialTheme.typography.body2
                 )
-
-                // Use AnimatedVisibility for the expand/shrink animation
-                AnimatedVisibility(
-                    visible = expanded,
-                    enter = expandVertically(animationSpec = tween(300)),
-                    exit = shrinkVertically(animationSpec = tween(300))
-                ) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = answer,
-                        style = MaterialTheme.typography.body2
-                    )
-                }
             }
         }
     }
-
 }
