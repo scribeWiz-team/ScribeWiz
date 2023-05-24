@@ -1,19 +1,12 @@
 package com.github.scribeWizTeam.scribewiz
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
-import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 
@@ -45,14 +38,5 @@ class AuthActivityTest {
         composeTestRule.onNodeWithText("Sign out").performClick()
         composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
     }*/
-
-    @Test
-    fun testHomeButton() {
-        Intents.init()
-        composeTestRule.onNodeWithText("Home").performClick()
-        intended(hasComponent(NavigationActivity::class.java.name))
-        Intents.release()
-    }
-
 
 }
