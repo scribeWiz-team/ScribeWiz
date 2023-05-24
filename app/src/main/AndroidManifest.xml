@@ -30,7 +30,6 @@
             android:exported="false" />
 
         <activity
-
             android:name=".activities.FirebaseUIActivity"
             android:exported="false">
             <meta-data
@@ -39,7 +38,7 @@
         </activity>
         <activity
             android:name=".NotesDisplayedActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"

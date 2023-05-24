@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.fragments.*
 import com.google.android.material.navigation.NavigationView
+
 
 /**
  * An activity that handles navigation and displays various fragments.
@@ -58,6 +60,14 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         //.commit()
         //set the default item selected
         navigationView.setCheckedItem(R.id.nav_profile)
+        val from = intent
+        when (from.getStringExtra("fragment")) {
+            "profilePage" -> showFragment(ProfilePageFragment())
+            "recordPage" -> showFragment(RecParameterFragment())
+            "helpPage" -> showFragment(HelpFragment())
+            "challengesPage" -> showFragment(ChallengesFragment())
+            else -> showFragment(ProfilePageFragment())
+        }
     }
 
     /**
@@ -81,11 +91,15 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {
-            R.id.nav_library -> showFragment(NotesListFragment(0))
-            R.id.nav_profile -> showFragment(ProfilePageFragment(0))
+            R.id.home -> {
+                val home = Intent(this, MainActivity::class.java)
+                startActivity(home)
+            }
+            R.id.nav_library -> showFragment(NotesListFragment())
+            R.id.nav_profile -> showFragment(ProfilePageFragment())
             R.id.nav_help -> showFragment(HelpFragment())
-            R.id.nav_rec -> showFragment(RecParameterFragment(0))
-            R.id.nav_share -> ShareFragment(0).shareMidiFile(
+            R.id.nav_rec -> showFragment(RecParameterFragment())
+            R.id.nav_share -> ShareFragment().shareMidiFile(
                 "/storage/emulated/0/Android/data/com.github.scribeWizTeam.scribewiz/cache/recording.3gp",
                 this
             )
@@ -102,7 +116,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
      *
      * @param fragment The fragment to be displayed.
      */
-    fun showFragment(fragment: Fragment) {
+    private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment).commit()
     }

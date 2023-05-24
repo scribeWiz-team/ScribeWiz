@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 
-class LibraryFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class LibraryFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     override fun onCreateView(
         inflater: LayoutInflater,

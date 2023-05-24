@@ -42,9 +42,7 @@ import androidx.fragment.app.commit
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 
-class RecParameterFragment(
-    contentLayoutId: Int
-) : Fragment(contentLayoutId) {
+class RecParameterFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     companion object {
         private val TONALITIES_NAMES = listOf(

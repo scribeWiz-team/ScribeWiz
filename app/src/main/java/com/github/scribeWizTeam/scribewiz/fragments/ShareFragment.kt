@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.R
 import java.io.File
 
-class ShareFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class ShareFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     override fun onCreateView(
         inflater: LayoutInflater,

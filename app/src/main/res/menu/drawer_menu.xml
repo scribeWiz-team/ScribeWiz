@@ -5,34 +5,38 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/home" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/fui_ic_anonymous_white_24dp"
-            android:title="Profile" />
+            android:title="@string/profile" />
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help"
-            android:title="Help" />
+            android:title="@string/help" />
         <item
             android:id="@+id/nav_library"
             android:icon="@drawable/ic_library"
-            android:title="Library" />
+            android:title="@string/library" />
         <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/ic_rec"
-            android:title="Record" />
+            android:title="@string/record" />
         <item
             android:id="@+id/nav_challenges"
-            android:title="Challenges" />
+            android:title="@string/challenges" />
 
 
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share"
-                android:title="Share" />
+                android:title="@string/share" />
         </menu>
     </item>
 

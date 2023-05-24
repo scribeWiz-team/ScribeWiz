@@ -48,7 +48,7 @@ import com.google.firebase.ktx.Firebase
 import kotlin.contracts.ExperimentalContracts
 
 
-class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
+class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     private lateinit var notesStorageManager: NotesStorageManager
     val dialogName = "Rename Note"
@@ -105,6 +105,17 @@ class NotesListFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     ) {
                         if (showShareMenu.value) {
                             ShareMenu(sharedNoteName.value, showShareMenu)
+                        }
+
+                        if (notesNames.isEmpty()) {
+                            Text(text = "You have no note yet",
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(15.dp)
+                                    .height(25.dp)
+                            )
+                            return@ScribeWizTheme
                         }
 
                         Text(
