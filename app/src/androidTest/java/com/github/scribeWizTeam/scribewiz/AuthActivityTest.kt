@@ -1,12 +1,12 @@
 package com.github.scribeWizTeam.scribewiz
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.core.app.ActivityScenario
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
 import com.google.firebase.auth.FirebaseAuth
-import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 
 
@@ -15,13 +15,18 @@ class AuthActivityTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<FirebaseUIActivity>()
-
-    @Before
-    fun setUp() {
-        // Initialize the ActivityScenario for FirebaseUIActivity
-        ActivityScenario.launch(FirebaseUIActivity::class.java)
+    @Test
+    fun assertLoginTextExist() {
         FirebaseAuth.getInstance().signOut()
+        composeTestRule.onNodeWithText("Login").assertExists()
     }
+
+//    @Before
+//    fun setUp() {
+//        // Initialize the ActivityScenario for FirebaseUIActivity
+//        ActivityScenario.launch(FirebaseUIActivity::class.java)
+//        FirebaseAuth.getInstance().signOut()
+//    }
 
     /*    @Test
         fun testLoginButton() {
@@ -32,11 +37,5 @@ class AuthActivityTest {
             Intents.release()
         }*/
 
-    //TODO: Figure out how to actually log in a user using the Google API
-    /*@Test
-    fun testSignOutButton(){
-        composeTestRule.onNodeWithText("Sign out").performClick()
-        composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
-    }*/
 
 }
