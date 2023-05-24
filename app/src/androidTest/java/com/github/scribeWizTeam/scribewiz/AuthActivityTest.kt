@@ -39,12 +39,6 @@ class AuthActivityTest {
             Intents.release()
         }*/
 
-    //TODO: Figure out how to actually log in a user using the Google API
-    /*@Test
-    fun testSignOutButton(){
-        composeTestRule.onNodeWithText("Sign out").performClick()
-        composeTestRule.onNodeWithText("Not signed in").assertIsDisplayed()
-    }*/
 
     @Test
     fun testHomeButton() {

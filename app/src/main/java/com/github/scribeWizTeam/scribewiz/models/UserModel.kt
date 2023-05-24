@@ -10,11 +10,10 @@ import kotlinx.coroutines.tasks.await
 
 data class UserModel(
     override var id: String = Firebase.firestore.collection(COLLECTION).document().id,
-    var userName: String? = "null",
+    var userName: String? = "Guest",
     var userNumRecordings: Long? = 0,
     var friends: MutableList<String>? = mutableListOf(),
     var musicNotes: MutableList<String>? = mutableListOf(),
-    var friendRequests: MutableList<String>? = mutableListOf(),
     var badges: MutableList<String>? = mutableListOf()
 
 ) : Model {
