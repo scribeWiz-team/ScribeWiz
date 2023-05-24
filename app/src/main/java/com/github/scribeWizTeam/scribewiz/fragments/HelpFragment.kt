@@ -24,19 +24,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
+import com.github.scribeWizTeam.scribewiz.util.FaqQueries
 
 class HelpFragment : Fragment() {
-
-    private val faqs = mapOf(
-        "How to log in with Google?" to "Answer for how to log in with Google.",
-        "Can I use the app offline?" to "Answer for can I use the app offline.",
-        "What are musicxml files?" to "Answer for what are musicxml files.",
-        "How do I record?" to "Answer for how do I record.",
-        "How do I share my masterpieces with friends on the app?" to "Answer for how do I share my masterpieces with friends on the app.",
-        "How do I delete a transcription?" to "Answer for how do I delete a transcription.",
-        //TODO: add more FAQS here and edit existing ones.
-
-    )
+    private val faqs = FaqQueries.faqs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +35,6 @@ class HelpFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-            // Dispose the Composition when viewLifecycleOwner is destroyed
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
@@ -53,24 +43,17 @@ class HelpFragment : Fragment() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(all = 8.dp),
+                        .padding(all = 3.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Help",
-                        style = MaterialTheme.typography.h4,
-                        fontSize = 50.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = "FAQs",
                         style = MaterialTheme.typography.h5,
-                        fontSize = 30.sp
+                        fontSize = 20.sp
                     )
 
-                    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+                    LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
                         items(faqs.toList()) { (faq, answer) ->
                             ExpandableCard(
                                 title = faq,
@@ -92,7 +75,7 @@ fun ExpandableCard(title: String, answer: String) {
 
     Card(
         modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 8.dp)
             .fillMaxWidth()
             .clickable { expanded = !expanded },
         elevation = 4.dp
@@ -105,7 +88,6 @@ fun ExpandableCard(title: String, answer: String) {
                 style = MaterialTheme.typography.h6
             )
 
-            // Use AnimatedVisibility for the expand/shrink animation
             AnimatedVisibility(
                 visible = expanded,
                 enter = expandVertically(animationSpec = tween(300)),
