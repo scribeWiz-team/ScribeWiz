@@ -7,15 +7,18 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentManager
@@ -31,6 +35,7 @@ import androidx.fragment.app.commit
 import coil.compose.AsyncImage
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -41,28 +46,46 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Spacer(Modifier.width(10.dp))
-                    HelpButton()
-                    Spacer(Modifier.weight(1f))
-                    ProfileButton()
-                    Spacer(Modifier.width(10.dp))
-                }
-                Spacer(Modifier.height(50.dp))
-                Image(
-                    painter = painterResource(id = R.mipmap.scribewiz_logo),
-                    contentDescription = "App logo",
-                    modifier = Modifier.size(180.dp)
-                )
-                Spacer(Modifier.height(50.dp))
+            ScribeWizTheme {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Row {
-                        ChallengesButton()
-                        RecordButton()
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Spacer(Modifier.width(10.dp))
+                        HelpButton()
+                        Spacer(Modifier.weight(1f))
+                        ProfileButton()
+                        Spacer(Modifier.width(10.dp))
                     }
-                    NotesListFragmentComponent(supportFragmentManager)
+                    Spacer(Modifier.height(50.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.scribewiz_logo),
+                        contentDescription = "App logo",
+                        modifier = Modifier.size(180.dp)
+                    )
+                    Spacer(Modifier.height(50.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Row(Modifier.height(100.dp)) {
+                            Box(
+                                Modifier
+                                    .weight(0.5f)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                ChallengesButton()
+                            }
+                            Box(
+                                Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                RecordButton()
+                            }
+                            Box(Modifier.weight(0.5f)) {}
+
+
+                        }
+                        NotesListFragmentComponent(supportFragmentManager)
+                    }
                 }
             }
         }
@@ -77,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                 launchNavActivity("helpPage")
             }
         Image(
-            painter = painterResource(id = R.mipmap.help),
+            painter = painterResource(id = R.drawable.help),
             contentDescription = "Help page",
             modifier = modifier
         )
@@ -85,16 +108,18 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun ChallengesButton() {
-        Button(
-            modifier = Modifier
-                .height(50.dp)
-                .width(190.dp)
-                .padding(5.dp),
-            onClick = {
+        val modifier = Modifier
+            .size(50.dp)
+            .clip(CircleShape)
+            .clickable {
                 launchNavActivity("challengesPage")
             }
-        ) {
-            Text("Challenges")
+        Box(modifier = modifier, contentAlignment = Alignment.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.challenge),
+                contentDescription = "Challenges page",
+                modifier = Modifier.size(40.dp)
+            )
         }
     }
 
@@ -102,14 +127,15 @@ class MainActivity : AppCompatActivity() {
     fun RecordButton() {
         Button(
             modifier = Modifier
-                .height(50.dp)
+                .height(100.dp)
                 .width(190.dp)
                 .padding(5.dp),
+            shape = RoundedCornerShape(100),
             onClick = {
                 launchNavActivity("recordPage")
             }
         ) {
-            Text("Record")
+            Text("Record", fontSize = 25.sp)
         }
     }
 
@@ -130,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Default profile picture
             Image(
-                painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.no_user),
                 contentDescription = "User profile picture",
                 modifier = modifier.clickable {
                     val login = Intent(this, FirebaseUIActivity::class.java)

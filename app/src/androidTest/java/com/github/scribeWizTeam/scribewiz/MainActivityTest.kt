@@ -54,7 +54,7 @@ class MainActivityTest {
     @Test
     fun canLaunchChallengesFragment() {
         Intents.init()
-        composeTestRule.onNodeWithText("Challenges").performClick()
+        composeTestRule.onNodeWithContentDescription("Challenges page").performClick()
         intended(hasComponent(NavigationActivity::class.java.name))
         intended(hasExtra("fragment", "challengesPage"))
         Intents.release()

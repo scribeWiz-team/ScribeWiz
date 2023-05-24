@@ -107,25 +107,25 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                             ShareMenu(sharedNoteName.value, showShareMenu)
                         }
 
-                        if (notesNames.isEmpty()) {
-                            Text(text = "You have no note yet",
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(15.dp)
-                                    .height(25.dp)
-                            )
-                            return@ScribeWizTheme
+                        val text = if (notesNames.isEmpty()) {
+                            "You have no note yet"
+                        } else {
+                            "All notes:"
                         }
 
                         Text(
-                            "All notes:",
+                            text = text,
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .padding(15.dp)
                                 .height(25.dp)
                         )
+
+                        if (notesNames.isEmpty()) {
+                            return@ScribeWizTheme
+                        }
+
                         LazyColumn(
                             modifier = Modifier
                                 .padding(all = 8.dp)
@@ -135,7 +135,6 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                         ) {
 
                             items(notesNames, key = { note -> note }) { name ->
-
                                 val state = rememberDismissState(
                                     confirmStateChange = {
                                         if (it == DismissValue.DismissedToStart) {
@@ -145,27 +144,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                         true
                                     }
                                 )
-                                Row(verticalAlignment = CenterVertically) {
-                                    Button(
-                                        onClick = {
-                                            showShareMenu.value = true
-                                            sharedNoteName.value = name
-                                        },
-                                        modifier = Modifier
-                                            .width(85.dp)
-                                            .height(45.dp)
-                                            .background(Color.White, CircleShape)
-                                            .padding(5.dp)
-                                    ) {
-                                        Text(text = "share")
-                                    }
-                                    SwipeToDismissNote(
-                                        state,
-                                        name,
-                                        showRenameDialog = showRenameDialog,
-                                        renamingNoteName = renamingNoteName
-                                    )
-                                }
+                                NoteEntry(state, name, showShareMenu, sharedNoteName, showRenameDialog, renamingNoteName)
                             }
                         }
                     }
@@ -177,9 +156,41 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                             onDismissRequest = { showRenameDialog.value = false }
                         )
                     }
-
                 }
             }
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun NoteEntry(
+        state: DismissState,
+        name: String,
+        showShareMenu: MutableState<Boolean>,
+        sharedNoteName: MutableState<String>,
+        showRenameDialog: MutableState<Boolean>,
+        renamingNoteName: MutableState<String>
+    ) {
+        Row(verticalAlignment = CenterVertically) {
+            Button(
+                onClick = {
+                    showShareMenu.value = true
+                    sharedNoteName.value = name
+                },
+                modifier = Modifier
+                    .width(85.dp)
+                    .height(45.dp)
+                    .background(Color.White, CircleShape)
+                    .padding(5.dp)
+            ) {
+                Text(text = "share")
+            }
+            SwipeToDismissNote(
+                state,
+                name,
+                showRenameDialog = showRenameDialog,
+                renamingNoteName = renamingNoteName
+            )
         }
     }
 
@@ -226,7 +237,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         renamingNoteName: MutableState<String>
     ) {
         val showMenu = remember { mutableStateOf(false) }
-        Surface(modifier = Modifier
+        Surface(modifier = getTileModifier()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
@@ -325,9 +336,6 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                 // Create an Outlined Text Field
                 // with icon and not expanded
                 Text(text = mSelectedName.value)
-//                Button(onClick = { mExpanded.value = mExpanded.value.not() }) {
-//
-//                }
 
                 DropdownMenu(
                     expanded = mExpanded.value,
