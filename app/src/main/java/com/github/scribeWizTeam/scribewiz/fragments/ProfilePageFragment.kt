@@ -23,10 +23,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -96,7 +93,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
         // Check if user is logged in, set default values otherwise
         var userName = userProfile.userName
-        var numRecordings = userProfile.userNumRecordings
+        val numRecordings = userProfile.userNumRecordings
         val friendsList = remember { getUserNamesFromList(getFriendIDList(context)) }
         if (userProfile.id != "null") {
             userName = userProfile.userName!!
@@ -123,10 +120,10 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                             LOCAL USER DETAILS
         ***************************************************************
         */
-            if (!isGuest) {
+            if (user != null) {
                 // Use user profile picture
                 AsyncImage(
-                    model = user!!.photoUrl,
+                    model = user.photoUrl,
                     contentDescription = "User profile picture",
                     modifier = Modifier
                         .size(60.dp)
@@ -153,15 +150,18 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             */
             Button(
                 onClick = {
-                    if (user != null) {
+                    if(user != null) {
                         AuthUI.getInstance().signOut(context)
                     }
-                    UserModel.currentUser(context).onSuccess {
-                        it.unregisterAsCurrentUser(context)
+                    if(!isGuest) {
+                        UserModel.currentUser(context).onSuccess {
+                            it.unregisterAsCurrentUser(context)
+                        }
+                        reloadFragment()
+                    }else{
+                        val goHome = Intent(context, FirebaseUIActivity::class.java)
+                        startActivity(goHome)
                     }
-
-                    val goHome = Intent(context, FirebaseUIActivity::class.java)
-                    context.startActivity(goHome)
                 },
                 modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
             ) {
@@ -220,7 +220,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         value = text.value,
                         onValueChange = { text.value = it },
                         label = { Text("Search for user") },
-                        modifier = Modifier.height(50.dp).width(250.dp),
+                        modifier = Modifier.height(50.dp).width(250.dp).testTag("SearchFriendField"),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                         keyboardActions = KeyboardActions(
                             onGo = {
