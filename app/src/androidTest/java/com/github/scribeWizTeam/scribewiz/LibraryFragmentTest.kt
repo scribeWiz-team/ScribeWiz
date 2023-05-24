@@ -5,8 +5,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.LibraryFragment
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.fragments.LibraryFragment
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

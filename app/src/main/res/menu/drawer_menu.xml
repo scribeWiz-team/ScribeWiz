@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home"
-            android:title="Home" />
-        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/fui_ic_anonymous_white_24dp"
             android:title="Profile" />
@@ -24,11 +20,6 @@
             android:id="@+id/nav_rec"
             android:icon="@drawable/ic_rec"
             android:title="Record" />
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings" />
-
         <item
             android:id="@+id/nav_challenges"
             android:title="Challenges" />

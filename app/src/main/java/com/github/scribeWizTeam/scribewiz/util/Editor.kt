@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Util
+package com.github.scribeWizTeam.scribewiz.util
 
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
@@ -11,7 +11,17 @@ import java.io.FileOutputStream
 class Editor {
 
     companion object {
-        // Function to edit a note at a specific location in a MusicXML file.
+
+        /**
+         * Function to edit a note at a specific location in a MusicXML file.
+         *
+         * @param outputFile   The output file to store the modified MusicXML.
+         * @param inputFile    The input file containing the original MusicXML.
+         * @param noteLocation The location of the note to be edited.
+         * @param newNote      The new note to replace the original note.
+         * @throws IOException              If an I/O error occurs.
+         * @throws XmlPullParserException   If an error occurs during XML parsing.
+         */
         fun editNoteInMusicXML(
             outputFile: File,
             inputFile: File,
@@ -31,8 +41,8 @@ class Editor {
             xmlSerializer.startDocument(null, true)
 
             // Variable to keep track of the current note location in the input MusicXML file.
-            var eventType = parser.eventType
-            var currentNoteLocation = 0
+            val eventType = parser.eventType
+            val currentNoteLocation = 0
 
             // Loop through the input file's XML content until reaching the end of the document, and write the note at the desired location.
             loopXMLDocument(
@@ -135,7 +145,7 @@ class Editor {
             var currentTicks = 1
             var noteLocation = 0
             var divisions = 0
-            var currentDivisionTicks = 480
+            val currentDivisionTicks = 480
 
             // Iterate through the XML file
             while (eventType != XmlPullParser.END_DOCUMENT) {

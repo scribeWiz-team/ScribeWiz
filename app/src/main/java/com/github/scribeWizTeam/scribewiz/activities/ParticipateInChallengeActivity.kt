@@ -1,15 +1,11 @@
-package com.github.scribeWizTeam.scribewiz.Activities
+package com.github.scribeWizTeam.scribewiz.activities
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -18,15 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.firebase.ui.auth.data.model.User
-import com.github.scribeWizTeam.scribewiz.Fragments.ChallengesFragment
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 
 class ParticipateInChallengeActivity : AppCompatActivity() {
 
@@ -36,15 +28,15 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var musicName: String = ""
+        var musicName = ""
 
-        if (!isTest) {
+        musicName = if (!isTest) {
             val extras = intent.extras
                 ?: throw Exception("Exception : No parameters passed to the activity by the intent")
-            musicName = extras.getString("musicName")
+            extras.getString("musicName")
                 ?: throw Exception("Exception : No musicName parameter passed to the activity")
         } else {
-            musicName = "Test"
+            "Test"
         }
 
         setContent {
@@ -70,7 +62,7 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
 
     @Composable
-    fun specificChallengeButton(challenge: ChallengeModel, context: Context, musicName: String) {
+    fun SpecificChallengeButton(challenge: ChallengeModel, context: Context, musicName: String) {
 
 
         Button(
@@ -112,7 +104,6 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
     @Composable
     fun ChallengeListParticipateIn(
         challenges: List<ChallengeModel>,
-        challengesTest: List<ChallengeModel>? = null,
         context: Context,
         musicName: String
     ) {
@@ -126,7 +117,7 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
             Spacer(modifier = Modifier.height(8.dp))
             challenges.forEach { challenge ->
-                specificChallengeButton(challenge = challenge, context, musicName)
+                SpecificChallengeButton(challenge = challenge, context, musicName)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }

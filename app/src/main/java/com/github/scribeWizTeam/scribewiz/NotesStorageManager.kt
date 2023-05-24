@@ -11,9 +11,9 @@ import java.io.File
 import java.io.FileOutputStream
 
 
-const val MUSIC_XML_EXTENSION : String = "xml"
-const val NOTES_FOLDER : String = "music_notes"
-const val FILES_COLLECTION_DB : String = "Files"
+const val MUSIC_XML_EXTENSION: String = "xml"
+const val NOTES_FOLDER: String = "music_notes"
+const val FILES_COLLECTION_DB: String = "Files"
 
 class NotesStorageManager() {
 
@@ -89,14 +89,17 @@ class NotesStorageManager() {
      * Rename the file with oldName by newName
      * Returns true if the renaming has succeeded
      * */
-    fun renameFile(oldName: String, newName: String) : Boolean{
+    fun renameFile(oldName: String, newName: String): Boolean {
         val file: File? = getNoteFile(oldName)
-        var fileHasBeenSuccessfullyRenamed: Boolean
+        val fileHasBeenSuccessfullyRenamed: Boolean
 
         when (file) {
-            is File -> fileHasBeenSuccessfullyRenamed = file.renameTo(File(storageFolder,"$newName.$MUSIC_XML_EXTENSION"))
-            else -> {Log.e("errorTag","The file couldn't be loaded")
-                     throw Exception("The file couldn't be found")}
+            is File -> fileHasBeenSuccessfullyRenamed =
+                file.renameTo(File(storageFolder, "$newName.$MUSIC_XML_EXTENSION"))
+            else -> {
+                Log.e("errorTag", "The file couldn't be loaded")
+                throw Exception("The file couldn't be found")
+            }
         }
 
         return fileHasBeenSuccessfullyRenamed
@@ -112,27 +115,29 @@ class NotesStorageManager() {
     TO DOWNLOAD:
     notesStorageManager.downloadFileFromDatabase("UC9ixjIeXnptB0pHtOiX")
 
-    **/
+     **/
 
     /**
      * Uploads a local file to the database file storage
      * @param filename The local name of the file
      */
-    fun uploadFileToDatabase(filename: String){
+    fun uploadFileToDatabase(filename: String) {
         val file = getNoteFile(filename)
         val doc = Firebase.firestore.collection(FILES_COLLECTION_DB).document()
-        doc.set(mutableMapOf(
-                    "fileID" to doc.id,
-                    "filename" to filename,
-                    "content" to file!!.readText(Charsets.UTF_8))
-                )
+        doc.set(
+            mutableMapOf(
+                "fileID" to doc.id,
+                "filename" to filename,
+                "content" to file!!.readText(Charsets.UTF_8)
+            )
+        )
     }
 
     /**
      * Downloads a file from the database file storage
      * @param fileID The ID of the file in the database Files collection
      */
-    fun downloadFileFromDatabase(fileID: String){
+    fun downloadFileFromDatabase(fileID: String) {
         runBlocking {
             val job = launch {
                 Firebase.firestore.collection(FILES_COLLECTION_DB)
@@ -140,8 +145,10 @@ class NotesStorageManager() {
                     .get()
                     .await()
                     .let {
-                        File(storageFolder, it.get("filename")!!.toString()
-                                + "_DOWNLOADED"+ MUSIC_XML_EXTENSION)
+                        File(
+                            storageFolder, it.get("filename")!!.toString()
+                                    + "_DOWNLOADED" + MUSIC_XML_EXTENSION
+                        )
                             .writeText(it.get("content")!!.toString())
                     }
             }

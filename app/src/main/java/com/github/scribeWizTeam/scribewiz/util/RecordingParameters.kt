@@ -1,7 +1,7 @@
-package com.github.scribeWizTeam.scribewiz.Util
+package com.github.scribeWizTeam.scribewiz.util
 
 
-class RecordingParameters() {
+class RecordingParameters {
     companion object {
         const val DEFAULT_SCORE_NAME = ""
         const val FALLBACK_SCORE_NAME = "new_score"
@@ -15,7 +15,7 @@ class RecordingParameters() {
     var scoreName: String = DEFAULT_SCORE_NAME
     var fifths: Int = DEFAULT_TONALITY
     var beats: Int = DEFAULT_BEATS
-    var beat_type: Int = DEFAULT_BEAT_TYPE
+    var beatType: Int = DEFAULT_BEAT_TYPE
     var tempo: Int = DEFAULT_TEMPO
-    var use_g_key_signature: Boolean = DEFAULT_KEY_SIGNATURE
+    var useGKeySignature: Boolean = DEFAULT_KEY_SIGNATURE
 }

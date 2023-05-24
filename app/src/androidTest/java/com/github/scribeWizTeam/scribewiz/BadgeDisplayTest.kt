@@ -1,15 +1,18 @@
 package com.github.scribeWizTeam.scribewiz
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.scribeWizTeam.scribewiz.Activities.BadgeDisplayActivity
-import com.github.scribeWizTeam.scribewiz.Activities.MainActivity
-import com.github.scribeWizTeam.scribewiz.Activities.NavigationActivity
-import com.github.scribeWizTeam.scribewiz.Fragments.ProfilePageFragment
+import com.github.scribeWizTeam.scribewiz.activities.BadgeDisplayActivity
+import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.fragments.ProfilePageFragment
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.BadgeRanks
 import com.github.scribeWizTeam.scribewiz.models.UserModel
@@ -53,6 +56,8 @@ class BadgeDisplayTest {
     fun testMyBadgesButton(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         Intents.intended(IntentMatchers.hasComponent(BadgeDisplayActivity::class.java.name))
         Intents.release()
     }
@@ -61,6 +66,8 @@ class BadgeDisplayTest {
     fun testMyBadgesPage(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         composeTestRule.onNodeWithText("My badges").assertIsDisplayed()
         composeTestRule.onNodeWithText("testBadge").assertIsDisplayed()
         Intents.release()
@@ -70,7 +77,11 @@ class BadgeDisplayTest {
     fun testBackButton(){
         Intents.init()
         composeTestRule.onNodeWithContentDescription("My badges button").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         composeTestRule.onNodeWithText("<-").performClick()
+        //wait for the page to load
+        Thread.sleep(1000)
         Intents.intended(IntentMatchers.hasComponent(NavigationActivity::class.java.name))
         Intents.release()
     }

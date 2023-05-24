@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Activities;
+package com.github.scribeWizTeam.scribewiz.activities;
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
@@ -24,7 +26,7 @@ class ChallengeNotesActivity : AppCompatActivity() {
         // Extract the challenge ID and user ID from the Intent that started this activity
         challengeId = intent.getStringExtra("challengeId")!!
         userId = intent.getStringExtra("userId")!!
-        var notesStorageManager = NotesStorageManager()
+        val notesStorageManager = NotesStorageManager()
 
         setContent {
             // Define a state variable for holding the list of submissions.

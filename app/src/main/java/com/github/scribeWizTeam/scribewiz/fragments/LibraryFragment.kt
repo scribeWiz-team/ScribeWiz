@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz.Fragments
+package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.R
 
 class LibraryFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
@@ -33,7 +32,9 @@ class LibraryFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
 
             setContent {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(

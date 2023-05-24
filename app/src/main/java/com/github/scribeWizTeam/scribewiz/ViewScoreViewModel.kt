@@ -24,7 +24,12 @@ class ViewScoreViewModel : ViewModel() {
         }
     }
 
-    fun updateLayout(screenWidthDp:Float) {
+    /**
+     * Updates the layout of the app based on the screen width.
+     *
+     * @param screenWidthDp The screen width in density-independent pixels (dp).
+     */
+    fun updateLayout(screenWidthDp: Float) {
         if (screenWidthDp >= 600f) {
             settings.value!!.display.layoutMode = LayoutMode.Page
         } else {
@@ -33,3 +38,4 @@ class ViewScoreViewModel : ViewModel() {
         settings.value = settings.value // fire change
     }
 }
+
