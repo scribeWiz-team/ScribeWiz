@@ -1,8 +1,8 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,22 +12,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import coil.compose.AsyncImage
 import com.firebase.ui.auth.AuthUI
 import com.github.scribeWizTeam.scribewiz.R
@@ -35,11 +38,13 @@ import com.github.scribeWizTeam.scribewiz.activities.BadgeDisplayActivity
 import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import kotlin.concurrent.thread
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlin.random.Random
 
 
@@ -74,39 +79,31 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
     /**
      * Composable function to display the profile page.
      */
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun ProfilePage(){
+    fun ProfilePage() {
+        var isGuest = true
         val context = LocalContext.current
-        var userProfile : UserModel = remember{ UserModel() }
+        var userProfile: UserModel = remember { UserModel() }
         // Badge collection button/display
-        UserModel.currentUser(context).onSuccess{
+        UserModel.currentUser(context).onSuccess {
             userProfile = it
+            isGuest = false
         }
 
         // Check if user is logged in, set default values otherwise
-        var userName = "Guest"
-        var numRecordings = "0"
-        val friendsList = hashMapOf(Pair("exampleFriendID0", "Chris"),
-            Pair("exampleFriendID1", "Louis"),
-            Pair("exampleFriendID2", "Baptiste"),
-            Pair("exampleFriendID3", "Noe"),
-            Pair("exampleFriendID4", "Louca"),
-            Pair("exampleFriendID5", "Zach"),
-            Pair("exampleFriendID6", "George"),
-            Pair("exampleFriendID7", "Alice"),
-            Pair("exampleFriendID8", "Bob"))
-        if(userProfile.id != "") {
-            Log.w("READINGFRIENDSLIST", "USER EXISTS")
-             db.collection("Users").document(userProfile.id)
-                 .get().addOnSuccessListener { data ->
-                     numRecordings = data.get("userNumRecordings").toString()
-                     // TODO: Currently bugging
-                     //friendsList = data.get("friendsList") as HashMap<String, String>
-                 }
-
+        var userName = userProfile.userName
+        val numRecordings = userProfile.userNumRecordings
+        val friendsList = remember { getUserNamesFromList(getFriendIDList(context)) }
+        if (userProfile.id != "null") {
             userName = userProfile.userName!!
         }
-        friendsList.forEach{Log.w(it.key, it.value)}
+
+        /*
+        ***************************************************************
+                                HEADER
+        ***************************************************************
+        */
         Column(
             modifier = Modifier.fillMaxSize().padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -118,7 +115,12 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
             )
             Spacer(Modifier.height(20.dp))
 
-            if(user != null){
+            /*
+        ***************************************************************
+                            LOCAL USER DETAILS
+        ***************************************************************
+        */
+            if (user != null) {
                 // Use user profile picture
                 AsyncImage(
                     model = user.photoUrl,
@@ -127,7 +129,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         .size(60.dp)
                         .clip(CircleShape)
                 )
-            }else {
+            } else {
                 // Default profile picture
                 Image(
                     painter = painterResource(id = R.mipmap.ic_launcher_foreground),
@@ -135,38 +137,51 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     modifier = Modifier.size(100.dp)
                 )
             }
-
-
             Text(
-                text = userName,
+                text = userName!!,
                 style = MaterialTheme.typography.h4,
                 fontSize = 30.sp
             )
 
-            // LOGIN/LOG-OUT BUTTON
+            /*
+            ***************************************************************
+                                LOGIN/LOG-OUT BUTTON
+            ***************************************************************
+            */
             Button(
                 onClick = {
-                    if(user != null){
+                    if(user != null) {
                         AuthUI.getInstance().signOut(context)
                     }
-                    UserModel.currentUser(context).onSuccess{
-                        it.unregisterAsCurrentUser(context)
+                    if(!isGuest) {
+                        UserModel.currentUser(context).onSuccess {
+                            it.unregisterAsCurrentUser(context)
+                        }
+                        reloadFragment()
+                    }else{
+                        val goHome = Intent(context, FirebaseUIActivity::class.java)
+                        startActivity(goHome)
                     }
-
-                    val goHome = Intent(context, FirebaseUIActivity::class.java)
-                    context.startActivity(goHome)
                 },
                 modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
             ) {
-                if(user == null) {
+                if (isGuest) {
                     Text("Sign in")
-                }else{
+                } else {
                     Text("Sign out")
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
-                horizontalArrangement = Arrangement.SpaceBetween){
+            /*
+            ***************************************************************
+                              NUM RECORDINGS AND BADGES
+            ***************************************************************
+            */
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = "My recordings : $numRecordings",
                     style = MaterialTheme.typography.h4,
@@ -174,11 +189,10 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
 
-
-                if(userProfile.id != ""){
+                if (!isGuest) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ){
+                    ) {
                         Image(painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "My badges button",
                             modifier = Modifier.clickable {
@@ -188,25 +202,42 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                                 startActivity(openBadges)
                             }
                         )
-
-                        Text("My badges", modifier=Modifier.offset(y= (-20).dp))
+                        Text("My badges", modifier = Modifier.offset(y = (-20).dp))
                     }
                 }
             }
 
-            if(user != null) {
+            /*
+            ***************************************************************
+                            ADD FRIENDS INPUT AND BUTTON
+            ***************************************************************
+            */
+            val localKeyboard = LocalSoftwareKeyboardController.current!!
+            if (!isGuest) {
                 val text = remember { mutableStateOf("") }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
                         value = text.value,
                         onValueChange = { text.value = it },
                         label = { Text("Search for user") },
-                        modifier = Modifier.height(50.dp).width(250.dp)
+                        modifier = Modifier.height(50.dp).width(250.dp).testTag("SearchFriendField"),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardActions = KeyboardActions(
+                            onGo = {
+                                localKeyboard.hide()
+                            }
+                        )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            sendFriendRequest(text.value)
+                            if (!friendsList.contains(text.value))
+                                addFriend(userProfile, text.value)
+
+                            // Refresh the user profile
+                            userProfile = UserModel.user(userProfile.id).getOrThrow()
+                            reloadFragment()
+
                         },
                         modifier = Modifier.height(50.dp)
                             .width(100.dp)
@@ -216,8 +247,8 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     }
                 }
             }
-            // TODO: Add user null check once bug is fixed
-            //if(user != null){
+
+            if (!isGuest) {
                 Text(
                     text = "My friends",
                     style = MaterialTheme.typography.h4,
@@ -225,18 +256,22 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                     modifier = Modifier.padding(top = 10.dp)
                 )
                 DrawFriendsGrid(friendsList)
-
-
+            }
         }
     }
 
+    /**
+     * Creates a grid with a card corresponding to each friend in the provided friends list.
+     *
+     * @param friendsList A list of names to display on each friend's card
+     */
     @Composable
-    fun DrawFriendsGrid(friendsList : MutableMap<String, String>){
+    private fun DrawFriendsGrid(friendsList: MutableList<String>){
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(friendsList.size) {item ->
+            items(friendsList.size) { item ->
                 Card(
                     modifier = Modifier.padding(4.dp),
                     backgroundColor = Color(
@@ -245,7 +280,7 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         blue = Random.nextInt(0, 255)
                     )
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally){
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                         Image(
                             painter = painterResource(id = R.mipmap.ic_launcher_foreground),
@@ -254,62 +289,110 @@ class ProfilePageFragment(contentLayoutId: Int) : Fragment(contentLayoutId) {
                         )
 
                         Text(
-                            text = friendsList.values.elementAt(item),
+                            text = friendsList.elementAt(item),
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp),
-
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp)
                         )
                     }
-                    // Default profile picture
-
                 }
             }
         }
     }
 
-    private fun sendFriendRequest(friendName: String){
+    /**
+     * Adds a user to the specified user's friend list. If the specified username
+     * is not registered in the database, this function will not do anything.
+     *
+     * @param user The currently signed-in user
+     * @param friendName The friend's userName, as displayed on their profile
+     *
+     */
+    private fun addFriend(user : UserModel, friendName: String){
 
-        val ret = UserModel.currentUser(requireContext())
-        if (ret.isFailure) {
+        // Cannot add oneself as friend
+        if(friendName == user.userName){
             return
         }
 
-        val localUser = ret.getOrThrow()
-
-        if(user != null) {
-            // Cannot add oneself as friend
-            if(friendName == user.displayName){
-                return
-            }
-            thread {
-
-                // Data abstraction leak, will fix in future
-                val snapshot = await(db.collection(UserModel.COLLECTION).get())
-
-                // Check if no users exist in the database
-                if(snapshot.isEmpty) {
-                    Log.w("ADDINGFRIEND", "EMPTYDB")
-                }
-
-                // Go through user list, check for a match
-                snapshot.forEach { doc ->
-                    Log.w("ADDINGFRIEND", "READINGUSER")
-                    // Checking for a match in the database
-                    if (doc.get("userName") == friendName) {
-                        // Check that the user is not already in the local friend list
-                        if(localUser.friends?.contains(doc.id) == true){
-                            return@thread
+        /* Search the database for a match on friendName
+         * If successful, add the friend's ID to the user's friend ID list
+         * It does NOT notify the friend that they have been added, nor
+         * does it add the user to the friend's friend list
+         */
+        runBlocking {
+            val job = launch{
+                db.collection(UserModel.COLLECTION)
+                    .get()
+                    .await()
+                    .toObjects(UserModel::class.java)
+                    .forEach{
+                        if(it.userName == friendName){
+                            user.friends!!.add(it.id)
+                            user.updateInDB()
                         }
+                    }
+            }
+            job.join()
+        }
+    }
 
-                        UserModel.user(doc.get("id") as String).onSuccess { toUser ->
-                            toUser.friendRequests?.add(localUser.id)
-                            toUser.updateInDB()
+    /**
+     * Gets the current user's friends list, returns an empty list on failure
+     * @return The list of friend user IDs
+     */
+    private fun getFriendIDList(context : Context) : MutableList<String>{
+        UserModel.currentUser(context).onSuccess {
+            return it.friends!!
+        }
+        return mutableListOf()
+    }
+
+    /**
+     * Gets the respective user names associated to each userID from the database.
+     * Any invalid IDs will be skipped.
+     * @param userIDList The list of user IDs to retrieve usernames from
+     * @return The list of usernames associated with the provided IDs
+     */
+    private fun getUserNamesFromList(userIDList : MutableList<String>) : MutableList<String> {
+        val userNameList = mutableListOf<String>()
+
+        runBlocking {
+            val job = launch {
+                for(id in userIDList){
+                    val userDoc = db.collection(UserModel.COLLECTION)
+                        .document(id)
+                        .get().await()
+
+                    if(userDoc.exists()){
+                        userDoc.toObject<UserModel>()?.let {user ->
+                            userNameList.add(user.userName!!)
                         }
                     }
                 }
             }
+            job.join()
         }
+
+        return userNameList
+    }
+
+    /**
+     * Reloads the profile page fragment, usually done when data is
+     * modified in the database
+     */
+    private fun reloadFragment(){
+        // Reload current fragment
+        val fragmentManager = requireActivity().supportFragmentManager
+        val ft1: FragmentTransaction =
+            fragmentManager.beginTransaction()
+        ft1.detach(this@ProfilePageFragment)
+        ft1.commit()
+
+        val ft2: FragmentTransaction =
+            fragmentManager.beginTransaction()
+        ft2.attach(this@ProfilePageFragment)
+        ft2.commit()
     }
     /*
 
