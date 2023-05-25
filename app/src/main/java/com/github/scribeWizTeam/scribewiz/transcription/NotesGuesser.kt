@@ -37,15 +37,15 @@ class NoteGuesser(override val sampleDelay: Double,
                   val silenceMinDuration: Double = 0.0,
                   val moving_window_neighbors: Int = 1): NoteGuesserInterface {
     // the window size is always odd, so that it’s symmetric
-    val moving_window_size = 2 * moving_window_neighbors + 1
+    val movingWindowSize = 2 * movingWindowNeighbors + 1
 
     override var notes: MutableList<MidiNote> = mutableListOf()
 
-    private var movingWindow: Array<Int> = Array(moving_window_size) { SILENT_PITCH }
+    private var movingWindow: Array<Int> = Array(movingWindowSize) { SILENT_PITCH }
     private var windowIndex: Int = 0
     private var enoughData: Boolean = false
 
-    private var time: Double = -sampleDelay * moving_window_neighbors
+    private var time: Double = -sampleDelay * movingWindowNeighbors
     private var currentNote: MidiNote = MidiNote(SILENT_PITCH, 0.0, 0.0)
 
     override fun addSample(pitchFreq: Double?): Int {
@@ -63,10 +63,10 @@ class NoteGuesser(override val sampleDelay: Double,
             MidiNote(currentNote.pitch, currentNote.startTime, time + sampleDelay)
         }
         time += sampleDelay
-        if (windowIndex >= moving_window_neighbors) {
+        if (windowIndex >= movingWindowNeighbors) {
             enoughData = true
         }
-        windowIndex = (windowIndex + 1) % moving_window_size
+        windowIndex = (windowIndex + 1) % movingWindowSize
         return currentNote.pitch
     }
 
@@ -74,7 +74,7 @@ class NoteGuesser(override val sampleDelay: Double,
         val best = movingWindow.groupBy { it }
             .mapValues { (_, l) -> l.size }
             .maxBy { it.value }
-        if (best.value == moving_window_neighbors) {
+        if (best.value == movingWindowNeighbors) {
             // not enough samples to be representative
             return SILENT_PITCH
         }
@@ -90,8 +90,8 @@ class NoteGuesser(override val sampleDelay: Double,
             if (currentNote.pitch == SILENT_PITCH && currentNote.duration < silenceMinDuration){
                 // if the silence is too short, we merge it into the previous note
                 val last_note = notes[notes.lastIndex]
-                val new_note = MidiNote(last_note.pitch, last_note.startTime, currentNote.endTime)
-                notes[notes.lastIndex] = new_note
+                val newNote = MidiNote(lastNote.pitch, lastNote.startTime, currentNote.endTime)
+                notes[notes.lastIndex] = newNote
             } else {
                 notes += currentNote
             }
