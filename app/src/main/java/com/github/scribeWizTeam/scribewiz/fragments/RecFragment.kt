@@ -251,7 +251,9 @@ class RecFragment(
             SAMPLE_RATE_IN_HZ.toDouble(),
             THRESHOLD
         )
-        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0)
+        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0, 
+                                      silenceMinDuration=0.3,
+                                      moving_window_neighbors=2)
         val signature = Signature(
             recording_parameters.fifths,
             recording_parameters.beats,
