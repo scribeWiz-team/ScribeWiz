@@ -203,7 +203,7 @@ class RecFragment(
 
         if (!isRecording) {
             // Set the timer
-            val tick_time = (1000 * 60 / recording_parameters.tempo).toLong()
+            val tick_time = (1000 * 60 / recordingParameters.tempo).toLong()
             metronomeTimer = onTickTimer(tick_time) { _ ->
                 val (beat, measure) = increment_metronome_counter()
                 counterText.value = "$measure.$beat"
@@ -244,7 +244,7 @@ class RecFragment(
     }
 
     private fun increment_metronome_counter(): Pair<Int, Int>{
-        if (beat_count == recording_parameters.beats){
+        if (beat_count == recordingParameters.beats){
             measure_count += 1
             beat_count = 1
         } else {
