@@ -23,11 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -84,10 +79,9 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
             setContent {
-                ScribeWizTheme() {
+                ScribeWizTheme {
                     ProfilePage()
                 }
-
             }
         }
     }
@@ -125,9 +119,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
         ***************************************************************
         */
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(all = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -172,23 +164,20 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
             */
             Button(
                 onClick = {
-                    if (user != null) {
+                    if(user != null) {
                         AuthUI.getInstance().signOut(context)
                     }
-                    if (!isGuest) {
+                    if(!isGuest) {
                         UserModel.currentUser(context).onSuccess {
                             it.unregisterAsCurrentUser(context)
                         }
                         reloadFragment()
-                    } else {
+                    }else{
                         val goHome = Intent(context, FirebaseUIActivity::class.java)
                         startActivity(goHome)
                     }
                 },
-                modifier = Modifier
-                    .height(60.dp)
-                    .width(100.dp)
-                    .padding(top = 10.dp)
+                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
             ) {
                 if (isGuest) {
                     Text("Sign in")
@@ -203,9 +192,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
             ***************************************************************
             */
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -247,10 +234,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                         value = text.value,
                         onValueChange = { text.value = it },
                         label = { Text("Search for user") },
-                        modifier = Modifier
-                            .height(50.dp)
-                            .width(250.dp)
-                            .testTag("SearchFriendField"),
+                        modifier = Modifier.height(50.dp).width(250.dp).testTag("SearchFriendField"),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                         keyboardActions = KeyboardActions(
                             onGo = {
@@ -269,8 +253,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                             reloadFragment()
 
                         },
-                        modifier = Modifier
-                            .height(50.dp)
+                        modifier = Modifier.height(50.dp)
                             .width(100.dp)
                     )
                     {
@@ -297,7 +280,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
      * @param friendsList A list of names to display on each friend's card
      */
     @Composable
-    private fun DrawFriendsGrid(friendsList: MutableList<String>) {
+    private fun DrawFriendsGrid(friendsList: MutableList<String>){
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
@@ -316,9 +299,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                         Image(
                             painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "FriendPP",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .padding(bottom = 0.dp)
+                            modifier = Modifier.size(60.dp).padding(bottom = 0.dp)
                         )
 
                         Text(
@@ -341,10 +322,10 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
      * @param friendName The friend's userName, as displayed on their profile
      *
      */
-    private fun addFriend(user: UserModel, friendName: String) {
+    private fun addFriend(user : UserModel, friendName: String){
 
         // Cannot add oneself as friend
-        if (friendName == user.userName) {
+        if(friendName == user.userName){
             return
         }
 
@@ -354,13 +335,13 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
          * does it add the user to the friend's friend list
          */
         runBlocking {
-            val job = launch {
+            val job = launch{
                 db.collection(UserModel.COLLECTION)
                     .get()
                     .await()
                     .toObjects(UserModel::class.java)
-                    .forEach {
-                        if (it.userName == friendName) {
+                    .forEach{
+                        if(it.userName == friendName){
                             user.friends!!.add(it.id)
                             user.updateInDB()
                         }
@@ -374,7 +355,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
      * Gets the current user's friends list, returns an empty list on failure
      * @return The list of friend user IDs
      */
-    private fun getFriendIDList(context: Context): MutableList<String> {
+    private fun getFriendIDList(context : Context) : MutableList<String>{
         UserModel.currentUser(context).onSuccess {
             return it.friends!!
         }
@@ -387,18 +368,18 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
      * @param userIDList The list of user IDs to retrieve usernames from
      * @return The list of usernames associated with the provided IDs
      */
-    private fun getUserNamesFromList(userIDList: MutableList<String>): MutableList<String> {
+    private fun getUserNamesFromList(userIDList : MutableList<String>) : MutableList<String> {
         val userNameList = mutableListOf<String>()
 
         runBlocking {
             val job = launch {
-                for (id in userIDList) {
+                for(id in userIDList){
                     val userDoc = db.collection(UserModel.COLLECTION)
                         .document(id)
                         .get().await()
 
-                    if (userDoc.exists()) {
-                        userDoc.toObject<UserModel>()?.let { user ->
+                    if(userDoc.exists()){
+                        userDoc.toObject<UserModel>()?.let {user ->
                             userNameList.add(user.userName!!)
                         }
                     }
@@ -414,7 +395,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
      * Reloads the profile page fragment, usually done when data is
      * modified in the database
      */
-    private fun reloadFragment() {
+    private fun reloadFragment(){
         // Reload current fragment
         val fragmentManager = requireActivity().supportFragmentManager
         val ft1: FragmentTransaction =

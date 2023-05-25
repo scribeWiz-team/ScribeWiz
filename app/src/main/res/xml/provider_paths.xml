@@ -14,7 +14,7 @@
             name="external_cache"
             path="." />
         <files-path
-            name="files"
+            name="my_files"
             path="." />
     </paths>
 </paths>

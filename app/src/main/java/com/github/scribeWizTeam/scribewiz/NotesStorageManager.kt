@@ -2,6 +2,7 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.content.Context
 import android.util.Log
+import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -119,15 +120,15 @@ class NotesStorageManager() {
 
     /**
      * Uploads a local file to the database file storage
-     * @param filename The local name of the file
+     * @param musicNoteModel The musicNoteModel of the file
      */
-    fun uploadFileToDatabase(filename: String) {
-        val file = getNoteFile(filename)
+    fun uploadFileToDatabase(musicNoteModel: MusicNoteModel) {
+        val file = getNoteFile(musicNoteModel.name)
         val doc = Firebase.firestore.collection(FILES_COLLECTION_DB).document()
         doc.set(
             mutableMapOf(
-                "fileID" to doc.id,
-                "filename" to filename,
+                "fileID" to musicNoteModel.id,
+                "filename" to musicNoteModel.name,
                 "content" to file!!.readText(Charsets.UTF_8)
             )
         )

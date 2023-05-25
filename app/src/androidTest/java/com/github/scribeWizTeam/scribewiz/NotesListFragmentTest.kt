@@ -11,13 +11,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
-import com.github.scribeWizTeam.scribewiz.models.UserModel
 import kotlinx.coroutines.runBlocking
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import kotlin.contracts.ExperimentalContracts
@@ -30,6 +26,7 @@ import kotlin.contracts.ExperimentalContracts
  */
 @RunWith(AndroidJUnit4::class)
 class NotesListFragmentTest {
+
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
@@ -48,6 +45,9 @@ class NotesListFragmentTest {
     private val invalidFileName = "NOT_A_VALID_FILE"
 
     private var notesDir = File("test")
+
+    private var exportSuccess: Boolean = false
+
 
     @Before
     fun initialize() {
@@ -144,8 +144,8 @@ class NotesListFragmentTest {
 
     @Test
     fun openDialogForShareWhenLongClick() {
-        UserModel().registerAsCurrentUser(context = composeTestRule.activity)
-        composeTestRule.onAllNodesWithText("share")[0].performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNodeWithText("Share to friend").performClick()
     }
 
     @Test
@@ -158,6 +158,17 @@ class NotesListFragmentTest {
         composeTestRule.onNode(hasText("Participate in a Challenge")).assertExists()
     }
 
+
+    //Test that the export button works
+    @Test
+    fun testExportButton() {
+        // Arrange: Long press on an item, in this case, an item with the text "a"
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+
+        // Act & Assert: Assert that an element with the text "Export" exists on the screen after the long press action
+        composeTestRule.onNode(hasText("Export")).assertExists()
+
+    }
 
     @After
     fun removeTestFiles() {

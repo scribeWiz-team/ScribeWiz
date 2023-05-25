@@ -81,8 +81,8 @@ class RecParameterFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId)
 
         return ComposeView(requireContext()).apply {
             setContent {
+                ScribeWizTheme {
 
-                ScribeWizTheme(darkTheme = true) {
                     val scoreName = remember { mutableStateOf(recordingParameters.scoreName) }
                     val beats = remember { mutableStateOf(recordingParameters.beats.toString()) }
                     val tempo = remember { mutableStateOf(recordingParameters.tempo.toString()) }
@@ -190,8 +190,6 @@ class RecParameterFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId)
                         }
                     }
                 }
-
-
             }
         }
     }
