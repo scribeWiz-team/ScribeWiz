@@ -87,7 +87,9 @@ class NoteGuesser(override val sampleDelay: Double,
 
     private fun pushCurrentNote() {
         if (currentNote.duration != 0.0) {
-            if (currentNote.pitch == SILENT_PITCH && currentNote.duration < silenceMinDuration){
+            if (    notes.size > 0
+                 && currentNote.pitch == SILENT_PITCH
+                 && currentNote.duration < silenceMinDuration){
                 // if the silence is too short, we merge it into the previous note
                 val lastNote = notes[notes.lastIndex]
                 val newNote = MidiNote(lastNote.pitch, lastNote.startTime, currentNote.endTime)
