@@ -5,13 +5,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.scribeWizTeam.scribewiz.activities.MainActivity
-import com.github.scribeWizTeam.scribewiz.fragments.ExpandableCard
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.fragments.HelpFragment
 import com.github.scribeWizTeam.scribewiz.util.FaqQueries
 import junit.framework.TestCase.assertEquals
@@ -29,7 +26,7 @@ class HelpFragmentTest {
     )
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createAndroidComposeRule<NavigationActivity>()
 
 
     // This test verifies that the first FAQ query in the list matches the expected string

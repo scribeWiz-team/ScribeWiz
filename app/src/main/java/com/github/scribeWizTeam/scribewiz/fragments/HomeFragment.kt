@@ -58,13 +58,6 @@ class HomeFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
             setContent {
                 ScribeWizTheme {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                        Row(modifier = Modifier.fillMaxWidth()) {
-//                            Spacer(Modifier.width(10.dp))
-//                            HelpButton()
-//                            Spacer(Modifier.weight(1f))
-//                            ProfileButton()
-//                            Spacer(Modifier.width(10.dp))
-//                        }
                         Spacer(Modifier.height(50.dp))
                         Image(
                             painter = painterResource(id = R.drawable.scribewiz_logo),
@@ -100,21 +93,6 @@ class HomeFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                 }
             }
         }
-    }
-
-    @Composable
-    fun HelpButton() {
-        val modifier = Modifier
-            .size(50.dp)
-            .clip(CircleShape)
-            .clickable {
-                launchNavActivity("helpPage")
-            }
-        Image(
-            painter = painterResource(id = R.drawable.help),
-            contentDescription = "Help page",
-            modifier = modifier
-        )
     }
 
     @Composable

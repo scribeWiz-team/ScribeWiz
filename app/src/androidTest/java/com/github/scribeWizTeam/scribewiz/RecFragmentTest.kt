@@ -7,7 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
-import com.github.scribeWizTeam.scribewiz.activities.MainActivity
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.fragments.RecFragment
 import org.junit.Assert.*
 import org.junit.Rule
@@ -21,12 +21,12 @@ class RecFragmentTest {
     var recordPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.RECORD_AUDIO)
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createAndroidComposeRule<NavigationActivity>()
 
     @Test
     fun startAndStopRecording() {
 
-        val scenario = launchFragmentInContainer<RecFragment>()
+        launchFragmentInContainer<RecFragment>()
 
         // Start recording
         composeTestRule.onNodeWithText("Start recording").performClick()
