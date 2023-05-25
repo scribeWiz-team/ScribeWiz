@@ -35,7 +35,7 @@ interface NoteGuesserInterface {
  */
 class NoteGuesser(override val sampleDelay: Double,
                   val silenceMinDuration: Double = 0.0,
-                  val moving_window_neighbors: Int = 1): NoteGuesserInterface {
+                  val movingWindowNeighbors: Int = 1): NoteGuesserInterface {
     // the window size is always odd, so that it’s symmetric
     val movingWindowSize = 2 * movingWindowNeighbors + 1
 
@@ -89,7 +89,7 @@ class NoteGuesser(override val sampleDelay: Double,
         if (currentNote.duration != 0.0) {
             if (currentNote.pitch == SILENT_PITCH && currentNote.duration < silenceMinDuration){
                 // if the silence is too short, we merge it into the previous note
-                val last_note = notes[notes.lastIndex]
+                val lastNote = notes[notes.lastIndex]
                 val newNote = MidiNote(lastNote.pitch, lastNote.startTime, currentNote.endTime)
                 notes[notes.lastIndex] = newNote
             } else {

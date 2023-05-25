@@ -50,7 +50,7 @@ import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
     contentLayoutId: Int  = 0,
-    private val recording_parameters: RecordingParameters
+    private val recordingParameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
     companion object {
@@ -184,7 +184,7 @@ class RecFragment(
             metronomeTimer.cancel()
         } else {
 
-            metronomeTimer = onTickTimer((1000 * 60 / recording_parameters.tempo).toLong()) {
+            metronomeTimer = onTickTimer((1000 * 60 / recordingParameters.tempo).toLong()) {
                 if (this::mediaPlayer.isInitialized) {
                     if (mediaPlayer.isPlaying) {
                         mediaPlayer.pause()
@@ -253,16 +253,16 @@ class RecFragment(
         )
         val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0, 
                                       silenceMinDuration=0.3,
-                                      moving_window_neighbors=2)
+                                      movingWindowNeighbors=2)
         val signature = Signature(
             recordingParameters.fifths,
             recordingParameters.beats,
-            recording_parameters.beatType,
+            recordingParameters.beatType,
             divisions = 2,
-            tempo = recording_parameters.tempo,
-            useGKeySignature = recording_parameters.useGKeySignature
+            tempo = recordingParameters.tempo,
+            useGKeySignature = recordingParameters.useGKeySignature
         )
-        val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
+        val renderer = MusicxmlBuilder(recordingParameters.scoreName, signature)
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
         // Start recording
@@ -282,7 +282,7 @@ class RecFragment(
         // end the transcription
         transcriber.endTranscription()
         val data = transcriber.getTranscription()
-        notesStorageManager.writeNoteFile(recording_parameters.scoreName, data)
+        notesStorageManager.writeNoteFile(recordingParameters.scoreName, data)
     }
 
     override fun onStop() {
