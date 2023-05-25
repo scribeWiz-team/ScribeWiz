@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
+import Export
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -16,11 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -227,7 +223,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         val showMenu = remember { mutableStateOf(false) }
 
         var buttonName by remember { mutableStateOf("Export") }
-        Surface(modifier = Modifier
+        Surface(modifier = getTileModifier()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
