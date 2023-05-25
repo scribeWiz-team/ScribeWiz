@@ -11,7 +11,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
-import com.github.scribeWizTeam.scribewiz.models.UserModel
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
@@ -144,8 +143,8 @@ class NotesListFragmentTest {
 
     @Test
     fun openDialogForShareWhenLongClick() {
-        UserModel().registerAsCurrentUser(context = composeTestRule.activity)
-        composeTestRule.onAllNodesWithText("share")[0].performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNodeWithText("Share to friend").performClick()
     }
 
     @Test
