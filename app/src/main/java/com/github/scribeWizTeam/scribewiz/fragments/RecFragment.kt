@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Switch
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -60,7 +61,6 @@ class RecFragment(
 
     companion object {
         private const val MILLIS_IN_FUTURE = 9999999L //number of milliseconds maximum record time
-        private const val COUNT_DOWN_INTERVAL = 1000L //number of milliseconds between each tick
         private const val SAMPLE_RATE_IN_HZ = 44100
         private const val NOTE_SAMPLE_INTERVAL =
             80L //number of milliseconds between two note guesses
@@ -87,10 +87,12 @@ class RecFragment(
 
     private var isRecording = false //boolean to check if recording is in progress
 
+    private var beat_count = 0
+    private var measure_count = 0
+
     private var metronomeIsPlaying = false
 
     private var processSamplesTimer = onTickTimer(1) {}
-    private var recordTimer = onTickTimer(1) {}
     private var metronomeTimer = onTickTimer(1) {}
 
     constructor() : this(0, RecordingParameters()) {
@@ -123,10 +125,9 @@ class RecFragment(
         return ComposeView(requireContext()).apply {
             setContent {
                 ScribeWizTheme {
-
-                    val counterText = remember { mutableStateOf("00:00") }
+                    val playMetronome = remember { mutableStateOf(metronomeIsPlaying) }
+                    val counterText = remember { mutableStateOf("1.1") }
                     val recordButtonText = remember { mutableStateOf("Start recording") }
-
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -144,6 +145,13 @@ class RecFragment(
                                 switchRecordState(context,counterText, recordButtonText)
                             }
                         }
+                        Switch(
+                            checked = playMetronome.value,
+                            onCheckedChange = {
+                                playMetronome.value = it
+                                metronomeIsPlaying = it
+                            }
+                        )
                     }
                 }
             }
@@ -181,32 +189,6 @@ class RecFragment(
         }
     }
 
-    private fun switchMetronomeState(
-        metronomeButtonText: MutableState<String>,
-        tempoValue: MutableState<String>
-    ) {
-        if (metronomeIsPlaying) {
-            metronomeButtonText.value = "Start metronome"
-            metronomeIsPlaying = false
-            metronomeTimer.cancel()
-        } else {
-
-            metronomeTimer = onTickTimer((1000 * 60 / recording_parameters.tempo).toLong()) {
-                if (this::mediaPlayer.isInitialized) {
-                    if (mediaPlayer.isPlaying) {
-                        mediaPlayer.pause()
-                        mediaPlayer.seekTo(0)
-                    }
-                    mediaPlayer.start()
-                }
-            }
-
-            metronomeTimer.start()
-            metronomeIsPlaying = true
-            metronomeButtonText.value = "Stop metronome"
-        }
-    }
-
     private fun switchRecordState(
         context: Context,
         counterText: MutableState<String>,
@@ -222,9 +204,17 @@ class RecFragment(
         if (!isRecording) {
 
             // Set the timer
-            recordTimer = onTickTimer(COUNT_DOWN_INTERVAL) { millisUntilFinished ->
-                counterText.value =
-                    ((MILLIS_IN_FUTURE - millisUntilFinished) / COUNT_DOWN_INTERVAL).toString()
+            val tick_time = (1000 * 60 / recording_parameters.tempo).toLong()
+            metronomeTimer = onTickTimer(tick_time) { _ ->
+                val (beat, measure) = increment_metronome_counter()
+                counterText.value = "$measure.$beat"
+                if (this::mediaPlayer.isInitialized && metronomeIsPlaying) {
+                    if (mediaPlayer.isPlaying) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                    }
+                    mediaPlayer.start()
+                }
             }
 
             processSamplesTimer = onTickTimer(NOTE_SAMPLE_INTERVAL) {
@@ -239,19 +229,29 @@ class RecFragment(
             //start recording
             recordButtonText.value = "Stop recording"
             // Start the timer
-            recordTimer.start()
+            metronomeTimer.start()
             processSamplesTimer.start()
             startRecording()
         } else {
             //stop recording
             // Stop the timer
-            recordTimer.cancel()
+            metronomeTimer.cancel()
             processSamplesTimer.cancel()
             // Set the recording time to 0
             counterText.value = "Recording saved!"
             recordButtonText.value = "Start recording"
             stopRecording()
         }
+    }
+
+    private fun increment_metronome_counter(): Pair<Int, Int>{
+        if (beat_count == recording_parameters.beats){
+            measure_count += 1
+            beat_count = 1
+        } else {
+            beat_count += 1
+        }
+        return Pair(beat_count, measure_count)
     }
 
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
@@ -279,6 +279,10 @@ class RecFragment(
         val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
+        // reset measure counter
+        beat_count = 1
+        measure_count = 1
+
         // Start recording
         audioRecorder.startRecording()
         isRecording = true
@@ -301,7 +305,7 @@ class RecFragment(
 
     override fun onStop() {
         try {
-            recordTimer.cancel()
+            // recordTimer.cancel()
             metronomeTimer.cancel()
             processSamplesTimer.cancel()
             if (this::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
