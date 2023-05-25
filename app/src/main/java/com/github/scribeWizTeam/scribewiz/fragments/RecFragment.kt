@@ -255,8 +255,8 @@ class RecFragment(
                                       silenceMinDuration=0.3,
                                       moving_window_neighbors=2)
         val signature = Signature(
-            recording_parameters.fifths,
-            recording_parameters.beats,
+            recordingParameters.fifths,
+            recordingParameters.beats,
             recording_parameters.beatType,
             divisions = 2,
             tempo = recording_parameters.tempo,
