@@ -22,13 +22,14 @@ ScribeWiz is a music transcription application that enables users to record audi
 ## Usage
 
 1.  Open the ScribeWiz app on your device.
-2.  Log in with google or by email, or if you haven't already, create an account.
-3.  From the menu button, click on new recording to bring you to a new recording tab.
-4.  Play your instrument into the phone's microphone.
+2.  Log in with google.
+3.  From the menu button, click on new recording to bring you to a new recording tab and select the recording parameters for the recording, once ready, press start.
+4.  Play your instrument or voice into the phone's microphone.
 5.  Tap the "Stop" button to stop recording.
-6.  The transcribed MIDI file will be displayed as musical notation in the app.
-7. You can edit the transcription from using from the studio tab with the studio tab within the app.
-8.  Share the transcribed file as desired.
+6.  The transcribed recording will be displayed as musical notation in your library tab.
+7.  You can edit the transcription by viewing it and selecting a note you would like to replace and the new note and then clicking the button replace note.
+8.  Share the transcribed file as desired to your friends or by exporting it to other apps.
+9.  Participate in challenges and win badges!
 
 ### Environment setup:
 
@@ -45,8 +46,7 @@ Contributions to ScribeWiz are always welcome! Here are some ways you can contri
 -   Contribute code by forking the repository and submitting a pull request.
 -   Spread the word about ScribeWiz to other musicians who might find it useful.
 
-## Recent major implementations:
-
- - A new login menu upon opening the app, providing a seamless and secure way for users to access their accounts, while allowing users to doubly use the app while offline.
- - A navigation menu allowing users to navigate the app with ease.
- - A microphone segment of the app, enabling the app's core feature of recording raw audio to be transcribed automatically.
+## Recent major implementations (05/25/2023):
+ - We have implemented a major overhaul of the UI and the app design, we hope it is to the liking of the users.
+ - The app is now complete with all of the basic features we had imagined. 
+ - We have added a new challenges tab where users can compete in weekly challenges to try and earn badges! 
