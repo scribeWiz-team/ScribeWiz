@@ -33,7 +33,7 @@ data class UserModel(
             val reader = context.getSharedPreferences(LOGGED_USER, Context.MODE_PRIVATE)
 
             val userId = reader.getString(USER_ID, "")
-            if (userId == null || userId.isEmpty()) return Result.failure(Exception("Invalid user registered"))
+            if (userId.isNullOrEmpty()) return Result.failure(Exception("Invalid user registered"))
 
             return user(userId)
         }

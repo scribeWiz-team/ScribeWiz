@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     private val user = FirebaseAuth.getInstance().currentUser
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val fragmentAdded = mutableStateOf(false)
 
         setContent {
             ScribeWizTheme {
@@ -84,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
 
                         }
-                        NotesListFragmentComponent(supportFragmentManager)
+                        NotesListFragmentComponent(supportFragmentManager, fragmentAdded)
                     }
                 }
             }
@@ -169,6 +173,7 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun NotesListFragmentComponent(
         fragmentManager: FragmentManager,
+        fragmentAdded: MutableState<Boolean>,
         modifier: Modifier = Modifier,
         tag: String = "noteListFragmentTag"
     ) {
@@ -178,17 +183,15 @@ class MainActivity : AppCompatActivity() {
                 FrameLayout(context).apply {
                     id = ViewCompat.generateViewId()
                 }
-            },
-            update = {
-                val fragmentAlreadyAdded = fragmentManager.findFragmentByTag(tag) != null
-
-                if (!fragmentAlreadyAdded) {
-                    fragmentManager.commit {
-                        add(it.id, NotesListFragment(), tag)
-                    }
+            }
+        ) {
+            if (!fragmentAdded.value) {
+                fragmentAdded.value = true
+                fragmentManager.commit {
+                    add(it.id, NotesListFragment(), tag)
                 }
             }
-        )
+        }
     }
 
     private fun launchNavActivity(fragment: String) {

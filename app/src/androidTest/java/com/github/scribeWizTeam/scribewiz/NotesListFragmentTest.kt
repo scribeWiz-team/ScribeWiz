@@ -2,24 +2,16 @@ package com.github.scribeWizTeam.scribewiz
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.content.Intent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
-import com.github.scribeWizTeam.scribewiz.models.UserModel
 import kotlinx.coroutines.runBlocking
-import org.junit.After
-import okhttp3.internal.wait
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -152,8 +144,8 @@ class NotesListFragmentTest {
 
     @Test
     fun openDialogForShareWhenLongClick() {
-        UserModel().registerAsCurrentUser(context = composeTestRule.activity)
-        composeTestRule.onAllNodesWithText("share")[0].performClick()
+        composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
+        composeTestRule.onNodeWithText("Share to friend").performClick()
     }
 
     @Test

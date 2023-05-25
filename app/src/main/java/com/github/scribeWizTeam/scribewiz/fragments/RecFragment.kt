@@ -2,8 +2,6 @@ package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaPlayer
@@ -13,7 +11,6 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +36,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
@@ -50,10 +46,11 @@ import com.github.scribeWizTeam.scribewiz.transcription.PitchDetector
 import com.github.scribeWizTeam.scribewiz.transcription.Signal
 import com.github.scribeWizTeam.scribewiz.transcription.Signature
 import com.github.scribeWizTeam.scribewiz.transcription.Transcriber
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
-    contentLayoutId: Int  = 0,
+    contentLayoutId: Int = 0,
     private val recording_parameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
@@ -121,25 +118,27 @@ class RecFragment(
 
         return ComposeView(requireContext()).apply {
             setContent {
+                ScribeWizTheme {
 
-                val counterText = remember { mutableStateOf("00:00") }
-                val recordButtonText = remember { mutableStateOf("Start recording") }
+                    val counterText = remember { mutableStateOf("00:00") }
+                    val recordButtonText = remember { mutableStateOf("Start recording") }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = CenterHorizontally) {
-                        Text(
-                            text = counterText.value,
-                            fontSize = 24.sp,
-                            modifier = Modifier.padding(10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        PlayButton(recordButtonText) {
-                            switchRecordState(context, counterText, recordButtonText)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = CenterHorizontally) {
+                            Text(
+                                text = counterText.value,
+                                fontSize = 24.sp,
+                                modifier = Modifier.padding(10.dp),
+                                textAlign = TextAlign.Center
+                            )
+                            PlayButton(recordButtonText) {
+                                switchRecordState(counterText, recordButtonText)
+                            }
                         }
                     }
                 }
