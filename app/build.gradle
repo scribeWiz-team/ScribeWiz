@@ -78,6 +78,7 @@ tasks.withType(Test) {
         // Compose
         def compose_version = '1.4.3'
         implementation "androidx.compose.ui:ui:$compose_version"
+        implementation "androidx.compose.ui:ui-viewbinding:$compose_version"
         implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
         implementation "androidx.compose.compiler:compiler:1.4.7"
         implementation "androidx.compose.material:material:$compose_version"
