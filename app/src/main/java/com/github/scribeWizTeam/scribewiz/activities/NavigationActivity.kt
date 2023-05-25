@@ -1,6 +1,5 @@
 package com.github.scribeWizTeam.scribewiz.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -55,16 +54,16 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         toggle.syncState()
         //set the default fragment
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, RecParameterFragment(0)).commit()
+        showFragment(HomeFragment())
         //set the default item selected
-        navigationView.setCheckedItem(R.id.nav_profile)
+        navigationView.setCheckedItem(R.id.home)
         val from = intent
         when (from.getStringExtra("fragment")) {
             "profilePage" -> showFragment(ProfilePageFragment())
             "recordPage" -> showFragment(RecParameterFragment())
             "helpPage" -> showFragment(HelpFragment())
             "challengesPage" -> showFragment(ChallengesFragment())
-            else -> showFragment(ProfilePageFragment())
+            else -> showFragment(HomeFragment())
         }
     }
 
@@ -89,11 +88,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Code to handle the navigation view item click event
         when (item.itemId) {
-            R.id.home -> {
-                val home = Intent(this, MainActivity::class.java)
-                startActivity(home)
-            }
-
+            R.id.home -> showFragment(HomeFragment())
             R.id.nav_library -> showFragment(NotesListFragment())
             R.id.nav_profile -> showFragment(ProfilePageFragment())
             R.id.nav_help -> showFragment(HelpFragment())

@@ -38,6 +38,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
     var exceptionCaught: Boolean = false //Used in the unit tests to make sure the exception was handled
     private lateinit var noteSpinner: Spinner
     private lateinit var replaceNoteButton: Button
+    private lateinit var fileName : String
 
     /**
      * Initializes the activity and sets up the view.
@@ -89,7 +90,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
         noteSpinner = findViewById(R.id.note_spinner)
 
         // Initialize the Spinner with an ArrayAdapter using an array of note choices.
-        val notesArray = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B") // modify this array as needed
+        val notesArray = arrayOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, notesArray)
         noteSpinner.adapter = spinnerAdapter
 
@@ -101,7 +102,8 @@ class NotesDisplayedActivity : AppCompatActivity() {
             //print the current tick position
             val selectedNote = noteSpinner.selectedItem.toString()
             if (filePassed != null) {
-                editNote(filePassed, selectedNote)
+                editNote(filePassed,selectedNote)
+
             }
         }
     }
@@ -109,10 +111,11 @@ class NotesDisplayedActivity : AppCompatActivity() {
     //Required by the implementation of the library to work
     private fun openFile(uri: Uri) {
         var inMemoryObject = Score()
+        fileName = inMemoryObject.title
         try {
             val fileData = readFileData(uri)
             inMemoryObject = ScoreLoader.loadScoreFromBytes(fileData, _alphaTabView.settings)
-            Log.i("AlphaTab", "File loaded: ${inMemoryObject.title}")
+            Log.i("AlphaTab", "File loaded: $fileName")
         } catch (e: Exception) {
             exceptionCaught = true
             Log.e("AlphaTab", "Failed to load file: $e, ${e.stackTraceToString()}")
@@ -128,8 +131,6 @@ class NotesDisplayedActivity : AppCompatActivity() {
             Log.e("AlphaTab", "Failed to render file: $e, ${e.stackTraceToString()}")
             Toast.makeText(this, "Open File Failed", Toast.LENGTH_LONG).show()
         }
-
-
     }
 
     @ExperimentalContracts
@@ -171,26 +172,36 @@ class NotesDisplayedActivity : AppCompatActivity() {
      * @return The output file with the modified note.
      */
     private fun editNote(filePassed: String, newNote: String): File {
-
-        // Convert the filePassed URI string to a file and create a temporary file to store the modified musicXML
+        val noteStorageManager = NotesStorageManager(this)
         val inputFileUri = Uri.parse(filePassed)
-        val inputFile = Companion.createTempFileFromUri(this, inputFileUri)
+        val inputFile = createTempFileFromUri(this, inputFileUri)
         val outputFile = File.createTempFile("temp_musicxml_modified", ".xml", cacheDir)
 
-        // Get the current tick position and convert it to a note location in the input musicXML file
         val tickPosition = _viewModel.currentTickPosition.value
         val noteLocation = Editor.getNoteCountWithinQuarterNotes(inputFile, tickPosition!!)
 
-        // Edit the note in the input musicXML file and write the modified content to the output file
         Editor.editNoteInMusicXML(outputFile, inputFile, noteLocation, newNote)
 
-        // Delete the input file since it's no longer needed and uses up storage space
-        inputFile.delete()
+        // Get the original file name and create a new file name for the edited file
+        val originalFileName = inputFileUri.lastPathSegment
+        val originalFileNameWithoutExtension = originalFileName?.substringBeforeLast('.')
 
-        // Open the modified musicXML file in the app (refreshes the view)
+        // You have to specify where you want to save your edited file. Here, it's saved in the same directory as the original file
+        val editedFile = originalFileNameWithoutExtension?.let { File(inputFile.parentFile, it) }
+
+        // Copy the content of the outputFile to the editedFile
+        if (editedFile != null) {
+            outputFile.copyTo(editedFile, overwrite = true)
+        }
+
         openFile(Uri.fromFile(outputFile))
 
-        // Return the output file
+        if (originalFileNameWithoutExtension != null) {
+            noteStorageManager.writeNoteFile(originalFileNameWithoutExtension, outputFile.readText())
+        }
+
+        inputFile.delete()
+
         return outputFile
     }
 

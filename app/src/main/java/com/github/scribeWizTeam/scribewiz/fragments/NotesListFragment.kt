@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
+import Export
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -16,11 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -139,6 +136,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                         if (it == DismissValue.DismissedToStart) {
                                             notesStorageManager.deleteNote(name)
                                             notesNames.remove(name)
+                                            Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show()
                                         }
                                         true
                                     }
@@ -150,7 +148,8 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                         showRenameDialog = showRenameDialog,
                                         renamingNoteName = renamingNoteName,
                                         showShareMenu = showShareMenu,
-                                        sharedNoteName = sharedNoteName
+                                        sharedNoteName = sharedNoteName,
+                                        noteNames = notesNames
                                     )
                                 }
                             }
@@ -177,7 +176,8 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         showRenameDialog: MutableState<Boolean>,
         renamingNoteName: MutableState<String>,
         showShareMenu: MutableState<Boolean>,
-        sharedNoteName: MutableState<String>
+        sharedNoteName: MutableState<String>,
+        noteNames: SnapshotStateList<String>
 
     ) {
         SwipeToDismiss(
@@ -193,7 +193,8 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     showRenameDialog,
                     renamingNoteName,
                     sharedNoteName,
-                    showShareMenu
+                    showShareMenu,
+                    noteNames
                 )
             },
             directions = setOf(DismissDirection.EndToStart)
@@ -222,12 +223,13 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         showRenameDialog: MutableState<Boolean>,
         renamingNoteName: MutableState<String>,
         sharedNoteName: MutableState<String>,
-        showShareMenu: MutableState<Boolean>
+        showShareMenu: MutableState<Boolean>,
+        noteNames: SnapshotStateList<String>
     ) {
         val showMenu = remember { mutableStateOf(false) }
 
         var buttonName by remember { mutableStateOf("Export") }
-        Surface(modifier = Modifier
+        Surface(modifier = getTileModifier()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
@@ -285,6 +287,13 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                         }
                     }) {
                         Text(buttonName)
+                    }
+                    DropdownMenuItem(modifier = Modifier.background(Color.Red), onClick = {
+                        notesStorageManager.deleteNote(name)
+                        noteNames.remove(name)
+                        Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Text("Delete")
                     }
                 }
 

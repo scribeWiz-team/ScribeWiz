@@ -22,10 +22,6 @@
             android:name=".activities.ParticipateInChallengeActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.NavigationActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".activities.ChallengeNotesActivity"
             android:exported="false" />
 
@@ -40,7 +36,7 @@
             android:name=".NotesDisplayedActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.NavigationActivity"
             android:exported="true"
             android:theme="@style/Theme.ScribeWiz.NoActionBar">
             <intent-filter>

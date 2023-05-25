@@ -55,8 +55,8 @@ import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
-    contentLayoutId: Int = 0,
-    private val recording_parameters: RecordingParameters
+    contentLayoutId: Int  = 0,
+    private val recordingParameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
     companion object {
@@ -202,9 +202,8 @@ class RecFragment(
         }
 
         if (!isRecording) {
-
             // Set the timer
-            val tick_time = (1000 * 60 / recording_parameters.tempo).toLong()
+            val tick_time = (1000 * 60 / recordingParameters.tempo).toLong()
             metronomeTimer = onTickTimer(tick_time) { _ ->
                 val (beat, measure) = increment_metronome_counter()
                 counterText.value = "$measure.$beat"
@@ -245,7 +244,7 @@ class RecFragment(
     }
 
     private fun increment_metronome_counter(): Pair<Int, Int>{
-        if (beat_count == recording_parameters.beats){
+        if (beat_count == recordingParameters.beats){
             measure_count += 1
             beat_count = 1
         } else {
@@ -267,16 +266,18 @@ class RecFragment(
             SAMPLE_RATE_IN_HZ.toDouble(),
             THRESHOLD
         )
-        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0)
+        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0, 
+                                      silenceMinDuration=0.3,
+                                      movingWindowNeighbors=2)
         val signature = Signature(
-            recording_parameters.fifths,
-            recording_parameters.beats,
-            recording_parameters.beatType,
+            recordingParameters.fifths,
+            recordingParameters.beats,
+            recordingParameters.beatType,
             divisions = 2,
-            tempo = recording_parameters.tempo,
-            useGKeySignature = recording_parameters.useGKeySignature
+            tempo = recordingParameters.tempo,
+            useGKeySignature = recordingParameters.useGKeySignature
         )
-        val renderer = MusicxmlBuilder(recording_parameters.scoreName, signature)
+        val renderer = MusicxmlBuilder(recordingParameters.scoreName, signature)
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
         // reset measure counter
@@ -300,7 +301,7 @@ class RecFragment(
         // end the transcription
         transcriber.endTranscription()
         val data = transcriber.getTranscription()
-        notesStorageManager.writeNoteFile(recording_parameters.scoreName, data)
+        notesStorageManager.writeNoteFile(recordingParameters.scoreName, data)
     }
 
     override fun onStop() {

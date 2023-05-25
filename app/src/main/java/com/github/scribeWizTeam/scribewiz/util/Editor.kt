@@ -28,6 +28,7 @@ class Editor {
             noteLocation: Int,
             newNote: String
         ) {
+
             // Initialize XmlPullParser for parsing the input MusicXML file.
             val parserFactory = XmlPullParserFactory.newInstance()
             val parser = parserFactory.newPullParser()

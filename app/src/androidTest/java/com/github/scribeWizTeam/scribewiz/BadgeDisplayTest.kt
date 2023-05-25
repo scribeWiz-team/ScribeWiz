@@ -10,7 +10,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.scribeWizTeam.scribewiz.activities.BadgeDisplayActivity
-import com.github.scribeWizTeam.scribewiz.activities.MainActivity
 import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.fragments.ProfilePageFragment
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
@@ -23,7 +22,7 @@ import org.junit.Test
 class BadgeDisplayTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createAndroidComposeRule<NavigationActivity>()
 
 
     @Before
