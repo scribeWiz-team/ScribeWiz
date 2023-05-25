@@ -18,6 +18,7 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -32,7 +33,10 @@ class FirebaseUIActivity : ComponentActivity() {
             startActivity(goHome)
         }
         setContent {
-            LoginPage()
+            ScribeWizTheme() {
+                LoginPage()
+            }
+
         }
     }
 

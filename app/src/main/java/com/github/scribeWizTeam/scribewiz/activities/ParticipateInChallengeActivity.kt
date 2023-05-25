@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,23 +41,24 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         }
 
         setContent {
-            val challenges = remember { ChallengeModel.challengesAvailable().toMutableStateList() }
+            ScribeWizTheme() {
+                val challenges =
+                    remember { ChallengeModel.challengesAvailable().toMutableStateList() }
 
-            if (isTest) {
-                ChallengeListParticipateIn(
-                    challenges = ChallengeModel.challengesAvailableTest(),
-                    context = this,
-                    musicName = musicName
-                )
-            } else {
-                ChallengeListParticipateIn(
-                    challenges = challenges,
-                    context = this,
-                    musicName = musicName
-                )
+                if (isTest) {
+                    ChallengeListParticipateIn(
+                        challenges = ChallengeModel.challengesAvailableTest(),
+                        context = this,
+                        musicName = musicName
+                    )
+                } else {
+                    ChallengeListParticipateIn(
+                        challenges = challenges,
+                        context = this,
+                        musicName = musicName
+                    )
+                }
             }
-
-
         }
     }
 

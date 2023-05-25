@@ -144,7 +144,14 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                         true
                                     }
                                 )
-                                NoteEntry(state, name, showShareMenu, sharedNoteName, showRenameDialog, renamingNoteName)
+                                NoteEntry(
+                                    state,
+                                    name,
+                                    showShareMenu,
+                                    sharedNoteName,
+                                    showRenameDialog,
+                                    renamingNoteName
+                                )
                             }
                         }
                     }
@@ -249,42 +256,45 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
             }
         ) {
 
-            Row {
-                Image(
-                    painter = painterResource(R.drawable.music_note),
-                    modifier = Modifier
-                        .height(20.dp)
-                        .align(CenterVertically),
-                    contentDescription = "music_file"
-                )
-                Text(
-                    text = name, modifier = Modifier
-                        .padding(10.dp)
-                        .width(220.dp)
-                )
+            ScribeWizTheme() {
+                Row {
+                    Image(
+                        painter = painterResource(R.drawable.music_note),
+                        modifier = Modifier
+                            .height(20.dp)
+                            .align(CenterVertically),
+                        contentDescription = "music_file"
+                    )
+                    Text(
+                        text = name, modifier = Modifier
+                            .padding(10.dp)
+                            .width(220.dp)
+                    )
 
-                DropdownMenu(
-                    expanded = showMenu.value,
-                    onDismissRequest = { showMenu.value = false }
-                ) {
-                    DropdownMenuItem(onClick = {
-                        renamingNoteName.value = name
-                        showRenameDialog.value = true
-                    }) {
-                        Text("Rename")
-                    }
-                    DropdownMenuItem(onClick = {
-                        val intent = Intent(context, ParticipateInChallengeActivity::class.java)
-                        intent.putExtra("musicName", name)
-                        startActivity(intent)
-                    }) {
-                        Text("Challenges")
+                    DropdownMenu(
+                        expanded = showMenu.value,
+                        onDismissRequest = { showMenu.value = false }
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            renamingNoteName.value = name
+                            showRenameDialog.value = true
+                        }) {
+                            Text("Rename")
+                        }
+                        DropdownMenuItem(onClick = {
+                            val intent = Intent(context, ParticipateInChallengeActivity::class.java)
+                            intent.putExtra("musicName", name)
+                            startActivity(intent)
+                        }) {
+                            Text("Challenges")
+                        }
+
+                        // Add more DropdownMenuItem here for more options
                     }
 
-                    // Add more DropdownMenuItem here for more options
                 }
-
             }
+
         }
     }
 

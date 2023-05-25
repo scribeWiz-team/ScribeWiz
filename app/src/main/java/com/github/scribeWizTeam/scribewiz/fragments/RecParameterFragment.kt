@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 
@@ -81,112 +82,116 @@ class RecParameterFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId)
         return ComposeView(requireContext()).apply {
             setContent {
 
-                val scoreName = remember { mutableStateOf(recordingParameters.scoreName) }
-                val beats = remember { mutableStateOf(recordingParameters.beats.toString()) }
-                val tempo = remember { mutableStateOf(recordingParameters.tempo.toString()) }
+                ScribeWizTheme(darkTheme = true) {
+                    val scoreName = remember { mutableStateOf(recordingParameters.scoreName) }
+                    val beats = remember { mutableStateOf(recordingParameters.beats.toString()) }
+                    val tempo = remember { mutableStateOf(recordingParameters.tempo.toString()) }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.Start) {
-                        // score name
-                        OutlinedTextField(scoreName.value,
-                            { scoreName.value = it },
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(5.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                            label = { Text(text = "Score name") })
-                        // tonality
-                        Row(
-                            verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(
-                                text = "Tonality: ",
-                                modifier = Modifier.padding(5.dp),
-                            )
-                            Spinner(
-                                modifier = Modifier.wrapContentSize(),
-                                displayItems = TONALITIES_NAMES,
-                                dataItems = TONALITIES_FIFTHS,
-                                onItemSelected = { recordingParameters.fifths = it },
-                                startIndex = 2 // start at C major
-                            )
-                        }
-                        // key
-                        Row(
-                            verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(
-                                text = "Staff key: ",
-                                modifier = Modifier.padding(5.dp),
-                            )
-                            Spinner(
-                                modifier = Modifier.wrapContentSize(),
-                                displayItems = KEY_NAMES,
-                                dataItems = KEY_VALUES,
-                                onItemSelected = { recordingParameters.useGKeySignature = it },
-                                startIndex = 1 // start with F key
-                            )
-                        }
-                        // time signature
-                        Row(
-                            verticalAlignment = CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(text = "Time signature: ")
-                            TextField(
-                                beats.value,
-                                { beats.value = it },
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.Start) {
+                            // score name
+                            OutlinedTextField(scoreName.value,
+                                { scoreName.value = it },
                                 modifier = Modifier
-                                    .height(50.dp)
-                                    .width(60.dp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            )
-                            Text(
-                                text = "/",
-                                modifier = Modifier.padding(5.dp),
-                                style = TextStyle(fontSize = 30.sp)
-                            )
-                            Spinner(
-                                modifier = Modifier.wrapContentSize(),
-                                displayItems = BEAT_TYPES.map { it.toString() },
-                                dataItems = BEAT_TYPES,
-                                onItemSelected = { recordingParameters.beatType = it },
-                                startIndex = 2 // start on 4 beats
-                            )
-                        }
-                        // tempo
-                        OutlinedTextField(tempo.value,
-                            { tempo.value = it },
-                            modifier = Modifier
-                                .width(120.dp)
-                                .padding(5.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            label = { Text(text = "Tempo") })
-                        // record button
-                        Button(
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(190.dp)
-                                .padding(5.dp),
-                            onClick = {
-                                launchRecordingFragment(
-                                    scoreName.value,
-                                    beats.value,
-                                    tempo.value
+                                    .width(200.dp)
+                                    .padding(5.dp),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                                label = { Text(text = "Score name") })
+                            // tonality
+                            Row(
+                                verticalAlignment = CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Text(
+                                    text = "Tonality: ",
+                                    modifier = Modifier.padding(5.dp),
+                                )
+                                Spinner(
+                                    modifier = Modifier.wrapContentSize(),
+                                    displayItems = TONALITIES_NAMES,
+                                    dataItems = TONALITIES_FIFTHS,
+                                    onItemSelected = { recordingParameters.fifths = it },
+                                    startIndex = 2 // start at C major
                                 )
                             }
-                        ) {
-                            Text(text = "Next")
+                            // key
+                            Row(
+                                verticalAlignment = CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Text(
+                                    text = "Staff key: ",
+                                    modifier = Modifier.padding(5.dp),
+                                )
+                                Spinner(
+                                    modifier = Modifier.wrapContentSize(),
+                                    displayItems = KEY_NAMES,
+                                    dataItems = KEY_VALUES,
+                                    onItemSelected = { recordingParameters.useGKeySignature = it },
+                                    startIndex = 1 // start with F key
+                                )
+                            }
+                            // time signature
+                            Row(
+                                verticalAlignment = CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Text(text = "Time signature: ")
+                                TextField(
+                                    beats.value,
+                                    { beats.value = it },
+                                    modifier = Modifier
+                                        .height(50.dp)
+                                        .width(60.dp),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                )
+                                Text(
+                                    text = "/",
+                                    modifier = Modifier.padding(5.dp),
+                                    style = TextStyle(fontSize = 30.sp)
+                                )
+                                Spinner(
+                                    modifier = Modifier.wrapContentSize(),
+                                    displayItems = BEAT_TYPES.map { it.toString() },
+                                    dataItems = BEAT_TYPES,
+                                    onItemSelected = { recordingParameters.beatType = it },
+                                    startIndex = 2 // start on 4 beats
+                                )
+                            }
+                            // tempo
+                            OutlinedTextField(tempo.value,
+                                { tempo.value = it },
+                                modifier = Modifier
+                                    .width(120.dp)
+                                    .padding(5.dp),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                label = { Text(text = "Tempo") })
+                            // record button
+                            Button(
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(190.dp)
+                                    .padding(5.dp),
+                                onClick = {
+                                    launchRecordingFragment(
+                                        scoreName.value,
+                                        beats.value,
+                                        tempo.value
+                                    )
+                                }
+                            ) {
+                                Text(text = "Next")
+                            }
                         }
                     }
                 }
+
+
             }
         }
     }
