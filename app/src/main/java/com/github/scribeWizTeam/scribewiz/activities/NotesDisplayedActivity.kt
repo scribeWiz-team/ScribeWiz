@@ -102,7 +102,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
             //print the current tick position
             val selectedNote = noteSpinner.selectedItem.toString()
             if (filePassed != null) {
-                val edited_file = editNote(filePassed,selectedNote)
+                editNote(filePassed,selectedNote)
 
             }
         }
@@ -172,6 +172,7 @@ class NotesDisplayedActivity : AppCompatActivity() {
      * @return The output file with the modified note.
      */
     private fun editNote(filePassed: String, newNote: String): File {
+        val noteStorageManager = NotesStorageManager(this)
         val inputFileUri = Uri.parse(filePassed)
         val inputFile = createTempFileFromUri(this, inputFileUri)
         val outputFile = File.createTempFile("temp_musicxml_modified", ".xml", cacheDir)
@@ -184,19 +185,20 @@ class NotesDisplayedActivity : AppCompatActivity() {
         // Get the original file name and create a new file name for the edited file
         val originalFileName = inputFileUri.lastPathSegment
         val originalFileNameWithoutExtension = originalFileName?.substringBeforeLast('.')
-        val editedName = "edited_$originalFileNameWithoutExtension"
 
         // You have to specify where you want to save your edited file. Here, it's saved in the same directory as the original file
-        val editedFile = File(inputFile.parentFile, editedName)
+        val editedFile = originalFileNameWithoutExtension?.let { File(inputFile.parentFile, it) }
 
         // Copy the content of the outputFile to the editedFile
-        outputFile.copyTo(editedFile, overwrite = true)
-
-        val noteStorageManager = NotesStorageManager(this)
+        if (editedFile != null) {
+            outputFile.copyTo(editedFile, overwrite = true)
+        }
 
         openFile(Uri.fromFile(outputFile))
 
-        noteStorageManager.writeNoteFile(editedName, outputFile.readText())
+        if (originalFileNameWithoutExtension != null) {
+            noteStorageManager.writeNoteFile(originalFileNameWithoutExtension, outputFile.readText())
+        }
 
         inputFile.delete()
 
