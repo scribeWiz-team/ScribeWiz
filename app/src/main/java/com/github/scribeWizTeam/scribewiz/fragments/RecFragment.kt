@@ -2,6 +2,8 @@ package com.github.scribeWizTeam.scribewiz.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaPlayer
@@ -11,6 +13,7 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +39,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.PermissionsManager
@@ -137,7 +141,7 @@ class RecFragment(
                                 textAlign = TextAlign.Center
                             )
                             PlayButton(recordButtonText) {
-                                switchRecordState(counterText, recordButtonText)
+                                switchRecordState(context,counterText, recordButtonText)
                             }
                         }
                     }
