@@ -10,8 +10,9 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/primary</item>
         <!-- Customize your theme here. -->
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="Theme.ScribeWiz.NoActionBar">
@@ -20,6 +21,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
 
     </style>
+
     <style name="Theme.ScribeWiz.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="Theme.ScribeWiz.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

@@ -6,7 +6,9 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Light">
+    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    android:backgroundTint="@color/primary"
+    android:statusBarColor="@color/primary">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -18,7 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:text="@string/placeholder"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <TextView

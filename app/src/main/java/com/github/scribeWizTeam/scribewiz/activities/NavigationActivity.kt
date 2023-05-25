@@ -95,6 +95,7 @@ class NavigationActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 val home = Intent(this, MainActivity::class.java)
                 startActivity(home)
             }
+
             R.id.nav_library -> showFragment(NotesListFragment())
             R.id.nav_profile -> showFragment(ProfilePageFragment())
             R.id.nav_help -> showFragment(HelpFragment())
