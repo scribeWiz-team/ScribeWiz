@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
     private lateinit var notesStorageManager: NotesStorageManager
     val dialogName = "Rename Note"
     private val contentDescriptionDialog = "New Name"
+
 
     constructor() : this(0) {
         // Default constructor
@@ -237,7 +239,9 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         renamingNoteName: MutableState<String>
     ) {
         val showMenu = remember { mutableStateOf(false) }
-        Surface(modifier = getTileModifier()
+
+        var buttonName by remember { mutableStateOf("Export") }
+        Surface(modifier = Modifier
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
@@ -268,6 +272,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     onDismissRequest = { showMenu.value = false }
                 ) {
                     DropdownMenuItem(onClick = {
+                        val noteToRename = name
                         renamingNoteName.value = name
                         showRenameDialog.value = true
                     }) {
@@ -280,11 +285,32 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     }) {
                         Text("Challenges")
                     }
-
-                    // Add more DropdownMenuItem here for more options
+                    // Added "Export" option
+                    DropdownMenuItem(onClick = {
+                        if(export(name)){
+                            buttonName = "Exported"
+                        }
+                    }) {
+                        Text(buttonName)
+                    }
                 }
 
             }
+        }
+    }
+
+    // Added export helper function which calls Export.exportMusicXMLFile to export the file
+    private fun export(name: String): Boolean {
+        // Get the file
+        val noteFile = notesStorageManager.getNoteFile(name)
+        // Export the file
+        val success = noteFile?.let { Export.exportMusicXMLFile(it, requireContext()) }
+        return if (success == true) {
+            Toast.makeText(context, "Exported $name", Toast.LENGTH_SHORT).show()
+            true
+        } else {
+            Toast.makeText(context, "Failed to export $name", Toast.LENGTH_SHORT).show()
+            false
         }
     }
 
@@ -423,4 +449,5 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
             }
         )
     }
+
 }
