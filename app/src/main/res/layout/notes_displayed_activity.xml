@@ -37,10 +37,10 @@
         android:id="@+id/note_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/replace_note_button"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toEndOf="@id/replace_note_button"
+        app:layout_constraintTop_toTopOf="@id/replace_note_button"
+        app:layout_constraintBottom_toBottomOf="@id/replace_note_button"
         android:layout_marginStart="12pt"
-        android:layout_marginTop="12pt"
         android:visibility="gone"
         />
 
