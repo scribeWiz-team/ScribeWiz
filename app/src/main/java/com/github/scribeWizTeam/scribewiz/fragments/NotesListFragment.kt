@@ -21,7 +21,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -35,7 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
@@ -44,8 +43,6 @@ import com.github.scribeWizTeam.scribewiz.activities.ParticipateInChallengeActiv
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlin.contracts.ExperimentalContracts
 
 
@@ -146,7 +143,16 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                         true
                                     }
                                 )
-                                NoteEntry(state, name, showShareMenu, sharedNoteName, showRenameDialog, renamingNoteName)
+                                Row(verticalAlignment = CenterVertically) {
+                                    SwipeToDismissNote(
+                                        state,
+                                        name,
+                                        showRenameDialog = showRenameDialog,
+                                        renamingNoteName = renamingNoteName,
+                                        showShareMenu = showShareMenu,
+                                        sharedNoteName = sharedNoteName
+                                    )
+                                }
                             }
                         }
                     }
@@ -165,42 +171,14 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun NoteEntry(
+    fun SwipeToDismissNote(
         state: DismissState,
         name: String,
-        showShareMenu: MutableState<Boolean>,
-        sharedNoteName: MutableState<String>,
         showRenameDialog: MutableState<Boolean>,
-        renamingNoteName: MutableState<String>
-    ) {
-        Row(verticalAlignment = CenterVertically) {
-            Button(
-                onClick = {
-                    showShareMenu.value = true
-                    sharedNoteName.value = name
-                },
-                modifier = Modifier
-                    .width(85.dp)
-                    .height(45.dp)
-                    .background(Color.White, CircleShape)
-                    .padding(5.dp)
-            ) {
-                Text(text = "share")
-            }
-            SwipeToDismissNote(
-                state,
-                name,
-                showRenameDialog = showRenameDialog,
-                renamingNoteName = renamingNoteName
-            )
-        }
-    }
+        renamingNoteName: MutableState<String>,
+        showShareMenu: MutableState<Boolean>,
+        sharedNoteName: MutableState<String>
 
-    @OptIn(ExperimentalMaterialApi::class)
-    @Composable
-    fun SwipeToDismissNote(
-        state: DismissState, name: String, showRenameDialog: MutableState<Boolean>,
-        renamingNoteName: MutableState<String>
     ) {
         SwipeToDismiss(
             state = state,
@@ -210,7 +188,13 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                 ) {}
             },
             dismissContent = {
-                NoteTile(name = name, showRenameDialog, renamingNoteName)
+                NoteTile(
+                    name = name,
+                    showRenameDialog,
+                    renamingNoteName,
+                    sharedNoteName,
+                    showShareMenu
+                )
             },
             directions = setOf(DismissDirection.EndToStart)
         )
@@ -236,7 +220,9 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
     fun NoteTile(
         name: String,
         showRenameDialog: MutableState<Boolean>,
-        renamingNoteName: MutableState<String>
+        renamingNoteName: MutableState<String>,
+        sharedNoteName: MutableState<String>,
+        showShareMenu: MutableState<Boolean>
     ) {
         val showMenu = remember { mutableStateOf(false) }
 
@@ -272,7 +258,6 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     onDismissRequest = { showMenu.value = false }
                 ) {
                     DropdownMenuItem(onClick = {
-                        val noteToRename = name
                         renamingNoteName.value = name
                         showRenameDialog.value = true
                     }) {
@@ -285,6 +270,14 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     }) {
                         Text("Challenges")
                     }
+                    DropdownMenuItem(onClick = {
+                        showShareMenu.value = true
+                        sharedNoteName.value = name
+                    }) {
+                        Text("Share to friend")
+                    }
+
+                    // Add more DropdownMenuItem here for more options
                     // Added "Export" option
                     DropdownMenuItem(onClick = {
                         if(export(name)){
@@ -339,8 +332,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     @Composable
     private fun ShareMenu(noteName: String, showShareMenu: MutableState<Boolean>) {
-        Popup(
-            alignment = Alignment.Center,
+        Dialog(
             onDismissRequest = { showShareMenu.value = false },
         ) {
 
@@ -348,43 +340,60 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
             if (ret.isFailure) {
                 Toast.makeText(context, "You're not logged in", Toast.LENGTH_LONG).show()
-                return@Popup
+                return@Dialog
             }
 
             val user = ret.getOrThrow()
-
-            val mExpanded = remember { mutableStateOf(true) }
             val mSelectedName = remember { mutableStateOf("") }
             val mSelectedID = remember { mutableStateOf("") }
 
-            Column(Modifier.padding(20.dp)) {
+            Surface(
+                modifier = Modifier.size(400.dp),
+            ) {
+                Column(Modifier.padding(20.dp), horizontalAlignment = CenterHorizontally) {
 
-                // Create an Outlined Text Field
-                // with icon and not expanded
-                Text(text = mSelectedName.value)
+                    // Create an Outlined Text Field
+                    // with icon and not expanded
+                    Text(text = mSelectedName.value)
 
-                DropdownMenu(
-                    expanded = mExpanded.value,
-                    onDismissRequest = { mExpanded.value = false },
-                    modifier = Modifier.align(CenterHorizontally)
-                ) {
-                    user.friends?.forEach { id ->
-                        UserModel.user(id).onSuccess { friend ->
-                            DropdownMenuItem(onClick = {
-                                mSelectedName.value = friend.userName.toString()
-                                mSelectedID.value = id
-                                mExpanded.value = false
-                            }) {
-                                friend.userName?.let { Text(text = it) }
+
+                    val userFriendsId = user.friends.orEmpty()
+
+                    Button(
+                        onClick = {
+                        showShareMenu.value = false
+                        shareNoteToOtherUser(noteName, mSelectedID.value)
+                    }) {
+                        Text("share")
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(all = 8.dp)
+                            .testTag("columnList"),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = CenterHorizontally
+                    ) {
+                        items(userFriendsId, key = { user -> user }) { id ->
+                            UserModel.user(id).onSuccess { friend ->
+                                friend.userName?.let {
+                                    Row(
+                                        Modifier.clickable {
+                                            mSelectedName.value = it
+                                            mSelectedID.value = friend.id
+                                        },
+                                        verticalAlignment = CenterVertically) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.no_user),
+                                            contentDescription = "User profile picture",
+                                        )
+                                        Spacer(Modifier.width(10.dp))
+                                        Text(text = it)
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                Button(onClick = {
-                    showShareMenu.value = false
-                    shareNoteToOtherUser(noteName, mSelectedID.value)
-                }) {
-                    Text("share")
                 }
             }
         }
@@ -392,9 +401,9 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
     private fun shareNoteToOtherUser(noteName: String, userId: String) {
 
-        val docRef = Firebase.firestore.collection(MusicNoteModel.COLLECTION).document()
-        val musicNoteModel = MusicNoteModel(docRef.id, noteName)
+        val musicNoteModel = MusicNoteModel(name = noteName)
         musicNoteModel.updateInDB()
+        notesStorageManager.uploadFileToDatabase(musicNoteModel)
 
         UserModel.currentUser(requireContext()).onFailure {
             Toast.makeText(context, "You're not logged in", Toast.LENGTH_LONG).show()

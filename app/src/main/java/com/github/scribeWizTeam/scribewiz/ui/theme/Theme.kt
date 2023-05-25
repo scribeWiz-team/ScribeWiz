@@ -25,7 +25,6 @@ private val LightColorPalette = lightColors(
     primaryVariant = PrimaryVariantRed,
     secondary = SecondaryWhite,
     background = Color.White,
-    surface = Color.LightGray,
     onPrimary = Color.Black,
     onSecondary = Color.Black,
     onBackground = Color.Black,

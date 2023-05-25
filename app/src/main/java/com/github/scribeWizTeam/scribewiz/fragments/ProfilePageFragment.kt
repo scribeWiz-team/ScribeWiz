@@ -23,11 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -54,6 +49,7 @@ import com.github.scribeWizTeam.scribewiz.activities.BadgeDisplayActivity
 import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -83,7 +79,9 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
             setContent {
-                ProfilePage()
+                ScribeWizTheme {
+                    ProfilePage()
+                }
             }
         }
     }
