@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
@@ -20,15 +17,17 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.*
+import com.github.scribeWizTeam.scribewiz.util.FaqQueries
 
 class HelpFragment : Fragment() {
-
-    private val helpTopics = listOf(
-        "Topic 1",
-        "Topic 2",
-        "Topic 3",
-        // Add more topics here
-    )
+    private val faqs = FaqQueries.faqs
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,36 +35,30 @@ class HelpFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-            // Dispose the Composition when viewLifecycleOwner is destroyed
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
 
             setContent {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(all = 3.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     Text(
-                        text = "Help",
-                        style = MaterialTheme.typography.h4,
-                        fontSize = 50.sp
+                        text = "FAQs",
+                        style = MaterialTheme.typography.h5,
+                        fontSize = 20.sp
                     )
 
-                    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-                        items(helpTopics) { topic ->
-                            Card(
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp, horizontal = 8.dp)
-                                    .fillMaxWidth(),
-                                elevation = 4.dp
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = topic,
-                                    style = MaterialTheme.typography.h6
-                                )
-                            }
+                    LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
+                        items(faqs.toList()) { (faq, answer) ->
+                            ExpandableCard(
+                                title = faq,
+                                answer = answer
+                            )
                         }
                     }
                 }
@@ -73,4 +66,40 @@ class HelpFragment : Fragment() {
         }
     }
 
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun ExpandableCard(title: String, answer: String) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .padding(vertical = 8.dp, horizontal = 8.dp)
+            .fillMaxWidth()
+            .clickable { expanded = !expanded },
+        elevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.h6
+            )
+
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(animationSpec = tween(300)),
+                exit = shrinkVertically(animationSpec = tween(300))
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = answer,
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+    }
 }

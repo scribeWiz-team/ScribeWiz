@@ -53,7 +53,7 @@ import com.github.scribeWizTeam.scribewiz.transcription.Transcriber
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
-    contentLayoutId: Int,
+    contentLayoutId: Int  = 0,
     private val recording_parameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
