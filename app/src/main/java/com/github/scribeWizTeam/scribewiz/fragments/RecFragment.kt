@@ -46,10 +46,11 @@ import com.github.scribeWizTeam.scribewiz.transcription.PitchDetector
 import com.github.scribeWizTeam.scribewiz.transcription.Signal
 import com.github.scribeWizTeam.scribewiz.transcription.Signature
 import com.github.scribeWizTeam.scribewiz.transcription.Transcriber
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
-    contentLayoutId: Int  = 0,
+    contentLayoutId: Int = 0,
     private val recording_parameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
@@ -117,25 +118,27 @@ class RecFragment(
 
         return ComposeView(requireContext()).apply {
             setContent {
+                ScribeWizTheme {
 
-                val counterText = remember { mutableStateOf("00:00") }
-                val recordButtonText = remember { mutableStateOf("Start recording") }
+                    val counterText = remember { mutableStateOf("00:00") }
+                    val recordButtonText = remember { mutableStateOf("Start recording") }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = CenterHorizontally) {
-                        Text(
-                            text = counterText.value,
-                            fontSize = 24.sp,
-                            modifier = Modifier.padding(10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        PlayButton(recordButtonText) {
-                            switchRecordState(counterText, recordButtonText)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = CenterHorizontally) {
+                            Text(
+                                text = counterText.value,
+                                fontSize = 24.sp,
+                                modifier = Modifier.padding(10.dp),
+                                textAlign = TextAlign.Center
+                            )
+                            PlayButton(recordButtonText) {
+                                switchRecordState(counterText, recordButtonText)
+                            }
                         }
                     }
                 }
