@@ -33,21 +33,19 @@ interface NoteGuesserInterface {
  * - when there is no more samples to process, call {@link #end_guessing()}
  * - you can retrieve the guessed notes at any time in the {@link #notes} attribute
  */
-class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
-    companion object {
-        private const val MOVING_WINDOW_NEIGHBORS = 1
-
-        // the window size is always odd, so that it’s symmetric
-        private const val MOVING_WINDOW_SIZE = 2 * MOVING_WINDOW_NEIGHBORS + 1
-    }
+class NoteGuesser(override val sampleDelay: Double,
+                  val silenceMinDuration: Double = 0.0,
+                  val movingWindowNeighbors: Int = 1): NoteGuesserInterface {
+    // the window size is always odd, so that it’s symmetric
+    val movingWindowSize = 2 * movingWindowNeighbors + 1
 
     override var notes: MutableList<MidiNote> = mutableListOf()
 
-    private var movingWindow: Array<Int> = Array(MOVING_WINDOW_SIZE) { SILENT_PITCH }
+    private var movingWindow: Array<Int> = Array(movingWindowSize) { SILENT_PITCH }
     private var windowIndex: Int = 0
     private var enoughData: Boolean = false
 
-    private var time: Double = -sampleDelay * MOVING_WINDOW_NEIGHBORS
+    private var time: Double = -sampleDelay * movingWindowNeighbors
     private var currentNote: MidiNote = MidiNote(SILENT_PITCH, 0.0, 0.0)
 
     override fun addSample(pitchFreq: Double?): Int {
@@ -65,10 +63,10 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
             MidiNote(currentNote.pitch, currentNote.startTime, time + sampleDelay)
         }
         time += sampleDelay
-        if (windowIndex >= MOVING_WINDOW_NEIGHBORS) {
+        if (windowIndex >= movingWindowNeighbors) {
             enoughData = true
         }
-        windowIndex = (windowIndex + 1) % MOVING_WINDOW_SIZE
+        windowIndex = (windowIndex + 1) % movingWindowSize
         return currentNote.pitch
     }
 
@@ -76,7 +74,7 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
         val best = movingWindow.groupBy { it }
             .mapValues { (_, l) -> l.size }
             .maxBy { it.value }
-        if (best.value == MOVING_WINDOW_NEIGHBORS) {
+        if (best.value == movingWindowNeighbors) {
             // not enough samples to be representative
             return SILENT_PITCH
         }
@@ -89,7 +87,16 @@ class NoteGuesser(override val sampleDelay: Double): NoteGuesserInterface {
 
     private fun pushCurrentNote() {
         if (currentNote.duration != 0.0) {
-            notes += currentNote
+            if (    notes.size > 0
+                 && currentNote.pitch == SILENT_PITCH
+                 && currentNote.duration < silenceMinDuration){
+                // if the silence is too short, we merge it into the previous note
+                val lastNote = notes[notes.lastIndex]
+                val newNote = MidiNote(lastNote.pitch, lastNote.startTime, currentNote.endTime)
+                notes[notes.lastIndex] = newNote
+            } else {
+                notes += currentNote
+            }
             currentNote = MidiNote(SILENT_PITCH, time, time)
         }
     }
