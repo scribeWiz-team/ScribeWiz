@@ -47,7 +47,6 @@ class NotesListFragmentTest {
 
     private var notesDir = File("test")
 
-
     @Before
     fun initialize() {
 
@@ -88,7 +87,7 @@ class NotesListFragmentTest {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalContracts::class)
+    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     @Test
     fun displayNotesWhenClickOnPlay() {
         Intents.init()
@@ -168,6 +167,7 @@ class NotesListFragmentTest {
         composeTestRule.onNode(hasText("com.github.scribeWizTeam.scribewiz.util.Export")).assertExists()
 
     }
+
 
     @After
     fun removeTestFiles() {

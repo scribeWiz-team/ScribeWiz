@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -101,6 +102,42 @@ class NotesStorageManagerTest {
                 notesStorageManager.getNoteFile(name)?.name ?: ""
             )
         }
+    }
+
+    @Test
+    fun testRenameFile() {
+        val oldName = "a"
+        val newName = "renamed"
+        assertTrue(notesStorageManager.renameFile(oldName, newName))
+        assertNotNull(notesStorageManager.getNoteFile(newName))
+        assertNull(notesStorageManager.getNoteFile(oldName))
+    }
+
+    @Test(expected = Exception::class)
+    fun testRenameNonExistentFile() {
+        val oldName = "nonExistentFile"
+        val newName = "renamed"
+        notesStorageManager.renameFile(oldName, newName)
+    }
+
+    @Test
+    fun testUploadAndDownloadFile() {
+        val musicNoteModel = MusicNoteModel("id1", "a")
+        notesStorageManager.uploadFileToDatabase(musicNoteModel)
+
+        val downloadedFileName = "${musicNoteModel.name}_DOWNLOADED"
+        notesStorageManager.downloadFileFromDatabase(musicNoteModel.id)
+
+        val downloadedFile = notesStorageManager.getNoteFile(downloadedFileName)
+        assertNotNull(downloadedFile)
+    }
+
+    @Test
+    fun testGetFileName() {
+        val musicNoteModel = MusicNoteModel("id1", "a")
+        notesStorageManager.uploadFileToDatabase(musicNoteModel)
+        val fileName = notesStorageManager.getFileName(musicNoteModel.id)
+        assertEquals(musicNoteModel.name, fileName)
     }
 
     @After

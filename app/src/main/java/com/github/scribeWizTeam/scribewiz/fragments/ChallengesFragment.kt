@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.activities.ChallengeNotesActivity
@@ -23,7 +24,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -34,8 +34,6 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ChallengesFragment : Fragment() {
-
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
@@ -86,7 +84,6 @@ class ChallengesFragment : Fragment() {
          * @param param2 Parameter 2.
          * @return A new instance of fragment ChallengesFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ChallengesFragment().apply {
@@ -113,6 +110,7 @@ class ChallengesFragment : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
+                .testTag("challengeButton")
         ) {
             Column(
                 modifier = Modifier
