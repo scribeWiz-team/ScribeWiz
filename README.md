@@ -1,5 +1,5 @@
 # ScribeWiz (WIP)
-ScribeWiz is a music transcription application that enables users to record audio input from an instrument through a microphone and transcribe it into a MIDI file. The transcribed file can be displayed as musical notation within the app, and users have the option to save, share and export their musical creations to other apps and media.
+ScribeWiz is a music transcription application that enables users to record audio input from an instrument through a microphone and transcribe it into an xml file. The transcribed file can be displayed as musical notation within the app, and users have the option to save, share and export their musical creations to other apps and media.
 
 <a href="https://codeclimate.com/github/scribeWiz-team/ScribeWiz/test_coverage"><img src="https://api.codeclimate.com/v1/badges/fc4516e613c1ccb040ea/test_coverage" /></a>
 <a href="https://codeclimate.com/github/scribeWiz-team/ScribeWiz/maintainability"><img src="https://api.codeclimate.com/v1/badges/fc4516e613c1ccb040ea/maintainability" /></a>
@@ -7,10 +7,10 @@ ScribeWiz is a music transcription application that enables users to record audi
 ## Features
 
  - Record audio input from an instrument through your phone's microphone.
- - Transcribes the recorded audio into a MIDI file automatically.
+ - Transcribes the recorded audio into an xml file automatically.
  - Displays the transcribed file within the app as musical notation.
  - Edit the notes and parameters like time signatures and tempo directly from within the app.
- - Save and share your creations as midi files with others through conventional media. 
+ - Save and share your creations as xml files with others through conventional media. 
 
 ## Getting Started
 
