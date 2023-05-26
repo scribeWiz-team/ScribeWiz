@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
+import com.github.scribeWizTeam.scribewiz.fragments.ChallengesFragment
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
@@ -82,6 +84,13 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
                         recordId = curDocID,
                         userId = currentUser.getOrNull()!!.id,
                     )
+                    val goHome = Intent(context, NavigationActivity::class.java)
+                    startActivity(goHome)
+                    Toast.makeText(
+                        context,
+                        "Submission successful!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(
                         context,
