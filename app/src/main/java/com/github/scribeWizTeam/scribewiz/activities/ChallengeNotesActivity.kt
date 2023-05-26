@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.models.ChallengeSubmissionModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.models.UserModel
 
 
@@ -37,6 +38,11 @@ class ChallengeNotesActivity : AppCompatActivity() {
             // Define a state variable for holding the list of submissions.
             val submissions = remember { mutableStateListOf<ChallengeSubmissionModel>() }
 
+            ScribeWizTheme() {
+
+                LaunchedEffect(challengeId) {
+                    submissions.addAll(ChallengeSubmissionModel.getAll(challengeId))
+                }
             // Get local user
             var userProfile = UserModel()
             UserModel.currentUser(this).onSuccess {

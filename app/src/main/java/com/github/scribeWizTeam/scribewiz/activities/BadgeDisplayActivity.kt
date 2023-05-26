@@ -25,6 +25,7 @@ import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.models.BadgeModel
 import com.github.scribeWizTeam.scribewiz.models.BadgeRanks
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 
 class BadgeDisplayActivity : ComponentActivity() {
 
@@ -33,7 +34,10 @@ class BadgeDisplayActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            BadgeDisplayLayout()
+            ScribeWizTheme() {
+                BadgeDisplayLayout()
+            }
+
         }
     }
 
