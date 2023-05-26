@@ -24,6 +24,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.FaqQueries
 
 class HelpFragment : Fragment() {
@@ -38,27 +39,28 @@ class HelpFragment : Fragment() {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
-
             setContent {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(all = 3.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                ScribeWizTheme() {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(all = 3.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Text(
-                        text = "FAQs",
-                        style = MaterialTheme.typography.h5,
-                        fontSize = 20.sp
-                    )
+                        Text(
+                            text = "FAQs",
+                            style = MaterialTheme.typography.h5,
+                            fontSize = 20.sp
+                        )
 
-                    LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
-                        items(faqs.toList()) { (faq, answer) ->
-                            ExpandableCard(
-                                title = faq,
-                                answer = answer
-                            )
+                        LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
+                            items(faqs.toList()) { (faq, answer) ->
+                                ExpandableCard(
+                                    title = faq,
+                                    answer = answer
+                                )
+                            }
                         }
                     }
                 }

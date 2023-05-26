@@ -7,4 +7,18 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#AABBCC</color> <!-- Replace with your PrimaryGreen color -->
+    <color name="primaryVariant">#BBCCDD
+    </color> <!-- Replace with your PrimaryVariantRed color -->
+    <color name="secondary">#CCDDEE</color> <!-- Replace with your SecondaryWhite color -->
+    <color name="background">#F8F8FF</color> <!-- Replace with your BackgroundBlack color -->
+    <color name="onPrimary">#EEFF00
+    </color> <!-- Replace with your onPrimary color for dark theme -->
+    <color name="onSecondary">#FF00EE
+    </color> <!-- Replace with your onSecondary color for dark theme -->
+    <color name="onBackground">#00EEFF
+    </color> <!-- Replace with your onBackground color for dark theme -->
+    <color name="onSurface">#00FFEE
+    </color> <!-- Replace with your onSurface color for dark theme -->
 </resources>

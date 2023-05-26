@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.github.scribeWizTeam.scribewiz.activities.ChallengeNotesActivity
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
+import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,19 +53,22 @@ class ChallengesFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                if (!isTest) {
-                    val challenges =
-                        remember {
-                            ChallengeModel.challengesAvailable().toMutableStateList()
-                        }
-                    ChallengeList(challenges = challenges)
-                } else {
-                    val challenges =
-                        remember {
-                            ChallengeModel.challengesAvailableTest().toMutableStateList()
-                        }
-                    ChallengeList(challenges = challenges)
+                ScribeWizTheme() {
+                    if (!isTest) {
+                        val challenges =
+                            remember {
+                                ChallengeModel.challengesAvailable().toMutableStateList()
+                            }
+                        ChallengeList(challenges = challenges)
+                    } else {
+                        val challenges =
+                            remember {
+                                ChallengeModel.challengesAvailableTest().toMutableStateList()
+                            }
+                        ChallengeList(challenges = challenges)
+                    }
                 }
+
 
             }
         }
