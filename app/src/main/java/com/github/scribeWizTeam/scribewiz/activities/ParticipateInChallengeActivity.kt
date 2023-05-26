@@ -99,8 +99,6 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
-
             },
 
             modifier = Modifier

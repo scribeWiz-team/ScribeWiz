@@ -46,9 +46,6 @@ class NotesListFragmentTest {
 
     private var notesDir = File("test")
 
-    private var exportSuccess: Boolean = false
-
-
     @Before
     fun initialize() {
 
@@ -169,6 +166,7 @@ class NotesListFragmentTest {
         composeTestRule.onNode(hasText("Export")).assertExists()
 
     }
+
 
     @After
     fun removeTestFiles() {

@@ -1,25 +1,31 @@
 package com.github.scribeWizTeam.scribewiz
 
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import com.github.scribeWizTeam.scribewiz.activities.ChallengeNotesActivity
+import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.fragments.ChallengesFragment
+import com.github.scribeWizTeam.scribewiz.fragments.ProfilePageFragment
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class ChallengesFragmentTest {
+
+
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createAndroidComposeRule<NavigationActivity>()
 
     @Before
     fun setUp() {
+        Intents.init()
         ChallengesFragment.isTest = true
-        val scenario = launchFragmentInContainer<ChallengesFragment>()
-        composeTestRule.setContent {
-            ChallengesFragment()
-        }
+        FragmentScenario.launchInContainer(ChallengesFragment::class.java)
     }
 
     @Test
@@ -28,8 +34,19 @@ class ChallengesFragmentTest {
         composeTestRule.onNodeWithText("test2").assertExists()
     }
 
+    @Test
+    fun testChallengeButtonLaunchesActivity() {
+        //wait for the button to appear
+        // Click the button
+        composeTestRule.onNodeWithText("test1").performClick()
+
+        // Check if intent was launched
+        Intents.intended(IntentMatchers.hasComponent(ChallengeNotesActivity::class.java.name))
+    }
+
     @After
     fun tearDown() {
         ChallengesFragment.isTest = false
+        Intents.release()
     }
 }
