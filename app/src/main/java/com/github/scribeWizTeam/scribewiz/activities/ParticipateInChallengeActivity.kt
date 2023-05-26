@@ -16,7 +16,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
-import com.github.scribeWizTeam.scribewiz.fragments.ChallengesFragment
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel

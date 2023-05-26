@@ -93,7 +93,6 @@ class NotesStorageManagerTest {
     fun getAllFile() {
         assertEquals(expectedFiles.size, notesStorageManager.getAllNotesFiles()?.size ?: 0)
     }
-
     @Test
     fun getFileRetrieveCorrectFile() {
 
