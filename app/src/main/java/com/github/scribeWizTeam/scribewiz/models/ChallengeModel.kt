@@ -1,6 +1,5 @@
 package com.github.scribeWizTeam.scribewiz.models
 
-import java.util.Date
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -9,6 +8,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 data class ChallengeModel(
     override val id: String = Firebase.firestore.collection(COLLECTION).document().id,
@@ -24,7 +24,7 @@ data class ChallengeModel(
         const val SUBMISSION_COLLECTION = "Submissions"
 
 
-        val challengeTest1: ChallengeModel =
+        private val challengeTest1: ChallengeModel =
             ChallengeModel(
                 "1", "test1",
                 Date(0),
@@ -33,7 +33,7 @@ data class ChallengeModel(
                 "This is a badge"
             )
 
-        val challengeTest2: ChallengeModel =
+        private val challengeTest2: ChallengeModel =
             ChallengeModel(
                 "2", "test2",
                 Date(0),

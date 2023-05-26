@@ -1,6 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
-import Export
+import com.github.scribeWizTeam.scribewiz.util.Export
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
-import com.github.scribeWizTeam.scribewiz.NotesDisplayedActivity
+import com.github.scribeWizTeam.scribewiz.activities.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.R
 import com.github.scribeWizTeam.scribewiz.activities.ParticipateInChallengeActivity
@@ -228,7 +228,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
     ) {
         val showMenu = remember { mutableStateOf(false) }
 
-        var buttonName by remember { mutableStateOf("Export") }
+        var buttonName by remember { mutableStateOf("com.github.scribeWizTeam.scribewiz.util.Export") }
         Surface(modifier = getTileModifier()
             .pointerInput(Unit) {
                 detectTapGestures(
@@ -280,7 +280,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     }
 
                     // Add more DropdownMenuItem here for more options
-                    // Added "Export" option
+                    // Added "com.github.scribeWizTeam.scribewiz.util.Export" option
                     DropdownMenuItem(onClick = {
                         if(export(name)){
                             buttonName = "Exported"
@@ -301,11 +301,11 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
         }
     }
 
-    // Added export helper function which calls Export.exportMusicXMLFile to export the file
+    // Added export helper function which calls com.github.scribeWizTeam.scribewiz.util.Export.exportMusicXMLFile to export the file
     private fun export(name: String): Boolean {
         // Get the file
         val noteFile = notesStorageManager.getNoteFile(name)
-        // Export the file
+        // com.github.scribeWizTeam.scribewiz.util.Export the file
         val success = noteFile?.let { Export.exportMusicXMLFile(it, requireContext()) }
         return if (success == true) {
             Toast.makeText(context, "Exported $name", Toast.LENGTH_SHORT).show()

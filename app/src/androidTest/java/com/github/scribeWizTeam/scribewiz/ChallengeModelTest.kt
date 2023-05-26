@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz;
+package com.github.scribeWizTeam.scribewiz
 
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel.Controller.challenge

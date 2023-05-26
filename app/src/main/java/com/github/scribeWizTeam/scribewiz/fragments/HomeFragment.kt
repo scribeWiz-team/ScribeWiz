@@ -36,17 +36,13 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import coil.compose.AsyncImage
 import com.github.scribeWizTeam.scribewiz.R
-import com.github.scribeWizTeam.scribewiz.activities.FirebaseUIActivity
 import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
-    // Get the current user
-    private val user = FirebaseAuth.getInstance().currentUser
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -84,8 +80,6 @@ class HomeFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                                     RecordButton()
                                 }
                                 Box(Modifier.weight(0.5f)) {}
-
-
                             }
                             NotesListFragmentComponent(parentFragmentManager, fragmentAdded)
                         }
@@ -125,33 +119,6 @@ class HomeFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
             }
         ) {
             Text("Record", fontSize = 25.sp)
-        }
-    }
-
-    @Composable
-    fun ProfileButton() {
-        val modifier = Modifier
-            .size(50.dp)
-            .clip(CircleShape)
-        if (user != null) {
-            // Use user profile picture
-            AsyncImage(
-                model = user.photoUrl,
-                contentDescription = "User profile picture",
-                modifier = modifier.clickable {
-                    launchNavActivity("profilePage")
-                }
-            )
-        } else {
-            // Default profile picture
-            Image(
-                painter = painterResource(id = R.drawable.no_user),
-                contentDescription = "User profile picture",
-                modifier = modifier.clickable {
-                    val login = Intent(requireContext(), FirebaseUIActivity::class.java)
-                    this.startActivity(login)
-                }
-            )
         }
     }
 

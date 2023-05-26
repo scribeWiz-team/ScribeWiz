@@ -1,4 +1,4 @@
-package com.github.scribeWizTeam.scribewiz
+package com.github.scribeWizTeam.scribewiz.activities
 
 import alphaTab.AlphaTabView
 import alphaTab.core.ecmaScript.Uint8Array
@@ -16,6 +16,9 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.github.scribeWizTeam.scribewiz.NotesStorageManager
+import com.github.scribeWizTeam.scribewiz.R
+import com.github.scribeWizTeam.scribewiz.ViewScoreViewModel
 import com.github.scribeWizTeam.scribewiz.util.Editor
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.ByteArrayOutputStream

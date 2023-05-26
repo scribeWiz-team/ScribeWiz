@@ -19,12 +19,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class HelpFragmentTest {
 
-    // Creating mock FAQs to use in tests, instead of using FAQs which require scrolling.
-    private val mockFaqs = mapOf(
-        "Mock Question 1?" to "Mock Answer 1",
-        "Mock Question 2?" to "Mock Answer 2"
-    )
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<NavigationActivity>()
 
@@ -96,7 +90,6 @@ class HelpFragmentTest {
         composeTestRule.onNodeWithText(answer).assertIsDisplayed()
     }
 
-    @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
     @Test
     fun helpFragment_AllFAQsAnswersHiddenInitially() {
         launchFragmentInContainer<HelpFragment>()

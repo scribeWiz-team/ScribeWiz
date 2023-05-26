@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.util.Export
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)

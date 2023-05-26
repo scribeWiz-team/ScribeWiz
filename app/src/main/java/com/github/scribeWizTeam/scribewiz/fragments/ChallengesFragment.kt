@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,7 +52,7 @@ class ChallengesFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                ScribeWizTheme() {
+                ScribeWizTheme {
                     if (!isTest) {
                         val challenges =
                             remember {
@@ -154,6 +155,7 @@ class ChallengesFragment : Fragment() {
         return "From ${dateFormatting(startingDate)} to ${dateFormatting(endDate)}"
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun dateFormatting(date: Date): String {
         val formatter = SimpleDateFormat("MMM dd, yyyy, HH:mm")
         return formatter.format(date) ?: throw Exception("There was a problem with your date")

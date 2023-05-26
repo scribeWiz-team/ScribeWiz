@@ -10,6 +10,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.github.scribeWizTeam.scribewiz.activities.NavigationActivity
+import com.github.scribeWizTeam.scribewiz.activities.NotesDisplayedActivity
 import com.github.scribeWizTeam.scribewiz.fragments.NotesListFragment
 import kotlinx.coroutines.runBlocking
 import org.junit.*
@@ -86,7 +87,7 @@ class NotesListFragmentTest {
         composeTestRule.onNodeWithText(invalidFileName).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalContracts::class)
+    @OptIn(ExperimentalContracts::class, ExperimentalUnsignedTypes::class)
     @Test
     fun displayNotesWhenClickOnPlay() {
         Intents.init()
@@ -162,8 +163,8 @@ class NotesListFragmentTest {
         // Arrange: Long press on an item, in this case, an item with the text "a"
         composeTestRule.onNode(hasText("a")).performTouchInput { longClick() }
 
-        // Act & Assert: Assert that an element with the text "Export" exists on the screen after the long press action
-        composeTestRule.onNode(hasText("Export")).assertExists()
+        // Act & Assert: Assert that an element with the text "com.github.scribeWizTeam.scribewiz.util.Export" exists on the screen after the long press action
+        composeTestRule.onNode(hasText("com.github.scribeWizTeam.scribewiz.util.Export")).assertExists()
 
     }
 

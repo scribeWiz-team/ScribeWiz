@@ -40,7 +40,7 @@ class ParticipateInChallengeTest {
      * Uses a [ComposeTestRule] created via [createEmptyComposeRule] that allows setup before the activity
      * is launched via [onBefore]. Assertions on the view can be made in [onAfterLaunched].
      */
-    inline fun <reified A : Activity> ComposeTestRule.launch(
+    private inline fun <reified A : Activity> ComposeTestRule.launch(
         onBefore: () -> Unit = {},
         intentFactory: (Context) -> Intent = {
             Intent(

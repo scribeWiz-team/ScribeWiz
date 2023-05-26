@@ -43,7 +43,7 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         }
 
         setContent {
-            ScribeWizTheme() {
+            ScribeWizTheme {
                 val challenges =
                     remember { ChallengeModel.challengesAvailable().toMutableStateList() }
 

@@ -37,7 +37,7 @@ class NoteGuesser(override val sampleDelay: Double,
                   val silenceMinDuration: Double = 0.0,
                   val movingWindowNeighbors: Int = 1): NoteGuesserInterface {
     // the window size is always odd, so that it’s symmetric
-    val movingWindowSize = 2 * movingWindowNeighbors + 1
+    private val movingWindowSize = 2 * movingWindowNeighbors + 1
 
     override var notes: MutableList<MidiNote> = mutableListOf()
 

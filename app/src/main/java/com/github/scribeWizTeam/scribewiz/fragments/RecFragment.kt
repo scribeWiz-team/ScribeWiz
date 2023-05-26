@@ -22,10 +22,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Switch
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -55,7 +55,7 @@ import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import com.github.scribeWizTeam.scribewiz.util.RecordingParameters
 
 class RecFragment(
-    contentLayoutId: Int  = 0,
+    contentLayoutId: Int = 0,
     private val recordingParameters: RecordingParameters
 ) : Fragment(contentLayoutId) {
 
@@ -87,8 +87,8 @@ class RecFragment(
 
     private var isRecording = false //boolean to check if recording is in progress
 
-    private var beat_count = 0
-    private var measure_count = 0
+    private var beatCount = 0
+    private var measureCount = 0
 
     private var metronomeIsPlaying = false
 
@@ -142,7 +142,7 @@ class RecFragment(
                                 textAlign = TextAlign.Center
                             )
                             PlayButton(recordButtonText) {
-                                switchRecordState(context,counterText, recordButtonText)
+                                switchRecordState(context, counterText, recordButtonText)
                             }
                         }
                         Switch(
@@ -195,7 +195,11 @@ class RecFragment(
         recordButtonText: MutableState<String>
     ) {
         // Check for audio recording permissions
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // No permissions, send a toast
             Toast.makeText(context, "Microphone permission required", Toast.LENGTH_LONG).show()
             return
@@ -203,9 +207,9 @@ class RecFragment(
 
         if (!isRecording) {
             // Set the timer
-            val tick_time = (1000 * 60 / recordingParameters.tempo).toLong()
-            metronomeTimer = onTickTimer(tick_time) { _ ->
-                val (beat, measure) = increment_metronome_counter()
+            val tickTime = (1000 * 60 / recordingParameters.tempo).toLong()
+            metronomeTimer = onTickTimer(tickTime) {
+                val (beat, measure) = incrementMetronomeCounter()
                 counterText.value = "$measure.$beat"
                 if (this::mediaPlayer.isInitialized && metronomeIsPlaying) {
                     if (mediaPlayer.isPlaying) {
@@ -243,14 +247,14 @@ class RecFragment(
         }
     }
 
-    private fun increment_metronome_counter(): Pair<Int, Int>{
-        if (beat_count == recordingParameters.beats){
-            measure_count += 1
-            beat_count = 1
+    private fun incrementMetronomeCounter(): Pair<Int, Int> {
+        if (beatCount == recordingParameters.beats) {
+            measureCount += 1
+            beatCount = 1
         } else {
-            beat_count += 1
+            beatCount += 1
         }
-        return Pair(beat_count, measure_count)
+        return Pair(beatCount, measureCount)
     }
 
     @SuppressLint("Permissions are checked before calling this method", "MissingPermission")
@@ -266,9 +270,11 @@ class RecFragment(
             SAMPLE_RATE_IN_HZ.toDouble(),
             THRESHOLD
         )
-        val noteGuesser = NoteGuesser(NOTE_SAMPLE_INTERVAL / 1000.0, 
-                                      silenceMinDuration=0.3,
-                                      movingWindowNeighbors=2)
+        val noteGuesser = NoteGuesser(
+            NOTE_SAMPLE_INTERVAL / 1000.0,
+            silenceMinDuration = 0.3,
+            movingWindowNeighbors = 2
+        )
         val signature = Signature(
             recordingParameters.fifths,
             recordingParameters.beats,
@@ -281,8 +287,8 @@ class RecFragment(
         transcriber = Transcriber(pitchDetector, noteGuesser, renderer)
 
         // reset measure counter
-        beat_count = 1
-        measure_count = 1
+        beatCount = 1
+        measureCount = 1
 
         // Start recording
         audioRecorder.startRecording()
