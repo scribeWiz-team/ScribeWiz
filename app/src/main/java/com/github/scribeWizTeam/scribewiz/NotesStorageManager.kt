@@ -124,7 +124,7 @@ class NotesStorageManager() {
      */
     fun uploadFileToDatabase(musicNoteModel: MusicNoteModel) {
         val file = getNoteFile(musicNoteModel.name)
-        val doc = Firebase.firestore.collection(FILES_COLLECTION_DB).document()
+        val doc = Firebase.firestore.collection(FILES_COLLECTION_DB).document(musicNoteModel.id)
         doc.set(
             mutableMapOf(
                 "fileID" to musicNoteModel.id,
@@ -146,15 +146,34 @@ class NotesStorageManager() {
                     .get()
                     .await()
                     .let {
+                        Log.w("DOWNLOADING", it.get("filename").toString())
                         File(
                             storageFolder, it.get("filename")!!.toString()
-                                    + "_DOWNLOADED" + MUSIC_XML_EXTENSION
+                                    + "_DOWNLOADED." + MUSIC_XML_EXTENSION
                         )
                             .writeText(it.get("content")!!.toString())
                     }
             }
             job.join()
         }
+    }
+
+    fun getFileName(fileID: String) : String{
+        var filename = "No file name"
+        runBlocking {
+            val job = launch {
+                Firebase.firestore
+                    .collection(FILES_COLLECTION_DB)
+                    .document(fileID)
+                    .get()
+                    .await()
+                    .let {
+                        filename = it.get("filename").toString()
+                    }
+            }
+            job.join()
+        }
+        return filename
     }
 }
 
