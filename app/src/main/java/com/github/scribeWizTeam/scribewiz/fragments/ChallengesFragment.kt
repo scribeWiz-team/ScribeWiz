@@ -1,5 +1,6 @@
 package com.github.scribeWizTeam.scribewiz.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import com.github.scribeWizTeam.scribewiz.activities.ChallengeNotesActivity
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.text.SimpleDateFormat
@@ -98,7 +100,12 @@ class ChallengesFragment : Fragment() {
     @Composable
     fun SpecificChallengeButton(challenge: ChallengeModel) {
 
-        fun challengeOnClick() {}
+        fun challengeOnClick() {
+
+            val openChallenge = Intent(context, ChallengeNotesActivity::class.java)
+            openChallenge.putExtra("challengeId", challenge.id)
+            startActivity(openChallenge)
+        }
 
         Button(
             onClick = ::challengeOnClick,

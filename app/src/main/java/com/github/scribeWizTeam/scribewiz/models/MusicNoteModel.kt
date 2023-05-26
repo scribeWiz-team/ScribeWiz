@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 data class MusicNoteModel (
-    override var id: String = Firebase.firestore.collection(COLLECTION).document().id,
+    override val id: String = "BAD FILENAME",
     var name: String = "new note",
 ) : Model {
 

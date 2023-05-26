@@ -1,6 +1,7 @@
 package com.github.scribeWizTeam.scribewiz.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -14,9 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.scribeWizTeam.scribewiz.NotesStorageManager
 import com.github.scribeWizTeam.scribewiz.models.ChallengeModel
 import com.github.scribeWizTeam.scribewiz.models.MusicNoteModel
 import com.github.scribeWizTeam.scribewiz.models.UserModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.github.scribeWizTeam.scribewiz.ui.theme.ScribeWizTheme
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,9 +33,7 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var musicName = ""
-
-        musicName = if (!isTest) {
+        val musicName = if (!isTest) {
             val extras = intent.extras
                 ?: throw Exception("Exception : No parameters passed to the activity by the intent")
             extras.getString("musicName")
@@ -71,11 +73,25 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
             onClick = {
                 val currentUser = UserModel.currentUser(context = context)
                 if (currentUser.isSuccess) {
-                    val musicFileId: String = addLocalMusicFileMetaDataToDB(musicName)
+                    val storageManager = NotesStorageManager(context = context)
+
+                    val curDocID = Firebase.firestore.collection(MusicNoteModel.COLLECTION).document().id
+                    val modelToUpload = MusicNoteModel(
+                        curDocID,
+                        name=musicName,
+                    )
+                    storageManager.uploadFileToDatabase(modelToUpload)
                     challenge.addSubmission(
-                        recordId = musicFileId,
+                        recordId = curDocID,
                         userId = currentUser.getOrNull()!!.id,
                     )
+                    val goHome = Intent(context, NavigationActivity::class.java)
+                    startActivity(goHome)
+                    Toast.makeText(
+                        context,
+                        "Submission successful!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(
                         context,
@@ -149,12 +165,5 @@ class ParticipateInChallengeActivity : AppCompatActivity() {
         return formatter.format(date) ?: throw Exception("There was a problem with your date")
     }
 
-    //It is needed here as long as I don't have the part from Stefan that upload local music files in a nice way
-    private fun addLocalMusicFileMetaDataToDB(nameMusic: String): String {
-        val musicModel = MusicNoteModel("dummy value", "name") /* the "dummy value" is here because with the next merge,
-        it won't be needed to pass an id, it will be automatically generated. */
-        musicModel.updateInDB()
-        return musicModel.id
-    }
 
 }
