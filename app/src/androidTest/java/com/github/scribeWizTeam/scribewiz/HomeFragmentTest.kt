@@ -41,4 +41,5 @@ class HomeFragmentTest {
         intended(hasExtra("fragment", "challengesPage"))
         Intents.release()
     }
+
 }
