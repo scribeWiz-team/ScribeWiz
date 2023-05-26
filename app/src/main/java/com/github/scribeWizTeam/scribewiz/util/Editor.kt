@@ -153,23 +153,26 @@ class Editor {
                 when (eventType) {
                     XmlPullParser.START_TAG -> {
                         // If the current tag is "note", increment the note location
-                        val tagName = parser.name
-                        if (tagName == "note") {
-                            if (currentTicks >= ticks) {
-                                return noteLocation
+                        when (parser.name) {
+                            "note" -> {
+                                if (currentTicks >= ticks) {
+                                    return noteLocation
+                                }
+                                noteLocation++
                             }
-                            noteLocation++
-                        }
-                        // If the current tag is "divisions", get the divisions value
-                        else if (tagName == "divisions") {
-                            eventType = parser.next()
-                            divisions = parser.text.toInt()
-                        }
-                        // If the current tag is "duration", get the duration and calculate the current division ticks
-                        else if (tagName == "duration") {
-                            eventType = parser.next()
-                            val duration = parser.text.toInt()
 
+                            // If the current tag is "divisions", get the divisions value
+                            "divisions" -> {
+                                eventType = parser.next()
+                                divisions = parser.text.toInt()
+                            }
+
+                            // If the current tag is "duration", get the duration and calculate the current division ticks
+                            "duration" -> {
+                                eventType = parser.next()
+                                val duration = parser.text.toInt()
+
+                            }
                         }
                     }
                     XmlPullParser.END_TAG -> {

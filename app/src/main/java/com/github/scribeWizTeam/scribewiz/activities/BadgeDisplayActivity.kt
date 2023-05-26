@@ -6,7 +6,14 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Button
@@ -34,7 +41,7 @@ class BadgeDisplayActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            ScribeWizTheme() {
+            ScribeWizTheme {
                 BadgeDisplayLayout()
             }
 
@@ -81,7 +88,7 @@ class BadgeDisplayActivity : ComponentActivity() {
     }
 
 
-    private val cardColors = mapOf<Int, Color>(
+    private val cardColors = mapOf(
         Pair(BadgeRanks.GOLD.ordinal, Color(215, 183, 64)),
         Pair(BadgeRanks.SILVER.ordinal, Color(224, 224, 224)),
         Pair(BadgeRanks.BRONZE.ordinal, Color(184, 115, 51))

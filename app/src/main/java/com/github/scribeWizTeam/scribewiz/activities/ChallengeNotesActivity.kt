@@ -38,7 +38,7 @@ class ChallengeNotesActivity : AppCompatActivity() {
             // Define a state variable for holding the list of submissions.
             val submissions = remember { mutableStateListOf<ChallengeSubmissionModel>() }
 
-            ScribeWizTheme() {
+            ScribeWizTheme {
 
                 LaunchedEffect(challengeId) {
                     submissions.addAll(ChallengeSubmissionModel.getAll(challengeId))

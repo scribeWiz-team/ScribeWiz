@@ -40,7 +40,7 @@ class HelpFragment : Fragment() {
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
             setContent {
-                ScribeWizTheme() {
+                ScribeWizTheme {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -70,7 +70,6 @@ class HelpFragment : Fragment() {
 
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ExpandableCard(title: String, answer: String) {
     var expanded by remember { mutableStateOf(false) }

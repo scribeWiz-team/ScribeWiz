@@ -1,3 +1,5 @@
+package com.github.scribeWizTeam.scribewiz.util
+
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -14,12 +16,12 @@ class Export {
         */
         fun exportMusicXMLFile(file: File, context: Context): Boolean {
             // Log a debug message
-            Log.d("Export", "exportMusicXMLFile called with file: ${file.path}")
+            Log.d("com.github.scribeWizTeam.scribewiz.util.Export", "exportMusicXMLFile called with file: ${file.path}")
 
             // Check if the file exists
             if (!file.exists()) {
                 // Log an error message
-                Log.e("Export", "File does not exist: ${file.path}")
+                Log.e("com.github.scribeWizTeam.scribewiz.util.Export", "File does not exist: ${file.path}")
                 return false
             }
 
@@ -51,7 +53,7 @@ class Export {
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                 // start the intent to share the file
-                context.startActivity(Intent.createChooser(shareIntent, "Export MusicXML file"))
+                context.startActivity(Intent.createChooser(shareIntent, "com.github.scribeWizTeam.scribewiz.util.Export MusicXML file"))
 
             } catch (
                 e: SecurityException

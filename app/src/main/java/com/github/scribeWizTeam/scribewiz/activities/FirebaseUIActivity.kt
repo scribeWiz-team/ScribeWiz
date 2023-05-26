@@ -33,7 +33,7 @@ class FirebaseUIActivity : ComponentActivity() {
             startActivity(goHome)
         }
         setContent {
-            ScribeWizTheme() {
+            ScribeWizTheme {
                 LoginPage()
             }
 
@@ -114,16 +114,6 @@ class FirebaseUIActivity : ComponentActivity() {
                 reloadPage()
             }
         // [END auth_fui_signout]
-    }
-
-    private fun delete() {
-        // [START auth_fui_delete]
-        AuthUI.getInstance()
-            .delete(this)
-            .addOnCompleteListener {
-                // ...
-            }
-        // [END auth_fui_delete]
     }
 
     private fun loginMessage(): String {
