@@ -119,7 +119,9 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
         ***************************************************************
         */
         Column(
-            modifier = Modifier.fillMaxSize().padding(all = 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -177,7 +179,10 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                         startActivity(goHome)
                     }
                 },
-                modifier = Modifier.height(60.dp).width(100.dp).padding(top = 10.dp)
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(100.dp)
+                    .padding(top = 10.dp)
             ) {
                 if (isGuest) {
                     Text("Sign in")
@@ -192,7 +197,9 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
             ***************************************************************
             */
             Row(
-                modifier = Modifier.fillMaxWidth().padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(PaddingValues(20.dp, 0.dp, 20.dp, 0.dp)),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -211,7 +218,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                             contentDescription = "My badges button",
                             modifier = Modifier.clickable {
 
-                                BadgeModel.addBadgeToUser(userProfile, null)
+                                BadgeModel.addBadgeToUser(userProfile, BadgeModel("123", "Best Guitar Solo"))
                                 val openBadges = Intent(context, BadgeDisplayActivity::class.java)
                                 startActivity(openBadges)
                             }
@@ -234,7 +241,10 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                         value = text.value,
                         onValueChange = { text.value = it },
                         label = { Text("Search for user") },
-                        modifier = Modifier.height(50.dp).width(250.dp).testTag("SearchFriendField"),
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(250.dp)
+                            .testTag("SearchFriendField"),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                         keyboardActions = KeyboardActions(
                             onGo = {
@@ -253,7 +263,8 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                             reloadFragment()
 
                         },
-                        modifier = Modifier.height(50.dp)
+                        modifier = Modifier
+                            .height(50.dp)
                             .width(100.dp)
                     )
                     {
@@ -270,6 +281,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                     modifier = Modifier.padding(top = 10.dp)
                 )
                 DrawFriendsGrid(friendsList)
+
             }
         }
     }
@@ -285,7 +297,7 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(friendsList.size) { item ->
+            items(friendsList.size + 1) { item ->
                 Card(
                     modifier = Modifier.padding(4.dp),
                     backgroundColor = Color(
@@ -299,11 +311,13 @@ class ProfilePageFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) 
                         Image(
                             painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = "FriendPP",
-                            modifier = Modifier.size(60.dp).padding(bottom = 0.dp)
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(bottom = 0.dp)
                         )
 
                         Text(
-                            text = friendsList.elementAt(item),
+                            text = "Netzu",
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 5.dp)

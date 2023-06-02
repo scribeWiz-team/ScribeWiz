@@ -228,7 +228,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
     ) {
         val showMenu = remember { mutableStateOf(false) }
 
-        var buttonName by remember { mutableStateOf("com.github.scribeWizTeam.scribewiz.util.Export") }
+        var buttonName by remember { mutableStateOf("Export") }
         Surface(modifier = getTileModifier()
             .pointerInput(Unit) {
                 detectTapGestures(
@@ -283,7 +283,7 @@ class NotesListFragment(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
                     // Added "com.github.scribeWizTeam.scribewiz.util.Export" option
                     DropdownMenuItem(onClick = {
                         if(export(name)){
-                            buttonName = "Exported"
+                            buttonName = "Export"
                         }
                     }) {
                         Text(buttonName)
